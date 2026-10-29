@@ -132,6 +132,8 @@ class Toolkit:
             results = self.registry.search(query, category=category, limit=max(1, min(limit, 25)))
         out: dict[str, Any] = {"query": query, "count": len(results), "providers": results}
         if not results:
+            out["web_search_required"] = True
+            out["search_reason"] = "no_provider_match"
             out["hint"] = (
                 "no provider matches this query. Call fetch_url on a likely page, "
                 "or answer without a structured source."

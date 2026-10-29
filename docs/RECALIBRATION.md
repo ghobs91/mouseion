@@ -5,8 +5,9 @@
 remain gated on the Phase 2 evaluation.
 **Progress:** Phase 0 complete: git baseline, README and `.env.example` corrected,
 `candidates_auto/` removed and ignored as regenerable output. Phase 1 complete: schema
-fields, 36-manifest backfill, `mouseion audit`, audit tests, and CI. The Phase 2
-failover engine is in progress.
+fields, 36-manifest backfill, `mouseion audit`, audit tests, and CI. Phase 2 complete:
+canonical query, cluster-only failover, attempt tracing, rate limiting, circuit breaker,
+single-flight, and `mouseion lookup`. Phase 3 breadth remains.
 **Basis:** the 2026-10-29 specification plus the repository as it actually stands:
 36 providers, 44 capabilities, 163 passing offline tests, 44 live contract tests.
 
@@ -452,6 +453,14 @@ can run the quickstart.
 **Gate:** valid empty never fails over; cross-cluster never fails over; region conflict
 never fails over; every failure produces an attempt trace; p95 overhead under 50 ms
 excluding upstream time.
+
+**Implemented:** `mouseion/engine.py`, `mouseion lookup`, and 18 engine tests. The
+shipped clusters are `scholarly_work_search`, `government_content_search`, and
+`entity_name_search`. `CanonicalQuery` supports `text`, `identifier`, `entity`, `geo`,
+and `limit`; `time_range` mapping is deferred until a cluster needs it. Identifier
+extraction covers NCT, DOI, CVE, CIK, PMID, and bare numeric ids. An explicit
+`--provider` is exact and does not fail over; source-specific `--params` require an
+explicit provider.
 
 ### Phase 3 — Category expansion (1–2 weeks, parallelizable)
 

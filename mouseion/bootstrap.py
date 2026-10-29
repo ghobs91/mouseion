@@ -11,6 +11,7 @@ from .client import ProviderClient
 from .config import Settings
 from .config import settings as default_settings
 from .embedders import FastEmbedder, OpenAIEmbedder
+from .engine import Engine
 from .registry import Registry
 from .router import Router
 from .tools import Toolkit
@@ -22,6 +23,7 @@ class App:
     cache: Cache
     client: ProviderClient
     router: Router
+    engine: Engine
     toolkit: Toolkit
 
     async def aclose(self) -> None:
@@ -49,8 +51,16 @@ def build(
         query_prefix=cfg.query_prefix,
         doc_prefix=cfg.doc_prefix,
     )
+    engine = Engine(registry, client, router, config=cfg)
     toolkit = Toolkit(registry, client, cache, router=router, config=cfg, transport=transport)
-    return App(registry=registry, cache=cache, client=client, router=router, toolkit=toolkit)
+    return App(
+        registry=registry,
+        cache=cache,
+        client=client,
+        router=router,
+        engine=engine,
+        toolkit=toolkit,
+    )
 
 
 def _embedder(cfg: Settings):

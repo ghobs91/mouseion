@@ -60,6 +60,21 @@ async def _run(args: argparse.Namespace) -> int:
 
     app = build()
     try:
+        if args.command == "lookup":
+            params = json.loads(args.params) if args.params else None
+            result = await app.engine.lookup(
+                args.query,
+                category=args.category,
+                domain=args.domain,
+                provider=args.provider,
+                capability=args.capability,
+                params=params,
+                limit=args.limit,
+                refresh=args.refresh,
+                allow_aggregators=args.allow_aggregators,
+            )
+            _print(result.to_dict())
+            return 0
         if args.command == "audit":
             from .audit import audit_live, audit_registry, summarize
 
@@ -154,6 +169,17 @@ def main() -> None:
     p.add_argument("--live", action="store_true", help="also check evidence URLs")
     p.add_argument("--provider", help="audit one provider")
     p.add_argument("--strict", action="store_true", help="treat warnings as failures")
+
+    p = sub.add_parser("lookup", help="route, execute, and fail over within a capability cluster")
+    p.add_argument("query")
+    p.add_argument("--category")
+    p.add_argument("--domain")
+    p.add_argument("--limit", type=int, default=10)
+    p.add_argument("--provider")
+    p.add_argument("--capability")
+    p.add_argument("--params", default=None, help="JSON object; bypasses query mapping")
+    p.add_argument("--refresh", action="store_true")
+    p.add_argument("--allow-aggregators", action="store_true")
 
     p = sub.add_parser("route", help="show ranked routing candidates")
     p.add_argument("query")

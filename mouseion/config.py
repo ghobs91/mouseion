@@ -50,6 +50,26 @@ class Settings:
     # fetch_url refuses private/link-local targets unless explicitly allowed.
     allow_private_urls: bool = field(default_factory=lambda: _bool("MOUSEION_ALLOW_PRIVATE_URLS"))
     default_ttl_s: float = field(default_factory=lambda: float(os.getenv("MOUSEION_TTL", "300")))
+    #: Failover engine. Three attempts is enough to cross a small cluster without
+    #: turning one question into a crawl.
+    engine_max_attempts: int = field(
+        default_factory=lambda: int(os.getenv("MOUSEION_ENGINE_ATTEMPTS", "3"))
+    )
+    engine_allow_aggregators: bool = field(
+        default_factory=lambda: _bool("MOUSEION_ENGINE_ALLOW_AGGREGATORS")
+    )
+    negative_cache_s: float = field(
+        default_factory=lambda: float(os.getenv("MOUSEION_NEGATIVE_TTL", "30"))
+    )
+    rate_limit_max_wait_s: float = field(
+        default_factory=lambda: float(os.getenv("MOUSEION_RATE_MAX_WAIT", "2"))
+    )
+    circuit_threshold: int = field(
+        default_factory=lambda: int(os.getenv("MOUSEION_CIRCUIT_THRESHOLD", "3"))
+    )
+    circuit_cooldown_s: float = field(
+        default_factory=lambda: float(os.getenv("MOUSEION_CIRCUIT_COOLDOWN", "60"))
+    )
     #: Empty means no embedding backend: the router stays lexical + patterns.
     embed_url: str = field(default_factory=lambda: os.getenv("MOUSEION_EMBED_URL", ""))
     embed_model: str = field(default_factory=lambda: os.getenv("MOUSEION_EMBED_MODEL", ""))

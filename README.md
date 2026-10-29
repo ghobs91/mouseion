@@ -199,6 +199,53 @@ routing must never take the tool surface down with it.
 in the manifests. When a real question has no provider, add it there with `"expect": null`.
 That file is the roadmap.
 
+## Lookup and failover
+
+`providers_search` is model-in-the-loop: the model picks a provider, reads its params,
+then calls it. `mouseion lookup` is the automatic path. It takes a query, routes it,
+translates the query through each capability's `query_map`, and tries sources in order.
+
+```bash
+mouseion lookup "CRISPR base editing" --domain academic_scientific
+mouseion lookup "NCT04631731" --limit 1
+mouseion lookup "drug recall" --provider openfda --capability drug_recalls
+```
+
+Four rules keep it honest:
+
+1. **Failover only inside a cluster.** A cluster is a declared group of capabilities
+   that can answer the same question (`scholarly_work_search`,
+   `government_content_search`, `entity_name_search`). Category membership is not
+   enough: FRED and the World Bank are not interchangeable.
+2. **A valid empty result is a success.** If a source answers with zero records, the
+   engine stops. "No Class I recalls" is an answer, not a reason to ask a different
+   register.
+3. **A region conflict is not a failover.** A US-only provider is dropped before the
+   call when the query names another country; it is never used as a fallback.
+4. **Aggregator exceptions are not automatic.** CourtListener, OpenAlex, GBIF, and
+   Open Library are useful, but they are secondary indexes. They are used only with
+   `--allow-aggregators` or an explicit `--provider`.
+
+Every result carries an `attempts` trace and a machine-readable signal:
+
+```json
+{
+  "web_search_required": false,
+  "attempts": [
+    {"provider": "openalex", "capability": "search_works", "outcome": "retryable", "http": 429},
+    {"provider": "crossref", "capability": "search_works", "outcome": "ok"}
+  ],
+  "envelope": { "records": [] }
+}
+```
+
+If every candidate fails, `web_search_required` is `true` and `reason` says why
+(`no_candidates`, `no_primary_candidates`, `missing_credential`, `unmapped_query`,
+`all_sources_failed`). `providers_search` emits the same signal when it finds nothing.
+
+The engine is a library and CLI first. It is not a fifth MCP tool yet; the four-tool
+surface stays stable until the failover eval is in place.
+
 ## The envelope
 
 Every provider returns this shape, which is what makes heterogeneous upstreams
