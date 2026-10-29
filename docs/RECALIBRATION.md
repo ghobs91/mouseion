@@ -3,9 +3,10 @@
 **Date:** 2026-10-29
 **Status:** Accepted for Phase 0–2. Phase 3 breadth and the auto-routing MCP surface
 remain gated on the Phase 2 evaluation.
-**Progress:** Phase 0 complete (git baseline, README and `.env.example` corrected).
-Phase 1 complete: schema fields, 36-manifest backfill, `mouseion audit`, audit tests,
-and CI. The Phase 2 failover engine is not started.
+**Progress:** Phase 0 complete: git baseline, README and `.env.example` corrected,
+`candidates_auto/` removed and ignored as regenerable output. Phase 1 complete: schema
+fields, 36-manifest backfill, `mouseion audit`, audit tests, and CI. The Phase 2
+failover engine is in progress.
 **Basis:** the 2026-10-29 specification plus the repository as it actually stands:
 36 providers, 44 capabilities, 163 passing offline tests, 44 live contract tests.
 
