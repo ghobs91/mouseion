@@ -1,0 +1,20 @@
+id: auto_gsa_data_live_os_json
+title: /data/live/os.json
+category: government
+description: " \u2014 GSA JSON endpoint, auto-discovered from the agency data.json\
+  \ catalogue. Unreviewed: the record projection is raw and the parameters are unknown."
+base: https://analytics.usa.gov
+adapter: rest_json
+auth:
+  type: none
+capabilities:
+  list:
+    description: Auto-imported listing endpoint (4 records in the probe response).
+    path: /data/live/os.json
+    record_path: query.dimensionFilter.andGroup.expressions
+    local_window: true
+    pagination:
+      mode: offset
+      default_limit: 10
+      max_limit: 50
+    example: {}

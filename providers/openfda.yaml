@@ -1,0 +1,167 @@
+id: openfda
+title: openFDA
+category: health
+regions: [US]
+description: >-
+  US FDA drug, food and device enforcement recalls plus structured drug labeling,
+  from the keyless openFDA API. Records are cited by their FDA identifiers
+  (recall_number, label id/set_id). No key required; a free key raises the rate limit.
+docs_url: https://open.fda.gov/apis/
+keywords:
+  - fda
+  - recall
+  - recalls
+  - enforcement
+  - drug
+  - label
+  - labeling
+  - warning letter
+  - contaminated
+  - product safety
+  - adverse event
+base: https://api.fda.gov
+adapter: rest_json
+auth:
+  type: none
+attribution: "openFDA, U.S. Food and Drug Administration"
+terms: "Do not rely on openFDA to make decisions regarding medical care; results are unvalidated."
+cache_ttl: 1800
+limits:
+  rps: 4
+  note: "240 requests/min and 1000/day without a key."
+capabilities:
+  drug_recalls:
+    description: >-
+      Drug enforcement reports: recalls, market withdrawals and safety alerts with
+      classification, recalling firm, product description, reason and distribution.
+      Use for "was X recalled", "why was X withdrawn", "recent drug recalls".
+    path: /drug/enforcement.json
+    empty_on_404: true
+    params:
+      search:
+        type: string
+        description: >-
+          openFDA search expression, field:value, e.g. 'reason_for_recall:"contamination"',
+          'recalling_firm:"Pfizer"', 'classification:"Class I"'. Quote multi-word values.
+      limit:
+        type: integer
+        description: Records per page (1-100, default 20).
+        default: 20
+    pagination:
+      mode: offset
+      param: skip
+      limit_param: limit
+      default_limit: 20
+      max_limit: 100
+    record_path: results
+    id_field: recall_number
+    terms_field: meta.disclaimer
+    fields:
+      recall_number: recall_number
+      event_id: event_id
+      classification: classification
+      status: status
+      product_type: product_type
+      recalling_firm: recalling_firm
+      product_description: product_description
+      reason_for_recall: reason_for_recall
+      distribution_pattern: distribution_pattern
+      report_date: report_date
+      recall_initiation_date: recall_initiation_date
+      voluntary_mandated: voluntary_mandated
+    exemplars:
+      - which pills got pulled off shelves by the FDA
+      - why was this drug withdrawn from the market
+      - recent Class I enforcement reports
+      - contaminated product recall
+    example:
+      search: 'classification:"Class I"'
+      limit: 5
+  drug_labels:
+    description: >-
+      Structured FDA drug labeling (SPL): indications, dosage, warnings, active and
+      inactive ingredients, purpose. Use for a drug's approved label content.
+    path: /drug/label.json
+    empty_on_404: true
+    params:
+      search:
+        type: string
+        description: >-
+          openFDA search expression, e.g. 'openfda.brand_name:"ibuprofen"',
+          'openfda.generic_name:"metformin"'.
+      limit:
+        type: integer
+        description: Records per page (1-100, default 10).
+        default: 10
+    pagination:
+      mode: offset
+      param: skip
+      limit_param: limit
+      default_limit: 10
+      max_limit: 100
+    record_path: results
+    id_field: id
+    source_url_template: "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid={set_id}"
+    terms_field: meta.disclaimer
+    fields:
+      id: id
+      set_id: set_id
+      effective_time: effective_time
+      brand_name: openfda.brand_name
+      generic_name: openfda.generic_name
+      manufacturer: openfda.manufacturer_name
+      product_type: openfda.product_type
+      route: openfda.route
+      indications_and_usage: indications_and_usage
+      dosage_and_administration: dosage_and_administration
+      warnings: warnings
+      active_ingredient: active_ingredient
+      inactive_ingredient: inactive_ingredient
+    exemplars:
+      - what are the warnings on the ibuprofen label
+      - what is the approved dosage for metformin
+      - active ingredients in this drug
+    example:
+      search: 'openfda.brand_name:"ibuprofen"'
+      limit: 2
+  device_recalls:
+    description: >-
+      Medical device enforcement reports: device recalls and market withdrawals with
+      classification, recalling firm, product description and reason.
+    path: /device/enforcement.json
+    empty_on_404: true
+    params:
+      search:
+        type: string
+        description: >-
+          openFDA search expression, e.g. 'reason_for_recall:"software"',
+          'recalling_firm:"Medtronic"'.
+      limit:
+        type: integer
+        description: Records per page (1-100, default 20).
+        default: 20
+    pagination:
+      mode: offset
+      param: skip
+      limit_param: limit
+      default_limit: 20
+      max_limit: 100
+    record_path: results
+    id_field: recall_number
+    terms_field: meta.disclaimer
+    fields:
+      recall_number: recall_number
+      classification: classification
+      status: status
+      recalling_firm: recalling_firm
+      product_description: product_description
+      reason_for_recall: reason_for_recall
+      distribution_pattern: distribution_pattern
+      report_date: report_date
+    exemplars:
+      - medical device recalls by Medtronic
+      - pacemaker or infusion pump recall
+      - device withdrawn from the market
+    example:
+      search: 'recalling_firm:"Medtronic"'
+      limit: 5

@@ -1,0 +1,77 @@
+id: cftc_cot
+title: CFTC Commitments of Traders
+category: finance
+regions: [US]
+description: >-
+  US Commodity Futures Trading Commission Commitments of Traders reports: weekly
+  positioning of commercial, non-commercial and non-reportable traders per futures
+  market, from the public Socrata API. Values are published as strings.
+docs_url: https://publicreporting.cftc.gov/
+keywords:
+  - cftc
+  - commitments of traders
+  - cot
+  - futures
+  - positioning
+  - open interest
+  - long
+  - short
+  - commodity
+  - speculative
+base: https://publicreporting.cftc.gov
+adapter: socrata
+auth:
+  type: none
+attribution: "U.S. Commodity Futures Trading Commission"
+cache_ttl: 3600
+limits:
+  rps: 5
+capabilities:
+  legacy_futures_only:
+    description: >-
+      Weekly Legacy report (futures only) rows: open interest and long/short positions
+      by trader category for each contract market. Filter with SQL-like where clauses.
+    path: /resource/6dca-aqww.json
+    params:
+      where:
+        type: string
+        description: >-
+          SoQL filter, e.g. "market_and_exchange_names like '%CRUDE%'" or
+          "report_date_as_yyyy_mm_dd > '2026-01-01'".
+      order:
+        type: string
+        description: SoQL order clause, e.g. "report_date_as_yyyy_mm_dd DESC".
+        default: report_date_as_yyyy_mm_dd DESC
+      select:
+        type: string
+        description: Comma-separated columns to return.
+        default: "market_and_exchange_names,report_date_as_yyyy_mm_dd,open_interest_all,noncomm_positions_long_all,noncomm_positions_short_all,comm_positions_long_all,comm_positions_short_all"
+      limit:
+        type: integer
+        description: Rows per page (1-1000, default 20).
+        default: 20
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: null
+    id_template: "{report_date}:{market}"
+    fields:
+      market: market_and_exchange_names
+      report_date: report_date_as_yyyy_mm_dd
+      open_interest: open_interest_all
+      noncommercial_long: noncomm_positions_long_all
+      noncommercial_short: noncomm_positions_short_all
+      commercial_long: comm_positions_long_all
+      commercial_short: comm_positions_short_all
+    exemplars:
+      - speculative positioning in crude oil futures
+      - how many long contracts do hedge funds hold in natural gas
+      - latest commitments of traders report
+      - open interest in corn futures by trader category
+    example:
+      where: "market_and_exchange_names like '%CRUDE%'"
+      order: report_date_as_yyyy_mm_dd DESC
+      limit: 4

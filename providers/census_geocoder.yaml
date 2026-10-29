@@ -1,0 +1,57 @@
+id: census_geocoder
+title: US Census geocoder
+category: places
+description: >-
+  US Census Bureau geocoder: resolve a street address to coordinates and to census
+  geography (state, county, tract, block). Keyless. Use it before any other
+  geographic lookup, because most place APIs need a coordinate or a FIPS code.
+docs_url: https://geocoding.geo.census.gov/geocoder/Geocoding_Services_API.html
+keywords:
+  - geocode
+  - address
+  - latitude
+  - longitude
+  - census tract
+  - fips
+  - county
+  - zip code
+  - location lookup
+base: https://geocoding.geo.census.gov/geocoder
+adapter: rest_json
+auth:
+  type: none
+attribution: "U.S. Census Bureau"
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  geocode_address:
+    description: >-
+      Geocode one US street address. Returns the matched address, latitude and
+      longitude, state, county and ZIP plus the census tract and block.
+    path: /locations/onelineaddress
+    params:
+      address:
+        type: string
+        required: true
+        description: Street address, e.g. "1600 Pennsylvania Ave NW, Washington DC".
+    defaults:
+      benchmark: Public_AR_Current
+      format: json
+    record_path: result.addressMatches
+    id_field: matched
+    source_url_template: "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address={address}"
+    fields:
+      matched: matchedAddress
+      latitude: coordinates.y
+      longitude: coordinates.x
+      state: addressComponents.state
+      county: addressComponents.county
+      zip: addressComponents.zip
+      tract: census2010Block
+    exemplars:
+      - latitude and longitude of an address
+      - which county is this address in
+      - what census tract is this
+    example:
+      address: 1600 Pennsylvania Ave NW, Washington DC

@@ -1,0 +1,20 @@
+id: auto_doj_digitalstrategy_costsavings_json
+title: /digitalstrategy/costsavings.json
+category: government
+description: " \u2014 DOJ JSON endpoint, auto-discovered from the agency data.json\
+  \ catalogue. Unreviewed: the record projection is raw and the parameters are unknown."
+base: https://www.justice.gov
+adapter: rest_json
+auth:
+  type: none
+capabilities:
+  list:
+    description: Auto-imported listing endpoint (309 records in the probe response).
+    path: /digitalstrategy/costsavings.json
+    record_path: realizedSavingsOrAvoidances
+    local_window: true
+    pagination:
+      mode: offset
+      default_limit: 10
+      max_limit: 50
+    example: {}

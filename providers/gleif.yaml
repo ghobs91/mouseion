@@ -1,0 +1,71 @@
+id: gleif
+title: GLEIF legal entity identifiers
+category: company
+description: >-
+  Global Legal Entity Identifier (LEI) records: registered legal name, address,
+  jurisdiction, registration status and parent relationships. Keyless. Use it to
+  resolve a company name to an LEI or to check a legal entity's registered identity.
+docs_url: https://www.gleif.org/en/lei-data/gleif-api
+keywords:
+  - gleif
+  - lei
+  - legal entity identifier
+  - company registry
+  - registered entity
+  - jurisdiction
+  - subsidiary
+  - parent company
+base: https://api.gleif.org/api/v1
+adapter: rest_json
+auth:
+  type: none
+attribution: "GLEIF (CC0 1.0)"
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  search_lei:
+    description: >-
+      Search LEI records by entity name. Returns the LEI, legal name, jurisdiction,
+      status and address.
+    path: /lei-records
+    params:
+      name:
+        type: string
+        required: true
+        description: Legal entity name or fragment, e.g. "Barclays".
+      limit:
+        type: integer
+        description: Records per page (1-100, default 10).
+        default: 10
+    alias:
+      name: "filter[fulltext]"
+    pagination:
+      mode: page
+      param: "page[number]"
+      limit_param: "page[size]"
+      total_pages_field: meta.pagination.lastPage
+      default_limit: 10
+      max_limit: 100
+      start: 1
+    record_path: data
+    id_field: lei
+    source_url_template: "https://search.gleif.org/#/record/{lei}"
+    fields:
+      lei: attributes.lei
+      name: attributes.entity.legalName.name
+      jurisdiction: attributes.entity.jurisdiction
+      legal_form: attributes.entity.legalForm.id
+      status: attributes.registration.status
+      registered_at: attributes.registration.registeredAt
+      address: attributes.entity.legalAddress.addressLines.0
+      city: attributes.entity.legalAddress.city
+      country: attributes.entity.legalAddress.country
+    version_field: meta.pagination.total
+    exemplars:
+      - LEI for Barclays Bank
+      - legal entity identifier of a company
+      - registered name of a subsidiary
+    example:
+      name: Barclays
+      limit: 5

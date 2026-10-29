@@ -1,0 +1,113 @@
+id: fred
+title: FRED (Federal Reserve Economic Data)
+category: finance
+description: >-
+  FRED, the St. Louis Fed's database of 800,000+ economic time series: unemployment,
+  CPI, GDP, payrolls, the federal funds rate, Treasury yields and more. Search for a
+  series, then read its observations. Requires a free API key in FRED_API_KEY.
+docs_url: https://fred.stlouisfed.org/docs/api/fred/
+keywords:
+  - fred
+  - economic data
+  - time series
+  - unemployment
+  - inflation
+  - cpi
+  - gdp
+  - payrolls
+  - federal funds rate
+  - treasury yield
+  - interest rate
+  - recession
+base: https://api.stlouisfed.org/fred
+adapter: rest_json
+auth:
+  type: api_key
+  env: FRED_API_KEY
+  param: api_key
+  location: query
+attribution: "Federal Reserve Bank of St. Louis"
+cache_ttl: 3600
+limits:
+  rps: 5
+capabilities:
+  search_series:
+    description: >-
+      Find economic series by text. Returns series ids with title, units, frequency
+      and date range. Use the id with `series_observations`.
+    path: /series/search
+    params:
+      search_text:
+        type: string
+        required: true
+        description: Words describing the series, e.g. "unemployment rate".
+      limit:
+        type: integer
+        description: Series per page (1-100, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 100
+    record_path: seriess
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/series/{id}"
+    fields:
+      id: id
+      title: title
+      units: units
+      frequency: frequency
+      seasonal_adjustment: seasonal_adjustment
+      observation_start: observation_start
+      observation_end: observation_end
+      last_updated: last_updated
+    version_field: count
+    exemplars:
+      - unemployment rate over time
+      - consumer price index inflation series
+      - what is the current federal funds rate
+      - GDP growth data
+    example:
+      search_text: unemployment rate
+      limit: 5
+  series_observations:
+    description: >-
+      Read the observations of one FRED series by id (e.g. UNRATE, CPIAUCSL, GDP,
+      DGS10). Returns date/value pairs, oldest first by default.
+    path: /series/observations
+    params:
+      series_id:
+        type: string
+        required: true
+        description: FRED series id, e.g. UNRATE.
+      limit:
+        type: integer
+        description: Observations per page (1-1000, default 100).
+        default: 100
+    defaults:
+      file_type: json
+      sort_order: desc
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 100
+      max_limit: 1000
+    record_path: observations
+    id_field: date
+    source_url_template: "https://fred.stlouisfed.org/series/{series_id}"
+    fields:
+      date: date
+      value: value
+    version_field: count
+    exemplars:
+      - latest unemployment rate values
+      - monthly CPI numbers for the last year
+      - treasury yield history
+    example:
+      series_id: UNRATE
+      limit: 12

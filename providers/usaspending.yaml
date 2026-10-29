@@ -1,0 +1,99 @@
+id: usaspending
+title: USAspending federal awards
+category: government
+regions: [US]
+description: >-
+  US federal spending: contract awards with recipient, amount, awarding agency and
+  period of performance, from the official USAspending API. Use for "who won this
+  federal contract", "how much did agency X spend on Y", and vendor concentration
+  questions.
+docs_url: https://api.usaspending.gov/docs/endpoints
+keywords:
+  - usaspending
+  - federal contract
+  - contract award
+  - procurement
+  - government spending
+  - award
+  - vendor
+  - defense contract
+  - obligation
+  - recipient
+base: https://api.usaspending.gov/api/v2
+adapter: rest_json
+auth:
+  type: none
+attribution: "USAspending.gov, U.S. Department of the Treasury"
+cache_ttl: 1800
+limits:
+  rps: 5
+capabilities:
+  spending_by_award:
+    description: >-
+      Search prime award contracts by keyword. Returns award id, recipient, amount,
+      awarding agency, description and period of performance, largest first.
+    path: /search/spending_by_award/
+    method: POST
+    params:
+      keywords:
+        type: array
+        required: true
+        description: >-
+          Words matched against award descriptions and recipient names. A string is
+          split on commas; a list is passed through.
+      sort:
+        type: string
+        description: Field to sort by.
+        default: Award Amount
+      order:
+        type: string
+        description: asc or desc.
+        default: desc
+      limit:
+        type: integer
+        description: Awards per page (1-100, default 15).
+        default: 15
+    body_template:
+      filters:
+        keywords: "{keywords}"
+        award_type_codes: ["A", "B", "C", "D"]
+      fields:
+        - Award ID
+        - Recipient Name
+        - Award Amount
+        - Awarding Agency
+        - Description
+        - Start Date
+        - End Date
+      page: "{page}"
+      limit: "{limit}"
+      sort: "{sort}"
+      order: "{order}"
+    pagination:
+      mode: page
+      param: page
+      limit_param: limit
+      has_next_field: page_metadata.has_next_page
+      default_limit: 15
+      max_limit: 100
+      start: 1
+    record_path: results
+    id_field: internal_id
+    source_url_template: "https://www.usaspending.gov/award/{internal_id}"
+    fields:
+      award_id: Award ID
+      recipient: Recipient Name
+      amount: Award Amount
+      agency: Awarding Agency
+      description: Description
+      start_date: Start Date
+      end_date: End Date
+      internal_id: internal_id
+    exemplars:
+      - which companies won federal contracts for cloud computing
+      - how much did the government spend on cybersecurity contracts
+      - who is the largest defense contractor by award amount
+      - federal contracts awarded to a university
+    example:
+      keywords: ["cloud computing"]
+      limit: 5

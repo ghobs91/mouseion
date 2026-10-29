@@ -1,0 +1,79 @@
+id: openfec
+title: FEC campaign finance
+category: finance
+regions: [US]
+description: >-
+  US Federal Election Commission campaign finance: committees and candidates with
+  type, designation, party and state, from the openFEC API. Works with the shared
+  DEMO_KEY at low volume; a free personal key raises the limit substantially.
+docs_url: https://api.open.fec.gov/developers/
+keywords:
+  - fec
+  - campaign finance
+  - election
+  - committee
+  - pac
+  - super pac
+  - candidate
+  - donations
+  - political action
+base: https://api.open.fec.gov/v1
+adapter: rest_json
+auth:
+  type: none
+attribution: "Federal Election Commission (public domain)"
+cache_ttl: 86400
+limits:
+  rps: 0.1
+  note: "DEMO_KEY is shared and very limited; register a free key."
+capabilities:
+  committees:
+    description: >-
+      Search FEC-registered committees by name. Returns committee id, name, type,
+      designation, party and state.
+    path: /committees/
+    params:
+      q:
+        type: string
+        required: true
+        description: Committee name search, e.g. "actblue".
+      state:
+        type: string
+        description: Two-letter state code.
+      limit:
+        type: integer
+        description: Records per page (1-100, default 10).
+        default: 10
+      api_key:
+        type: string
+        description: openFEC API key. Defaults to the shared DEMO_KEY.
+    defaults:
+      api_key: DEMO_KEY
+    pagination:
+      mode: page
+      param: page
+      limit_param: per_page
+      total_pages_field: pagination.pages
+      default_limit: 10
+      max_limit: 100
+      start: 1
+    record_path: results
+    id_field: committee_id
+    source_url_template: "https://www.fec.gov/data/committee/{committee_id}/"
+    fields:
+      committee_id: committee_id
+      name: name
+      type: committee_type_full
+      designation: designation_full
+      party: party_full
+      state: state
+      cycles: cycles
+    version_field: pagination.count
+    exemplars:
+      - what is ActBlue
+      - super PACs registered in Texas
+      - FEC committee filings for a candidate
+      - political action committee finances
+    example:
+      q: actblue
+      limit: 5

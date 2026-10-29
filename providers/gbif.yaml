@@ -1,0 +1,72 @@
+id: gbif
+title: GBIF species occurrences
+category: life-sciences
+description: >-
+  GBIF: global biodiversity occurrence records — where and when a species was
+  observed, with coordinates, dataset and basis of record. Keyless. Use for species
+  distribution and observation questions.
+docs_url: https://techdocs.gbif.org/en/openapi/
+keywords:
+  - gbif
+  - species
+  - occurrence
+  - biodiversity
+  - observation
+  - wildlife
+  - taxonomy
+  - habitat
+  - specimen
+base: https://api.gbif.org/v1
+adapter: rest_json
+auth:
+  type: none
+attribution: "GBIF.org (CC BY 4.0)"
+cache_ttl: 3600
+limits:
+  rps: 5
+capabilities:
+  search_occurrences:
+    description: >-
+      Search species occurrence records by scientific name and country. Returns
+      species, country, year, coordinates, dataset and basis of record.
+    path: /occurrence/search
+    params:
+      scientific_name:
+        type: string
+        required: true
+        description: Scientific name, e.g. "Puma concolor".
+      country:
+        type: string
+        description: Two-letter country code, e.g. US.
+      limit:
+        type: integer
+        description: Records per page (1-300, default 20).
+        default: 20
+    alias:
+      scientific_name: scientificName
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 300
+    record_path: results
+    id_field: key
+    source_url_template: "https://www.gbif.org/occurrence/{key}"
+    fields:
+      key: key
+      species: scientificName
+      country: country
+      year: year
+      latitude: decimalLatitude
+      longitude: decimalLongitude
+      dataset: datasetName
+      basis: basisOfRecord
+    version_field: count
+    exemplars:
+      - where has the Florida panther been observed
+      - recent sightings of a species
+      - biodiversity records for a country
+    example:
+      scientific_name: Puma concolor
+      limit: 5

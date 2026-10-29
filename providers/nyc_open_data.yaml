@@ -1,0 +1,81 @@
+id: nyc_open_data
+title: NYC Open Data property records
+category: places
+regions: [US]
+description: >-
+  New York City property and parcel records from NYC Open Data (Socrata): address,
+  borough, block and lot (BBL), owner of record, building class, year built, lot area
+  and zoning. Keyless. Use the BBL to look up deeds and violations elsewhere.
+docs_url: https://data.cityofnewyork.us/d/64uk-42ks
+keywords:
+  - nyc
+  - new york
+  - property
+  - parcel
+  - bbl
+  - lot
+  - zoning
+  - owner of record
+  - building class
+  - real estate
+base: https://data.cityofnewyork.us
+adapter: socrata
+auth:
+  type: none
+attribution: "NYC Open Data (public domain)"
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  parcels:
+    description: >-
+      Query NYC parcel records with SoQL. Filter by borough, address, owner or BBL.
+      Returns address, owner, building class, year built, lot area and zoning.
+    path: /resource/64uk-42ks.json
+    params:
+      where:
+        type: string
+        description: >-
+          SoQL filter, e.g. "upper(ownername) like '%COLUMBIA%'" or
+          "borough = 'MN'".
+      q:
+        type: string
+        description: Free-text search across all columns.
+      order:
+        type: string
+        description: SoQL order clause.
+      limit:
+        type: integer
+        description: Rows per page (1-1000, default 20).
+        default: 20
+    defaults:
+      select: >-
+        borough,block,lot,address,ownername,bldgclass,yearbuilt,lotarea,zonedist1,landuse
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: null
+    id_template: "{borough}-{block}-{lot}"
+    source_url_template: "https://data.cityofnewyork.us/d/64uk-42ks"
+    fields:
+      borough: borough
+      block: block
+      lot: lot
+      address: address
+      owner: ownername
+      building_class: bldgclass
+      year_built: yearbuilt
+      lot_area: lotarea
+      zoning: zonedist1
+      land_use: landuse
+    exemplars:
+      - who owns this building in Manhattan
+      - NYC property records for a block and lot
+      - zoning of a New York parcel
+      - lot area and year built for an address
+    example:
+      where: "upper(ownername) like '%COLUMBIA%'"
+      limit: 5

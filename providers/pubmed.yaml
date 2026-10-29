@@ -1,0 +1,107 @@
+id: pubmed
+title: PubMed and PMC
+category: biomedical
+description: >-
+  Biomedical literature from PubMed (NIH National Library of Medicine). Two-step:
+  `search` returns PMIDs for a query, then `summaries` returns titles, journals,
+  dates and authors for those PMIDs. Keyless; NCBI allows 3 requests/second without
+  a key and 10 with a free one.
+docs_url: https://www.ncbi.nlm.nih.gov/books/NBK25499/
+keywords:
+  - pubmed
+  - biomedical
+  - literature
+  - paper
+  - study
+  - journal
+  - pmid
+  - clinical research
+  - abstract
+  - citation
+base: https://eutils.ncbi.nlm.nih.gov/entrez/eutils
+adapter: rest_json
+auth:
+  type: none
+attribution: "PubMed, U.S. National Library of Medicine"
+cache_ttl: 3600
+limits:
+  rps: 3
+capabilities:
+  search:
+    description: >-
+      Search PubMed with full query syntax. Returns a list of PMIDs only; call
+      `summaries` with those ids (comma-separated) to get titles and authors.
+    path: /esearch.fcgi
+    params:
+      term:
+        type: string
+        required: true
+        description: >-
+          PubMed query, e.g. "CAR-T lymphoma", or fielded syntax such as
+          'melanoma[Title] AND immunotherapy[Abstract]'.
+      limit:
+        type: integer
+        description: PMIDs per page (1-100, default 20).
+        default: 20
+    defaults:
+      db: pubmed
+      retmode: json
+      sort: relevance
+    pagination:
+      mode: offset
+      param: retstart
+      limit_param: retmax
+      default_limit: 20
+      max_limit: 100
+    record_path: esearchresult.idlist
+    id_field: pmid
+    source_url_template: "https://pubmed.ncbi.nlm.nih.gov/{pmid}/"
+    fields:
+      pmid: value
+    version_field: esearchresult.count
+    exemplars:
+      - find papers about CAR-T therapy in lymphoma
+      - recent clinical research on GLP-1 drugs and weight loss
+      - what does the literature say about vitamin D and depression
+      - systematic reviews on statins
+    example:
+      term: CAR-T lymphoma
+      limit: 10
+  summaries:
+    description: >-
+      Fetch titles, journal, publication date, authors and publication type for up to
+      100 PMIDs. Pass ids as a comma-separated string, e.g. "32580042,30000000".
+    path: /esummary.fcgi
+    params:
+      ids:
+        type: string
+        required: true
+        description: Comma-separated PMIDs from the search capability.
+    defaults:
+      db: pubmed
+      retmode: json
+    alias:
+      ids: id
+    record_path: result
+    map_exclude:
+      - uids
+    id_field: pmid
+    source_url_template: "https://pubmed.ncbi.nlm.nih.gov/{pmid}/"
+    fields:
+      pmid: uid
+      title: title
+      journal: source
+      pubdate: pubdate
+      authors: authors
+      pubtype: pubtype
+      volume: volume
+      issue: issue
+      pages: pages
+      doi: elocationid
+    pluck:
+      authors: name
+    exemplars:
+      - details for these pubmed ids
+      - authors and journal of a paper
+    example:
+      ids: "32580042"

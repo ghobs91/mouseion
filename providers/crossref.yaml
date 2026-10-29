@@ -1,0 +1,64 @@
+id: crossref
+title: Crossref DOI metadata
+category: research
+description: >-
+  Crossref: registered DOI metadata for journal articles, books, datasets and
+  preprints, with title, authors, container, year and citation counts. Keyless.
+docs_url: https://api.crossref.org/swagger-ui/index.html
+keywords:
+  - crossref
+  - doi
+  - citation
+  - journal article
+  - metadata
+  - publication
+  - publisher
+  - isbn
+base: https://api.crossref.org
+adapter: rest_json
+auth:
+  type: none
+attribution: "Crossref"
+cache_ttl: 3600
+limits:
+  rps: 5
+capabilities:
+  search_works:
+    description: >-
+      Search Crossref metadata by text. Returns DOI, title, container, year, type and
+      citation count.
+    path: /works
+    params:
+      query:
+        type: string
+        required: true
+        description: Free-text query, e.g. "CRISPR base editing".
+      limit:
+        type: integer
+        description: Works per page (1-100, default 10).
+        default: 10
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: rows
+      default_limit: 10
+      max_limit: 100
+    record_path: message.items
+    id_field: doi
+    source_url_template: "https://doi.org/{doi}"
+    fields:
+      doi: DOI
+      title: title.0
+      container: container-title.0
+      year: issued.date-parts.0.0
+      type: type
+      citations: is-referenced-by-count
+      publisher: publisher
+    version_field: message.total-results
+    exemplars:
+      - DOI metadata for a paper
+      - who published this article
+      - citation count for a journal article
+    example:
+      query: CRISPR base editing
+      limit: 5

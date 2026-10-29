@@ -1,0 +1,20 @@
+id: auto_gsa_dataset_8d706970_ebc7_4f3c_85e6_7cfcce5a7f7c_resource_fa
+title: /dataset/8d706970-ebc7-4f3c-85e6-7cfcce5a7f7c/resource/faa96364-9a09-4f24-a76c-b49834fe1c21/download/bureaudirectory.json
+category: government
+description: " \u2014 GSA JSON endpoint, auto-discovered from the agency data.json\
+  \ catalogue. Unreviewed: the record projection is raw and the parameters are unknown."
+base: https://inventory.data.gov
+adapter: rest_json
+auth:
+  type: none
+capabilities:
+  list:
+    description: Auto-imported listing endpoint (1 records in the probe response).
+    path: /dataset/8d706970-ebc7-4f3c-85e6-7cfcce5a7f7c/resource/faa96364-9a09-4f24-a76c-b49834fe1c21/download/bureaudirectory.json
+    record_path: leaders
+    local_window: true
+    pagination:
+      mode: offset
+      default_limit: 10
+      max_limit: 50
+    example: {}

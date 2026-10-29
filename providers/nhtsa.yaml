@@ -1,0 +1,59 @@
+id: nhtsa
+title: NHTSA vehicle specifications
+category: government
+description: >-
+  NHTSA vPIC: vehicle makes and models with the manufacturer identifiers other
+  recall and safety datasets use. Keyless, public domain.
+docs_url: https://vpic.nhtsa.dot.gov/api/
+keywords:
+  - nhtsa
+  - vehicle
+  - car model
+  - make and model
+  - vin
+  - automotive
+  - recall lookup
+base: https://vpic.nhtsa.dot.gov/api/vehicles
+adapter: rest_json
+auth:
+  type: none
+attribution: "NHTSA vPIC (public domain)"
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  models_for_make:
+    description: >-
+      List the models a manufacturer has produced. Returns make and model names with
+      their NHTSA ids, which the recall and safety APIs use.
+    path: /GetModelsForMake/{make}
+    params:
+      make:
+        type: string
+        required: true
+        description: Manufacturer name, e.g. honda.
+      limit:
+        type: integer
+        description: Models to return (1-200, default 20).
+        default: 20
+    defaults:
+      format: json
+    local_window: true
+    pagination:
+      mode: offset
+      default_limit: 20
+      max_limit: 200
+    record_path: Results
+    id_template: "{Make_Name}:{Model_Name}"
+    source_url_template: "https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMake/{make}?format=json"
+    fields:
+      make: Make_Name
+      model: Model_Name
+      model_id: Model_ID
+    exemplars:
+      - what models does Honda make
+      - list car models for a manufacturer
+      - NHTSA model ids for a make
+    example:
+      make: honda
+      limit: 10

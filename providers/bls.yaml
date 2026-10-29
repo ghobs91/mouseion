@@ -1,0 +1,79 @@
+id: bls
+title: BLS labor statistics
+category: finance
+regions: [US]
+description: >-
+  US Bureau of Labor Statistics time series: unemployment, payrolls, CPI and wages by
+  series id. Keyless (the v2 API allows a limited number of daily queries without a
+  key; register one for higher limits). One series per call.
+docs_url: https://www.bls.gov/developers/
+keywords:
+  - bls
+  - labor statistics
+  - unemployment
+  - payrolls
+  - cpi
+  - inflation
+  - wages
+  - employment
+  - jobless
+  - series id
+base: https://api.bls.gov/publicAPI/v2
+adapter: rest_json
+auth:
+  type: none
+attribution: "U.S. Bureau of Labor Statistics"
+cache_ttl: 3600
+limits:
+  rps: 1
+  note: "25 queries/day without a key."
+capabilities:
+  series_observations:
+    description: >-
+      Read the observations of one BLS series (e.g. LNS14000000 = unemployment rate,
+      CES0000000001 = total nonfarm payrolls, CUUR0000SA0 = CPI-U). Returns year,
+      period, period name and value.
+    path: /timeseries/data/
+    method: POST
+    params:
+      series_id:
+        type: string
+        required: true
+        description: BLS series id, e.g. LNS14000000.
+      start_year:
+        type: string
+        description: First year, YYYY. Omit for the API default window.
+      end_year:
+        type: string
+        description: Last year, YYYY. Omit for the API default window.
+      limit:
+        type: integer
+        description: Observations to return (1-100, default 24).
+        default: 24
+    body_template:
+      seriesid: ["{series_id}"]
+      startyear: "{start_year}"
+      endyear: "{end_year}"
+    local_window: true
+    pagination:
+      mode: offset
+      default_limit: 24
+      max_limit: 100
+    record_path: Results.series.0.data
+    id_template: "{year}:{period}"
+    source_url_template: "https://data.bls.gov/timeseries/{series_id}"
+    fields:
+      year: year
+      period: period
+      period_name: periodName
+      value: value
+      latest: latest
+    version_field: status
+    exemplars:
+      - current unemployment rate from BLS
+      - nonfarm payroll numbers
+      - CPI inflation index history
+      - average hourly earnings series
+    example:
+      series_id: LNS14000000
+      limit: 12

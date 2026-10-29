@@ -1,0 +1,71 @@
+id: openfema
+title: FEMA disaster declarations
+category: government
+description: >-
+  FEMA OpenFEMA: disaster declarations with state, incident type, declaration date
+  and designated areas. Keyless, public domain. Use for federal disaster history and
+  eligibility questions.
+docs_url: https://www.fema.gov/about/openfema/api
+keywords:
+  - fema
+  - disaster
+  - declaration
+  - emergency
+  - hurricane relief
+  - fire management
+  - federal aid
+  - incident
+base: https://www.fema.gov/api/open/v2
+adapter: rest_json
+auth:
+  type: none
+attribution: "FEMA OpenFEMA (public domain)"
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  disaster_declarations:
+    description: >-
+      Disaster declaration summaries: declaration number, state, incident type,
+      declaration date, designated area and declaration title. Filter with OData.
+    path: /DisasterDeclarationsSummaries
+    params:
+      filter:
+        type: string
+        description: >-
+          OData filter, e.g. "state eq 'CA' and incidentType eq 'Fire'".
+      orderby:
+        type: string
+        description: OData order, e.g. "declarationDate desc".
+      limit:
+        type: integer
+        description: Records per page (1-1000, default 20).
+        default: 20
+    alias:
+      filter: $filter
+      orderby: $orderby
+    pagination:
+      mode: offset
+      param: $skip
+      limit_param: $top
+      default_limit: 20
+      max_limit: 1000
+    record_path: DisasterDeclarationsSummaries
+    id_field: declaration
+    source_url_template: "https://www.fema.gov/disaster/{number}"
+    fields:
+      declaration: femaDeclarationString
+      number: disasterNumber
+      state: state
+      type: declarationType
+      declared: declarationDate
+      incident: incidentType
+      title: declarationTitle
+      area: designatedArea
+    exemplars:
+      - disaster declarations in California
+      - when was the last federal fire declaration
+      - FEMA aid for a hurricane
+    example:
+      orderby: declarationDate desc
+      limit: 5

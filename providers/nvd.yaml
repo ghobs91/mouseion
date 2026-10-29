@@ -1,0 +1,80 @@
+id: nvd
+title: NIST National Vulnerability Database
+category: security
+description: >-
+  CVE vulnerability records from NIST NVD: identifier, description, CVSS score and
+  severity, publication dates and references. Keyless, but rate-limited to 5 requests
+  per 30 seconds; a free API key raises that.
+docs_url: https://nvd.nist.gov/developers/vulnerabilities
+keywords:
+  - nvd
+  - cve
+  - vulnerability
+  - security
+  - exploit
+  - cvss
+  - patch
+  - advisory
+  - software flaw
+  - openssl
+  - log4j
+base: https://services.nvd.nist.gov/rest/json
+adapter: rest_json
+auth:
+  type: none
+attribution: "NIST National Vulnerability Database"
+cache_ttl: 3600
+limits:
+  rps: 0.17
+  note: "5 requests per 30 seconds without a key."
+capabilities:
+  search_cves:
+    description: >-
+      Search CVE records by keyword, product name or CVE id. Returns the CVE id,
+      description, CVSS base score and severity, published and modified dates.
+    path: /cves/2.0
+    params:
+      keyword:
+        type: string
+        description: Word or product matched against CVE descriptions, e.g. openssl.
+      cve_id:
+        type: string
+        description: Exact CVE id, e.g. CVE-2021-44228.
+      limit:
+        type: integer
+        description: Records per page (1-100, default 10).
+        default: 10
+    alias:
+      keyword: keywordSearch
+      cve_id: cveId
+    pagination:
+      mode: offset
+      param: startIndex
+      limit_param: resultsPerPage
+      default_limit: 10
+      max_limit: 100
+    record_path: vulnerabilities
+    id_field: cve_id
+    patterns:
+      - "CVE-\\d{4}-\\d{4,}"
+    source_url_template: "https://nvd.nist.gov/vuln/detail/{cve_id}"
+    fields:
+      cve_id: cve.id
+      published: cve.published
+      modified: cve.lastModified
+      status: cve.vulnStatus
+      description: cve.descriptions.0.value
+      cvss_base: cve.metrics.cvssMetricV31.0.cvssData.baseScore
+      severity: cve.metrics.cvssMetricV31.0.cvssData.baseSeverity
+      references: cve.references
+    pluck:
+      references: url
+    version_field: totalResults
+    exemplars:
+      - critical vulnerabilities in openssl
+      - log4j CVE details
+      - recent high severity CVEs
+      - is CVE-2021-44228 fixed
+    example:
+      keyword: openssl
+      limit: 5

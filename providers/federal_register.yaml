@@ -1,0 +1,129 @@
+id: federal_register
+title: Federal Register
+category: government
+regions: [US]
+description: >-
+  The US Federal Register: rules, proposed rules, notices and presidential documents,
+  with agency, publication date and abstract. Use for "what did the government publish
+  about X", new regulations, comment periods and effective dates. Keyless.
+docs_url: https://www.federalregister.gov/developers/documentation/api/v1
+keywords:
+  - federal register
+  - regulation
+  - rule
+  - rulemaking
+  - notice
+  - executive order
+  - agency
+  - comment period
+  - effective date
+  - proposed rule
+  - federal agency
+base: https://www.federalregister.gov/api/v1
+adapter: rest_json
+auth:
+  type: none
+attribution: "Federal Register, U.S. National Archives and Records Administration"
+cache_ttl: 1800
+limits:
+  rps: 5
+capabilities:
+  search:
+    description: >-
+      Search Federal Register documents by term, agency, document type and publication
+      date window. Returns newest first by default.
+    path: /documents.json
+    params:
+      term:
+        type: string
+        description: Full-text search term, e.g. "artificial intelligence".
+      agency:
+        type: array
+        description: Agency slug(s), e.g. ["environmental-protection-agency"].
+      document_type:
+        type: array
+        description: One or more of RULE, PRORULE, NOTICE, PRESDOCU.
+      published_after:
+        type: string
+        description: Earliest publication date, YYYY-MM-DD.
+      published_before:
+        type: string
+        description: Latest publication date, YYYY-MM-DD.
+      order:
+        type: string
+        description: newest, oldest, relevance, or a field name.
+        default: newest
+      limit:
+        type: integer
+        description: Documents per page (1-100, default 10).
+        default: 10
+    alias:
+      term: "conditions[term]"
+      agency: "conditions[agencies][]"
+      document_type: "conditions[type][]"
+      published_after: "conditions[publication_date][gte]"
+      published_before: "conditions[publication_date][lte]"
+    pagination:
+      mode: page
+      param: page
+      limit_param: per_page
+      total_pages_field: total_pages
+      default_limit: 10
+      max_limit: 100
+      min_limit: 2
+      start: 1
+    record_path: results
+    id_field: document_number
+    source_url_template: "{html_url}"
+    fields:
+      document_number: document_number
+      title: title
+      type: type
+      abstract: abstract
+      publication_date: publication_date
+      html_url: html_url
+      pdf_url: pdf_url
+      agencies: agencies
+    pluck:
+      agencies: name
+    exemplars:
+      - new federal regulations about artificial intelligence
+      - what did the EPA publish this month
+      - is there an open comment period for a proposed rule
+      - executive order published in the federal register
+    example:
+      term: artificial intelligence
+      published_after: "2026-01-01"
+      limit: 5
+  get:
+    description: Read one Federal Register document by its document number.
+    path: /documents/{document_number}.json
+    params:
+      document_number:
+        type: string
+        required: true
+        description: Federal Register document number, e.g. "2026-12345".
+    record_path: null
+    id_field: document_number
+    source_url_template: "{html_url}"
+    fields:
+      document_number: document_number
+      title: title
+      type: type
+      abstract: abstract
+      publication_date: publication_date
+      effective_on: effective_on
+      comments_close_on: comments_close_on
+      html_url: html_url
+      raw_text_url: raw_text_url
+      agencies: agencies
+      action: action
+      dates: dates
+      citation: citation
+    pluck:
+      agencies: name
+    exemplars:
+      - read the full text of a specific rule
+      - effective date and docket number for this document
+    example:
+      document_number: "2026-12345"

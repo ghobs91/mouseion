@@ -1,0 +1,63 @@
+id: openlibrary
+title: Open Library
+category: reference
+description: >-
+  Open Library: bibliographic records for books and editions, with title, authors,
+  first publication year, edition count and language. Keyless. Use it to identify a
+  book or an author's works.
+docs_url: https://openlibrary.org/developers/api
+keywords:
+  - open library
+  - book
+  - isbn
+  - author
+  - edition
+  - publication year
+  - bibliography
+base: https://openlibrary.org
+adapter: rest_json
+auth:
+  type: none
+attribution: "Open Library, Internet Archive"
+cache_ttl: 86400
+limits:
+  rps: 3
+capabilities:
+  search_books:
+    description: >-
+      Search books by title, author or subject. Returns the work key, title, authors,
+      first publication year and edition count.
+    path: /search.json
+    params:
+      q:
+        type: string
+        required: true
+        description: Query, e.g. "dune frank herbert" or "isbn:9780441013593".
+      limit:
+        type: integer
+        description: Works per page (1-100, default 10).
+        default: 10
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 10
+      max_limit: 100
+    record_path: docs
+    id_field: key
+    source_url_template: "https://openlibrary.org{key}"
+    fields:
+      key: key
+      title: title
+      authors: author_name
+      first_year: first_publish_year
+      editions: edition_count
+      language: language
+    version_field: numFound
+    exemplars:
+      - who wrote this book
+      - when was this novel first published
+      - books by an author
+    example:
+      q: dune frank herbert
+      limit: 5

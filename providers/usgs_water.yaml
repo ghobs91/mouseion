@@ -1,0 +1,72 @@
+id: usgs_water
+title: USGS water services
+category: places
+description: >-
+  USGS Water Services: real-time streamflow, gauge height, temperature and water
+  quality at monitoring locations across the United States. Keyless. Use a USGS site
+  number, which the site lookup returns.
+docs_url: https://waterservices.usgs.gov/
+keywords:
+  - usgs water
+  - streamflow
+  - river gauge
+  - discharge
+  - water level
+  - hydrology
+  - flood stage
+  - cfs
+base: https://waterservices.usgs.gov/nwis
+adapter: rest_json
+auth:
+  type: none
+attribution: "USGS Water Services (public domain)"
+cache_ttl: 900
+limits:
+  rps: 5
+capabilities:
+  instantaneous_values:
+    description: >-
+      Read recent instantaneous values for one USGS monitoring site. Returns the
+      timestamped readings of one parameter (00060 discharge in cfs, 00065 gauge
+      height in feet).
+    path: /iv/
+    params:
+      sites:
+        type: string
+        required: true
+        description: USGS site number, e.g. 01646500 (Potomac River).
+      parameter:
+        type: string
+        description: Parameter code — 00060 discharge, 00065 gauge height, 00010 temperature.
+        default: "00060"
+      period:
+        type: string
+        description: Lookback window, ISO 8601 duration, e.g. P1D or P7D.
+        default: P1D
+      limit:
+        type: integer
+        description: Readings to return (1-96, default 24, newest first).
+        default: 24
+    alias:
+      parameter: parameterCd
+    defaults:
+      format: json
+    local_window: true
+    pagination:
+      mode: offset
+      default_limit: 24
+      max_limit: 96
+    record_path: value.timeSeries.0.values.0.value
+    id_field: date
+    source_url_template: "https://waterdata.usgs.gov/monitoring-location/{sites}/"
+    fields:
+      date: dateTime
+      value: value
+      qualifiers: qualifiers
+    exemplars:
+      - river flow rate right now
+      - how high is the Potomac today
+      - streamflow at a USGS gauge
+    example:
+      sites: "01646500"
+      limit: 12

@@ -1,0 +1,50 @@
+id: nhc
+title: NOAA National Hurricane Center
+category: places
+description: >-
+  NOAA National Hurricane Center: tropical cyclones currently being advised, with
+  position, intensity, pressure and movement. Keyless, public domain.
+docs_url: https://www.nhc.noaa.gov/
+keywords:
+  - hurricane
+  - tropical storm
+  - cyclone
+  - noaa
+  - nhc
+  - typhoon
+  - category
+  - landfall
+  - storm track
+base: https://www.nhc.noaa.gov
+adapter: rest_json
+auth:
+  type: none
+attribution: "NOAA National Hurricane Center (public domain)"
+cache_ttl: 300
+limits:
+  rps: 5
+capabilities:
+  active_storms:
+    description: >-
+      Tropical cyclones currently being advised. Returns storm id and name,
+      classification, max intensity, central pressure, position and movement.
+    path: /CurrentStorms.json
+    record_path: activeStorms
+    id_field: id
+    source_url_template: "https://www.nhc.noaa.gov/"
+    fields:
+      id: id
+      name: name
+      classification: classification
+      intensity_kt: intensity
+      pressure_mb: pressure
+      latitude: latitude
+      longitude: longitude
+      movement: movementDir
+      speed_kt: movementSpeed
+      updated: lastUpdate
+    exemplars:
+      - active hurricanes right now
+      - where is the tropical storm heading
+      - current cyclone intensity and pressure
+    example: {}

@@ -1,0 +1,68 @@
+id: zenodo
+title: Zenodo research repository
+category: research
+description: >-
+  Zenodo: open research outputs — datasets, software, preprints and reports — with
+  DOI, creators, type and publication date. Use for data behind a paper or a citable
+  software release.
+docs_url: https://developers.zenodo.org/
+keywords:
+  - zenodo
+  - dataset
+  - research data
+  - software release
+  - preprint
+  - repository
+  - doi
+  - supplementary data
+base: https://zenodo.org/api
+adapter: rest_json
+auth:
+  type: none
+attribution: "Zenodo (CERN)"
+cache_ttl: 3600
+limits:
+  rps: 5
+capabilities:
+  search_records:
+    description: >-
+      Search Zenodo records. Returns DOI, title, resource type, publication date,
+      access rights and creators.
+    path: /records
+    params:
+      q:
+        type: string
+        required: true
+        description: Free-text query, e.g. "climate model output".
+      limit:
+        type: integer
+        description: Records per page (1-100, default 10).
+        default: 10
+    pagination:
+      mode: page
+      param: page
+      limit_param: size
+      default_limit: 10
+      max_limit: 100
+      start: 1
+    record_path: hits.hits
+    id_field: id
+    source_url_template: "https://zenodo.org/records/{id}"
+    fields:
+      id: id
+      doi: doi
+      title: metadata.title
+      type: metadata.resource_type.title
+      published: metadata.publication_date
+      access: metadata.access_rights
+      creators: metadata.creators
+    pluck:
+      creators: name
+    version_field: hits.total
+    exemplars:
+      - dataset behind a climate paper
+      - citable software release
+      - open research data about air quality
+    example:
+      q: climate model output
+      limit: 5

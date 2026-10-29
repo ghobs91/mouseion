@@ -1,0 +1,100 @@
+id: usgs_earthquake
+title: USGS earthquake catalog
+category: places
+description: >-
+  USGS ANSS Comprehensive Earthquake Catalog (ComCat): worldwide earthquakes with
+  magnitude, place, depth and time, filterable by region, magnitude and date. Public
+  domain, keyless.
+docs_url: https://earthquake.usgs.gov/fdsnws/event/1/
+keywords:
+  - earthquake
+  - seismic
+  - usgs
+  - magnitude
+  - quake
+  - tremor
+  - epicenter
+  - richter
+  - fault
+base: https://earthquake.usgs.gov/fdsnws/event/1
+adapter: rest_json
+auth:
+  type: none
+attribution: "USGS Earthquake Hazards Program (public domain)"
+cache_ttl: 300
+limits:
+  rps: 5
+capabilities:
+  query:
+    description: >-
+      Search earthquakes by time window, magnitude, and bounding box. Returns
+      magnitude, place, time (epoch milliseconds), coordinates and the USGS event page.
+    path: /query
+    params:
+      min_magnitude:
+        type: number
+        description: Minimum magnitude, e.g. 4.5.
+      start_time:
+        type: string
+        description: Earliest origin time, ISO date (2026-01-01).
+      end_time:
+        type: string
+        description: Latest origin time, ISO date.
+      min_latitude:
+        type: number
+        description: Bounding box south edge.
+      max_latitude:
+        type: number
+        description: Bounding box north edge.
+      min_longitude:
+        type: number
+        description: Bounding box west edge.
+      max_longitude:
+        type: number
+        description: Bounding box east edge.
+      limit:
+        type: integer
+        description: Events to return (1-200, default 20).
+        default: 20
+    alias:
+      min_magnitude: minmagnitude
+      start_time: starttime
+      end_time: endtime
+      min_latitude: minlatitude
+      max_latitude: maxlatitude
+      min_longitude: minlongitude
+      max_longitude: maxlongitude
+    defaults:
+      format: geojson
+      orderby: time
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 200
+      start: 1
+    record_path: features
+    id_field: event_id
+    source_url_template: "{url}"
+    fields:
+      event_id: id
+      magnitude: properties.mag
+      place: properties.place
+      time_ms: properties.time
+      updated_ms: properties.updated
+      longitude: geometry.coordinates.0
+      latitude: geometry.coordinates.1
+      depth_km: geometry.coordinates.2
+      url: properties.url
+      tsunami: properties.tsunami
+      significance: properties.sig
+    version_field: metadata.count
+    exemplars:
+      - earthquakes near Japan this week
+      - magnitude 5 or larger earthquakes recently
+      - seismic activity in California
+      - latest significant quake
+    example:
+      min_magnitude: 5
+      limit: 5

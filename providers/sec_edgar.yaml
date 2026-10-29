@@ -1,0 +1,123 @@
+id: sec_edgar
+title: SEC EDGAR full-text search
+category: government
+regions: [US]
+description: >-
+  US Securities and Exchange Commission EDGAR: full-text search across corporate
+  filings (10-K, 10-Q, 8-K, S-1 and others), returning the company, form type,
+  filing date, period and accession number. Covers filings from 2001 onward.
+  SEC requires a User-Agent that identifies the caller: set SEC_USER_AGENT to
+  "Your Name you@example.com" or requests are refused with a clear error.
+docs_url: https://www.sec.gov/edgar/sec-api-documentation
+keywords:
+  - sec
+  - edgar
+  - 10-k
+  - 10-q
+  - 8-k
+  - annual report
+  - quarterly report
+  - filing
+  - disclosure
+  - public company
+  - risk factors
+  - insider
+  - s-1
+base: https://efts.sec.gov
+adapter: rest_json
+auth:
+  type: user_agent
+  env: SEC_USER_AGENT
+attribution: "U.S. Securities and Exchange Commission"
+cache_ttl: 3600
+limits:
+  rps: 5
+capabilities:
+  full_text_search:
+    description: >-
+      Search the full text of SEC filings. Use for what a public company disclosed
+      about a topic, which companies mention a term in their risk factors, or which
+      10-Ks reference a technology. SEC returns 100 hits per request regardless of
+      page size and re-ranks between calls, so the window is fetched once and cached;
+      pages stay consistent until the cache expires (a refresh can reorder them).
+    path: /LATEST/search-index
+    params:
+      q:
+        type: string
+        required: true
+        description: >-
+          Search text. Wrap a phrase in double quotes, e.g. '"artificial intelligence"'.
+      forms:
+        type: string
+        description: Comma-separated form types, e.g. "10-K,10-Q".
+      limit:
+        type: integer
+        description: Records to return (1-100, default 10).
+        default: 10
+    pagination:
+      mode: offset
+      param: from
+      default_limit: 10
+      max_limit: 100
+    local_window: true
+    record_path: hits.hits
+    id_field: document_id
+    source_url_template: "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={cik}&type={form}"
+    fields:
+      document_id: _id
+      company: _source.display_names.0
+      cik: _source.ciks.0
+      form: _source.form
+      filed: _source.file_date
+      period: _source.period_ending
+      accession: _source.adsh
+      location: _source.biz_locations.0
+      sic: _source.sics.0
+    version_field: hits.total.value
+    exemplars:
+      - what did Apple disclose about artificial intelligence in its 10-K
+      - which public companies mention quantum computing in their risk factors
+      - recent 8-K filings from a company
+      - find annual reports that discuss supply chain risk
+    example:
+      q: '"artificial intelligence"'
+      forms: "10-K"
+  filings_by_cik:
+    description: >-
+      List a company's recent filings by CIK: form type, filing date, period and the
+      primary document name. Use for "what has Apple filed lately" and for enumerating
+      10-Ks or 8-Ks. Returns the most recent filings first.
+    base: https://data.sec.gov
+    path: /submissions/CIK{cik:0>10}.json
+    params:
+      cik:
+        type: string
+        required: true
+        description: SEC CIK, padded or bare (e.g. 320193 or 0000320193).
+      limit:
+        type: integer
+        description: Filings to return (1-100, default 20).
+        default: 20
+    local_window: true
+    pagination:
+      mode: offset
+      default_limit: 20
+      max_limit: 100
+    record_path: filings.recent
+    transpose: true
+    id_field: accession
+    source_url_template: "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={cik}&type={form}"
+    fields:
+      accession: accessionNumber
+      form: form
+      filed: filingDate
+      period: reportDate
+      document: primaryDocument
+      description: primaryDocDescription
+    exemplars:
+      - what has Apple filed with the SEC recently
+      - list the 10-K filings for a company
+      - latest 8-K filings by CIK
+    example:
+      cik: "320193"
+      limit: 5

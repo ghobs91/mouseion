@@ -1,0 +1,78 @@
+id: nws
+title: National Weather Service alerts
+category: places
+regions: [US]
+description: >-
+  Active US weather alerts from api.weather.gov: watches, warnings and advisories with
+  severity, affected areas and expiry. Keyless, but NWS requires a User-Agent that
+  identifies the caller. The endpoint has no page size, so results are fetched once and
+  sliced locally.
+docs_url: https://www.weather.gov/documentation/services-web-api
+keywords:
+  - weather
+  - nws
+  - alert
+  - warning
+  - tornado
+  - hurricane
+  - flood
+  - storm
+  - heat advisory
+  - forecast
+base: https://api.weather.gov
+adapter: rest_json
+auth:
+  type: none
+attribution: "NOAA / National Weather Service (public domain)"
+cache_ttl: 300
+limits:
+  rps: 5
+capabilities:
+  active_alerts:
+    description: >-
+      Active watches, warnings and advisories for a US state or area code. Returns the
+      event, severity, headline, affected areas, sender and expiry.
+    path: /alerts/active
+    params:
+      area:
+        type: string
+        description: Two-letter state code (CA, TX) or marine area.
+      severity:
+        type: string
+        description: Extreme, Severe, Moderate or Minor.
+      limit:
+        type: integer
+        description: Alerts to return (1-200, default 20).
+        default: 20
+    defaults:
+      status: actual
+      message_type: alert
+    local_window: true
+    pagination:
+      mode: offset
+      default_limit: 20
+      max_limit: 200
+    record_path: features
+    id_field: alert_id
+    source_url_template: "{web}"
+    fields:
+      alert_id: properties.id
+      event: properties.event
+      severity: properties.severity
+      urgency: properties.urgency
+      certainty: properties.certainty
+      headline: properties.headline
+      areas: properties.areaDesc
+      effective: properties.effective
+      expires: properties.expires
+      sender: properties.senderName
+      web: properties.web
+    version_field: title
+    exemplars:
+      - weather alerts in Texas right now
+      - tornado warnings active
+      - flood advisory for California
+      - severe weather warnings
+    example:
+      area: CA
+      limit: 5

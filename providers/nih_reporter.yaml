@@ -1,0 +1,94 @@
+id: nih_reporter
+title: NIH RePORTER
+category: biomedical
+regions: [US]
+description: >-
+  NIH-funded research projects: title, abstract, principal investigators,
+  organisation, fiscal year and award amount, from the keyless RePORTER v2 API.
+  Use for who is funded for a line of research and how much NIH spends on it.
+docs_url: https://api.reporter.nih.gov/
+keywords:
+  - nih
+  - reporter
+  - grant
+  - funding
+  - research project
+  - principal investigator
+  - award
+  - r01
+  - agency
+  - biomedical funding
+base: https://api.reporter.nih.gov/v2
+adapter: rest_json
+auth:
+  type: none
+attribution: "NIH RePORTER, U.S. National Institutes of Health"
+cache_ttl: 3600
+limits:
+  rps: 5
+capabilities:
+  search_projects:
+    description: >-
+      Search NIH-funded projects by text across titles and abstracts. Returns the
+      project number, title, abstract, institution, investigators, fiscal year and
+      award amount.
+    path: /projects/search
+    method: POST
+    params:
+      query:
+        type: string
+        required: true
+        description: Words matched against project titles and abstracts.
+      limit:
+        type: integer
+        description: Projects per page (1-100, default 3; abstracts are long).
+        default: 3
+    body_template:
+      criteria:
+        advanced_text_search:
+          operator: and
+          search_field: projecttitle,abstracttext
+          search_text: "{query}"
+      include_fields:
+        - ProjectNum
+        - ProjectTitle
+        - FiscalYear
+        - AwardAmount
+        - Organization
+        - PrincipalInvestigators
+        - AgencyIcAdmin
+        - ProjectStartDate
+        - ProjectEndDate
+        - AbstractText
+      offset: "{offset}"
+      limit: "{limit}"
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 3
+      max_limit: 100
+    record_path: results
+    id_field: project_num
+    source_url_template: "https://reporter.nih.gov/project-details/{project_num}"
+    fields:
+      project_num: project_num
+      title: project_title
+      fiscal_year: fiscal_year
+      award_amount: award_amount
+      organization: organization.org_name
+      investigators: principal_investigators
+      agency: agency_ic_admin.abbreviation
+      start_date: project_start_date
+      end_date: project_end_date
+      abstract: abstract_text
+    pluck:
+      investigators: full_name
+    exemplars:
+      - NIH grants for Alzheimer's research
+      - who is funded to study antibiotic resistance
+      - how much does NIH spend on cancer immunotherapy
+      - R01 awards to a university
+    example:
+      query: immunotherapy melanoma
+      limit: 5

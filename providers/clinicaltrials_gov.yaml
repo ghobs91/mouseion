@@ -1,0 +1,141 @@
+id: clinicaltrials_gov
+title: ClinicalTrials.gov
+category: biomedical
+description: >-
+  ClinicalTrials.gov study registry via the public v2 REST API. Search studies by
+  condition, intervention, sponsor, free text or status; fetch one study by NCT number.
+  No key, no login.
+docs_url: https://clinicaltrials.gov/data-api/api
+keywords:
+  - clinical trial
+  - clinical trials
+  - trial
+  - study
+  - nct
+  - recruiting
+  - interventional
+  - enrollment
+  - phase
+  - drug trial
+  - patient
+base: https://clinicaltrials.gov/api/v2
+adapter: rest_json
+auth:
+  type: none
+attribution: "ClinicalTrials.gov, U.S. National Library of Medicine"
+cache_ttl: 3600
+limits:
+  rps: 50
+capabilities:
+  search:
+    description: >-
+      Search registered clinical studies. Returns trials matching a condition,
+      intervention, sponsor or free-text term, newest first. Use this for any question
+      about trials, recruiting studies, phases, sponsors or enrollment counts.
+    path: /studies
+    params:
+      condition:
+        type: string
+        description: Disease or condition, e.g. "type 2 diabetes", "melanoma".
+      intervention:
+        type: string
+        description: Drug, device or procedure under study, e.g. "pembrolizumab".
+      sponsor:
+        type: string
+        description: Lead sponsor or collaborator name.
+      term:
+        type: string
+        description: Free-text expression searched across study fields.
+      status:
+        type: string
+        description: >-
+          Comma-separated overall status, e.g. "RECRUITING", "COMPLETED",
+          "ACTIVE_NOT_RECRUITING".
+      limit:
+        type: integer
+        description: Records per page (1-100, default 20).
+        default: 20
+    alias:
+      condition: query.cond
+      intervention: query.intr
+      sponsor: query.spons
+      term: query.term
+      status: filter.overallStatus
+    pagination:
+      mode: token
+      param: pageToken
+      limit_param: pageSize
+      next_field: nextPageToken
+      default_limit: 20
+      max_limit: 100
+    record_path: studies
+    id_field: nct_id
+    source_url_template: "https://clinicaltrials.gov/study/{nct_id}"
+    fields:
+      nct_id: protocolSection.identificationModule.nctId
+      title: protocolSection.identificationModule.briefTitle
+      acronym: protocolSection.identificationModule.acronym
+      status: protocolSection.statusModule.overallStatus
+      study_type: protocolSection.designModule.studyType
+      phases: protocolSection.designModule.phases
+      enrollment: protocolSection.designModule.enrollmentInfo.count
+      enrollment_type: protocolSection.designModule.enrollmentInfo.type
+      conditions: protocolSection.conditionsModule.conditions
+      interventions: protocolSection.armsInterventionsModule.interventions
+      sponsor: protocolSection.sponsorCollaboratorsModule.leadSponsor.name
+      collaborators: protocolSection.sponsorCollaboratorsModule.collaborators
+      start_date: protocolSection.statusModule.startDateStruct.date
+      primary_completion: protocolSection.statusModule.primaryCompletionDateStruct.date
+      completion_date: protocolSection.statusModule.completionDateStruct.date
+      last_update: protocolSection.statusModule.lastUpdatePostDateStruct.date
+      summary: protocolSection.descriptionModule.briefSummary
+      has_results: hasResults
+    pluck:
+      interventions: name
+      collaborators: name
+    exemplars:
+      - find recruiting clinical trials for melanoma
+      - trials looking for volunteers with type 2 diabetes
+      - how many patients is this study enrolling
+      - who is sponsoring the pembrolizumab lung cancer study
+    example:
+      condition: melanoma
+      limit: 5
+  get:
+    description: Read one study in full by its NCT number (e.g. NCT04631731).
+    path: /studies/{nct_id}
+    params:
+      nct_id:
+        type: string
+        required: true
+        description: NCT registry number, format NCT########.
+    record_path: null
+    id_field: nct_id
+    source_url_template: "https://clinicaltrials.gov/study/{nct_id}"
+    fields:
+      nct_id: protocolSection.identificationModule.nctId
+      title: protocolSection.identificationModule.briefTitle
+      official_title: protocolSection.identificationModule.officialTitle
+      status: protocolSection.statusModule.overallStatus
+      study_type: protocolSection.designModule.studyType
+      phases: protocolSection.designModule.phases
+      enrollment: protocolSection.designModule.enrollmentInfo.count
+      conditions: protocolSection.conditionsModule.conditions
+      interventions: protocolSection.armsInterventionsModule.interventions
+      sponsor: protocolSection.sponsorCollaboratorsModule.leadSponsor.name
+      start_date: protocolSection.statusModule.startDateStruct.date
+      primary_completion: protocolSection.statusModule.primaryCompletionDateStruct.date
+      completion_date: protocolSection.statusModule.completionDateStruct.date
+      summary: protocolSection.descriptionModule.briefSummary
+      eligibility: protocolSection.eligibilityModule.eligibilityCriteria
+      has_results: hasResults
+    pluck:
+      interventions: name
+      collaborators: name
+    patterns:
+      - "NCT\\d{8}"
+    exemplars:
+      - read the full record for a specific trial
+      - eligibility criteria for this study
+    example:
+      nct_id: NCT04631731

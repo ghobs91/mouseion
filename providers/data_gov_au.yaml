@@ -1,0 +1,68 @@
+id: data_gov_au
+title: data.gov.au open data catalogue
+category: government
+regions: [AU]
+description: >-
+  Australia's national open data catalogue (CKAN): search ~100,000 datasets published
+  by federal, state and local agencies, with publisher, licence and last-updated time.
+  Keyless.
+docs_url: https://data.gov.au/data/api/3/action/package_search
+keywords:
+  - data.gov.au
+  - australia
+  - open data
+  - dataset catalogue
+  - ckan
+  - australian government
+  - abs
+base: https://data.gov.au/data/api/3/action
+adapter: rest_json
+auth:
+  type: none
+attribution: "data.gov.au (CC BY 3.0 Australia)"
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  search_datasets:
+    description: >-
+      Search the Australian open data catalogue by keyword. Returns dataset title,
+      slug, publisher, licence, resource count and last-updated timestamp.
+    path: /package_search
+    params:
+      q:
+        type: string
+        required: true
+        description: Search terms, e.g. "water quality".
+      limit:
+        type: integer
+        description: Datasets per page (1-100, default 10).
+        default: 10
+    pagination:
+      mode: offset
+      param: start
+      limit_param: rows
+      default_limit: 10
+      max_limit: 100
+    record_path: result.results
+    id_field: name
+    source_url_template: "https://data.gov.au/data/dataset/{name}"
+    fields:
+      title: title
+      name: name
+      publisher: organization.title
+      licence: license_title
+      resources: num_resources
+      updated: metadata_modified
+      tags: tags
+    pluck:
+      tags: name
+      publisher: title
+    version_field: result.count
+    exemplars:
+      - Australian open datasets about water quality
+      - ABS census data on data.gov.au
+      - government datasets about transport in Australia
+    example:
+      q: water quality
+      limit: 5

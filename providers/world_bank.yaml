@@ -1,0 +1,76 @@
+id: world_bank
+title: World Bank indicators
+category: finance
+description: >-
+  World Bank Open Data: development indicators (population, GDP, literacy, life
+  expectancy, CO2 and ~1,400 more) by country and year, from the keyless Indicators
+  API v2. One indicator and one country per call.
+docs_url: https://datahelpdesk.worldbank.org/knowledgebase/articles/889392
+keywords:
+  - world bank
+  - development indicator
+  - gdp per capita
+  - population
+  - life expectancy
+  - literacy
+  - poverty
+  - country statistics
+  - international data
+base: https://api.worldbank.org/v2
+adapter: rest_json
+auth:
+  type: none
+attribution: "World Bank Open Data (CC BY 4.0)"
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  indicator:
+    description: >-
+      Read one indicator for one country across years. Returns the country, indicator
+      name, year and value. Indicator codes look like SP.POP.TOTL (population) or
+      NY.GDP.PCAP.CD (GDP per capita).
+    path: /country/{country}/indicator/{indicator}
+    params:
+      country:
+        type: string
+        required: true
+        description: ISO3 country code (USA, GBR) or "all".
+      indicator:
+        type: string
+        required: true
+        description: Indicator code, e.g. SP.POP.TOTL.
+      limit:
+        type: integer
+        description: Rows per page (1-100, default 20).
+        default: 20
+    defaults:
+      format: json
+    pagination:
+      mode: page
+      param: page
+      limit_param: per_page
+      total_pages_field: "0.pages"
+      default_limit: 20
+      max_limit: 100
+      start: 1
+    record_path: "1"
+    id_template: "{country}:{date}"
+    source_url_template: "https://data.worldbank.org/indicator/{indicator}"
+    fields:
+      country: country.value
+      country_code: countryiso3code
+      indicator: indicator.value
+      indicator_code: indicator.id
+      date: date
+      value: value
+    version_field: "0.total"
+    exemplars:
+      - population of Brazil over time
+      - GDP per capita in India
+      - life expectancy by country
+      - CO2 emissions world bank data
+    example:
+      country: USA
+      indicator: SP.POP.TOTL
+      limit: 5

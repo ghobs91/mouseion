@@ -1,0 +1,76 @@
+id: sf_open_data
+title: San Francisco Open Data
+category: places
+regions: [US]
+description: >-
+  City and County of San Francisco open data (Socrata): police incident reports,
+  permits, 311 cases and similar datasets, queried with SoQL. Keyless.
+docs_url: https://data.sfgov.org/
+keywords:
+  - san francisco
+  - sf
+  - "311"
+  - police incident
+  - permit
+  - city data
+  - crime
+  - neighborhood
+base: https://data.sfgov.org
+adapter: socrata
+auth:
+  type: none
+attribution: "DataSF (public domain)"
+cache_ttl: 3600
+limits:
+  rps: 5
+capabilities:
+  police_incidents:
+    description: >-
+      San Francisco police incident reports: incident id, date/time, category,
+      description, resolution, police district and neighbourhood. Filter with SoQL on
+      date, category or district.
+    path: /resource/wg3w-h783.json
+    params:
+      where:
+        type: string
+        description: >-
+          SoQL filter, e.g. "incident_date > '2026-01-01'" or
+          "incident_category = 'Burglary'".
+      order:
+        type: string
+        description: SoQL order clause.
+        default: incident_datetime DESC
+      limit:
+        type: integer
+        description: Rows per page (1-1000, default 20).
+        default: 20
+    defaults:
+      select: >-
+        incident_id,incident_datetime,incident_category,incident_description,
+        resolution,police_district,analysis_neighborhood,latitude,longitude
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: null
+    id_field: incident_id
+    source_url_template: "https://data.sfgov.org/d/wg3w-h783"
+    fields:
+      incident_id: incident_id
+      occurred_at: incident_datetime
+      category: incident_category
+      description: incident_description
+      resolution: resolution
+      district: police_district
+      neighborhood: analysis_neighborhood
+      latitude: latitude
+      longitude: longitude
+    exemplars:
+      - recent burglaries in San Francisco
+      - SF police incidents by neighborhood
+      - crime reports in the Mission district
+    example:
+      where: "incident_category = 'Burglary'"
+      limit: 5

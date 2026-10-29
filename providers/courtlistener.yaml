@@ -1,0 +1,79 @@
+id: courtlistener
+title: CourtListener case law
+category: legal
+regions: [US]
+description: >-
+  CourtListener: US federal and state court opinions and dockets, searchable by
+  keyword, court and filing date, with citation and docket number. A free API token is
+  required (COURTLISTENER_TOKEN); anonymous search now returns 401. Returns the first
+  page only.
+docs_url: https://www.courtlistener.com/help/api/rest/
+keywords:
+  - courtlistener
+  - case law
+  - opinion
+  - court
+  - judicial
+  - docket
+  - ruling
+  - citation
+  - lawsuit
+  - appellate
+base: https://www.courtlistener.com/api/rest/v4
+adapter: rest_json
+auth:
+  type: api_key
+  env: COURTLISTENER_TOKEN
+  param: Authorization
+  location: header
+  prefix: "Token "
+attribution: "CourtListener, Free Law Project"
+cache_ttl: 3600
+limits:
+  rps: 0.2
+  note: "requires a free API token; anonymous search returns 401."
+capabilities:
+  search_opinions:
+    description: >-
+      Search court opinions by keyword with optional court and date filters. Returns
+      case name, court, citation, filing date, docket number and the opinion URL.
+      CourtListener pages by cursor, so this returns the first 20 matches.
+    path: /search/
+    params:
+      q:
+        type: string
+        required: true
+        description: Search terms, e.g. "antitrust standing".
+      court:
+        type: string
+        description: Court id, e.g. scotus, ca9.
+      filed_after:
+        type: string
+        description: Earliest filing date, YYYY-MM-DD.
+      filed_before:
+        type: string
+        description: Latest filing date, YYYY-MM-DD.
+    defaults:
+      type: o
+      order_by: score desc
+    record_path: results
+    id_field: cluster_id
+    source_url_template: "https://www.courtlistener.com{absolute_url}"
+    fields:
+      case_name: caseName
+      court: court
+      citation: citation
+      docket_number: docketNumber
+      filed: dateFiled
+      status: status
+      judge: judge
+      cluster_id: cluster_id
+      absolute_url: absolute_url
+    version_field: count
+    exemplars:
+      - supreme court opinions on abortion
+      - ninth circuit rulings on immigration
+      - case law about non-compete clauses
+      - federal court decision on antitrust
+    example:
+      q: antitrust standing

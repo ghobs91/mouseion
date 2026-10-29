@@ -1,0 +1,76 @@
+id: cms_provider
+title: CMS Care Compare hospital data
+category: health
+regions: [US]
+description: >-
+  US Centers for Medicare & Medicaid Services Care Compare: hospital identity,
+  ownership, emergency services and the overall star rating, from the CMS Provider
+  Data API. Keyless.
+docs_url: https://data.cms.gov/provider-data/
+keywords:
+  - cms
+  - hospital
+  - care compare
+  - star rating
+  - medicare
+  - nursing home
+  - quality
+  - facility
+  - emergency services
+base: https://data.cms.gov/provider-data/api/1/datastore/query
+adapter: rest_json
+auth:
+  type: none
+attribution: "Centers for Medicare & Medicaid Services (public domain)"
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  hospitals:
+    description: >-
+      Hospital General Information: name, address, type, ownership, emergency services
+      and the CMS overall star rating. Filter by state or name.
+    path: /xubh-q36u/0
+    params:
+      state:
+        type: string
+        description: Two-letter state code to filter by, e.g. CA. Omit for all states.
+      limit:
+        type: integer
+        description: Rows per page (1-500, default 20).
+        default: 20
+    query_template:
+      conditions:
+        - property: state
+          value: "{state}"
+          operator: "="
+      limit: "{limit}"
+      offset: "{offset}"
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 500
+    record_path: results
+    id_field: facility_id
+    source_url_template: "https://www.medicare.gov/care-compare/details/hospital/{facility_id}"
+    fields:
+      facility_id: facility_id
+      name: facility_name
+      address: address
+      city: citytown
+      state: state
+      zip: zip_code
+      type: hospital_type
+      ownership: hospital_ownership
+      emergency_services: emergency_services
+      overall_rating: hospital_overall_rating
+    version_field: count
+    exemplars:
+      - hospital quality ratings in California
+      - does this hospital have emergency services
+      - best rated hospitals by state
+      - medicare star rating for a hospital
+    example:
+      limit: 5

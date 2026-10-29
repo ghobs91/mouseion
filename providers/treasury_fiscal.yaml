@@ -1,0 +1,110 @@
+id: treasury_fiscal
+title: US Treasury Fiscal Data
+category: finance
+regions: [US]
+description: >-
+  US Treasury Fiscal Data: the Debt to the Penny (total public debt outstanding,
+  held by the public and intragovernmental), updated each business day, from the
+  keyless Fiscal Data API. The API also serves ~180 other tables, but this manifest
+  exposes the headline debt dataset.
+docs_url: https://fiscaldata.treasury.gov/api-documentation/
+keywords:
+  - treasury
+  - fiscal data
+  - national debt
+  - debt to the penny
+  - public debt
+  - government borrowing
+  - deficit
+  - tga
+  - interest expense
+base: https://api.fiscaldata.treasury.gov/services/api/fiscal_service
+adapter: rest_json
+auth:
+  type: none
+attribution: "U.S. Department of the Treasury, Fiscal Service"
+cache_ttl: 3600
+limits:
+  rps: 5
+capabilities:
+  debt_to_penny:
+    description: >-
+      Total US public debt outstanding by day, split into debt held by the public
+      and intragovernmental holdings. Values are strings in dollars.
+    path: /v2/accounting/od/debt_to_penny
+    params:
+      filter:
+        type: string
+        description: >-
+          Fiscal Data filter syntax, e.g. "record_date:gte:2026-01-01" or
+          "record_date:eq:2026-10-20".
+      sort:
+        type: string
+        description: Sort field, prefix with - for descending.
+        default: "-record_date"
+      limit:
+        type: integer
+        description: Rows per page (1-100, default 10).
+        default: 10
+    pagination:
+      mode: page
+      param: "page[number]"
+      limit_param: "page[size]"
+      total_pages_field: "meta.total-pages"
+      default_limit: 10
+      max_limit: 100
+      start: 1
+    record_path: data
+    id_field: record_date
+    source_url_template: "https://fiscaldata.treasury.gov/datasets/debt-to-the-penny/"
+    fields:
+      record_date: record_date
+      total_debt: tot_pub_debt_out_amt
+      held_by_public: debt_held_public_amt
+      intragovernmental: intragov_hold_amt
+    version_field: meta.total-count
+    exemplars:
+      - total public debt outstanding
+      - how much does the US government owe right now
+      - national debt on a specific date
+    example:
+      limit: 5
+  avg_interest_rates:
+    description: >-
+      Average interest rates on US Treasury securities by security type and class
+      (bills, notes, bonds, TIPS, FRNs), monthly. Values are strings in percent.
+    path: /v2/accounting/od/avg_interest_rates
+    params:
+      filter:
+        type: string
+        description: 'Fiscal Data filter, e.g. "record_date:gte:2026-01-01".'
+      sort:
+        type: string
+        description: Sort field, prefix with - for descending.
+        default: "-record_date"
+      limit:
+        type: integer
+        description: Rows per page (1-100, default 10).
+        default: 10
+    pagination:
+      mode: page
+      param: "page[number]"
+      limit_param: "page[size]"
+      total_pages_field: "meta.total-pages"
+      default_limit: 10
+      max_limit: 100
+      start: 1
+    record_path: data
+    id_template: "{record_date}:{security_desc}"
+    source_url_template: "https://fiscaldata.treasury.gov/datasets/average-interest-rates-treasury-securities/"
+    fields:
+      record_date: record_date
+      security_type: security_type_desc
+      security: security_desc
+      rate_percent: avg_interest_rate_amt
+    exemplars:
+      - average interest rate on treasury bills
+      - what rate does the government pay on 10 year notes
+      - treasury interest cost by security type
+    example:
+      limit: 5

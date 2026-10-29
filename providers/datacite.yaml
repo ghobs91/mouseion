@@ -1,0 +1,66 @@
+id: datacite
+title: DataCite DOI metadata
+category: research
+description: >-
+  DataCite: DOI metadata for research datasets and software, with creators,
+  publisher, resource type, year and URL. Complements Crossref, which covers
+  articles rather than data.
+docs_url: https://support.datacite.org/docs/api
+keywords:
+  - datacite
+  - dataset doi
+  - research data
+  - repository
+  - software citation
+  - metadata
+  - creators
+base: https://api.datacite.org
+adapter: rest_json
+auth:
+  type: none
+attribution: "DataCite (CC0)"
+cache_ttl: 3600
+limits:
+  rps: 5
+capabilities:
+  search_dois:
+    description: >-
+      Search DataCite DOIs for datasets and software. Returns DOI, title, publisher,
+      year, resource type and landing URL.
+    path: /dois
+    params:
+      query:
+        type: string
+        required: true
+        description: Free-text query, e.g. "ocean temperature".
+      limit:
+        type: integer
+        description: Records per page (1-100, default 10).
+        default: 10
+    pagination:
+      mode: page
+      param: "page[number]"
+      limit_param: "page[size]"
+      total_pages_field: meta.totalPages
+      default_limit: 10
+      max_limit: 100
+      start: 1
+    record_path: data
+    id_field: id
+    source_url_template: "https://doi.org/{doi}"
+    fields:
+      id: id
+      doi: attributes.doi
+      title: attributes.titles.0.title
+      publisher: attributes.publisher
+      year: attributes.publicationYear
+      type: attributes.types.resourceTypeGeneral
+      url: attributes.url
+    version_field: meta.total
+    exemplars:
+      - DOI for a research dataset
+      - who published this dataset
+      - citable dataset about ocean temperature
+    example:
+      query: ocean temperature
+      limit: 5

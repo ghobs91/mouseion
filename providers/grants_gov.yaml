@@ -1,0 +1,81 @@
+id: grants_gov
+title: Grants.gov
+category: government
+regions: [US]
+description: >-
+  Official US federal funding opportunity search: posted and forecasted
+  opportunities with agency, opening and closing dates and opportunity number,
+  from the keyless Grants.gov search API.
+docs_url: https://www.grants.gov/api
+keywords:
+  - grants.gov
+  - grant opportunity
+  - funding opportunity
+  - nofo
+  - rfa
+  - federal grant
+  - apply for funding
+  - forecasted
+  - posted
+  - assistance listing
+base: https://api.grants.gov/v1/api
+adapter: rest_json
+auth:
+  type: none
+attribution: "Grants.gov, U.S. Department of Health and Human Services"
+cache_ttl: 3600
+limits:
+  rps: 5
+capabilities:
+  search_opportunities:
+    description: >-
+      Search federal funding opportunities by keyword. Returns the opportunity
+      number, title, agency, status and open/close dates.
+    path: /search2
+    method: POST
+    params:
+      keyword:
+        type: string
+        required: true
+        description: Words matched against opportunity titles and descriptions.
+      status:
+        type: string
+        description: posted, forecasted, closed, archived, or a pipe-separated list.
+        default: posted
+      limit:
+        type: integer
+        description: Opportunities per page (1-100, default 20).
+        default: 20
+    body_template:
+      keyword: "{keyword}"
+      oppStatuses: "{status}"
+      rows: "{rows}"
+      startRecordNum: "{startRecordNum}"
+    pagination:
+      mode: offset
+      param: startRecordNum
+      limit_param: rows
+      default_limit: 20
+      max_limit: 100
+    record_path: data.oppHits
+    id_field: number
+    source_url_template: "https://www.grants.gov/search-results-detail/{opportunity_id}"
+    fields:
+      number: number
+      title: title
+      agency: agency
+      agency_code: agencyCode
+      status: oppStatus
+      open_date: openDate
+      close_date: closeDate
+      doc_type: docType
+      opportunity_id: id
+    version_field: data.hitCount
+    exemplars:
+      - grants for rural broadband
+      - funding opportunities for clean energy startups
+      - open NIH funding announcements
+      - grants for artificial intelligence research
+    example:
+      keyword: broadband
+      limit: 5

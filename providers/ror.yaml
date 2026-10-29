@@ -1,0 +1,64 @@
+id: ror
+title: Research Organization Registry
+category: research
+description: >-
+  ROR: persistent identifiers for research institutions worldwide, with canonical
+  name, aliases, location and type. Use it to resolve an institution name to an ID
+  that other research APIs use.
+docs_url: https://ror.readme.io/
+keywords:
+  - ror
+  - research organization
+  - university
+  - institution
+  - affiliation
+  - grid
+  - isni
+  - laboratory
+base: https://api.ror.org/v2
+adapter: rest_json
+auth:
+  type: none
+attribution: "Research Organization Registry (CC0)"
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  search_organizations:
+    description: >-
+      Search research institutions by name. Returns the ROR id, canonical name,
+      country and institution type.
+    path: /organizations
+    params:
+      query:
+        type: string
+        required: true
+        description: Institution name, e.g. "University of Oxford".
+      limit:
+        type: integer
+        description: Records to return (1-50, default 10).
+        default: 10
+    local_window: true
+    pagination:
+      mode: page
+      param: page
+      default_limit: 10
+      max_limit: 50
+      start: 1
+    record_path: items
+    id_field: id
+    source_url_template: "{id}"
+    fields:
+      id: id
+      name: names.0.value
+      country: locations.0.geonames_details.country_name
+      city: locations.0.geonames_details.name
+      type: types.0
+    version_field: number_of_results
+    exemplars:
+      - ROR id for a university
+      - which country is this research institute in
+      - official name of a laboratory
+    example:
+      query: University of Oxford
+      limit: 5

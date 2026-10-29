@@ -1,0 +1,66 @@
+# Held-out routing cases. These are deliberately NOT the exemplars in the
+# manifests: exemplars are training data, this file is the test set. If a query
+# here also appears as an exemplar, the score is leakage, not routing quality.
+#
+# `expect` is the provider id that should rank first, or null when no provider
+# should match at all.
+
+{"query": "Were there any Class I drug recalls for blood pressure medication?", "expect": "openfda"}
+{"query": "which medicines were taken off the market for safety reasons", "expect": "openfda"}
+{"query": "any contaminated batches of heart medication", "expect": "openfda"}
+{"query": "what does the ibuprofen package insert say", "expect": "openfda"}
+{"query": "side effects listed in the prescribing information", "expect": "openfda"}
+
+{"query": "studies accepting new participants with asthma", "expect": "clinicaltrials_gov"}
+{"query": "is there a trial for a new Alzheimer's drug", "expect": "clinicaltrials_gov"}
+{"query": "how large is the melanoma cohort", "expect": "clinicaltrials_gov"}
+{"query": "NCT04631731", "expect": "clinicaltrials_gov"}
+{"query": "phase 3 results for a diabetes treatment", "expect": "clinicaltrials_gov"}
+
+{"query": "rules issued about AI this year", "expect": "federal_register"}
+{"query": "environmental agency notices from last week", "expect": "federal_register"}
+{"query": "is there an open comment period for a proposed rule", "expect": "federal_register"}
+{"query": "executive orders signed recently", "expect": "federal_register"}
+{"query": "where can I read the text of a new regulation", "expect": "federal_register"}
+
+{"query": "how are hedge funds positioned in crude", "expect": "cftc_cot"}
+{"query": "latest commitments of traders report", "expect": "cftc_cot"}
+{"query": "net long speculative contracts in gold", "expect": "cftc_cot"}
+{"query": "weekly futures positioning data", "expect": "cftc_cot"}
+
+{"query": "how do I bake sourdough bread", "expect": null}
+{"query": "what is the capital of France", "expect": null}
+{"query": "who won the football match last night", "expect": null}
+{"query": "recommend a good science fiction novel", "expect": null}
+{"query": "what is the weather in Paris tomorrow", "expect": null}
+
+{"query": "search company annual reports for mentions of supply chain disruption", "expect": "sec_edgar"}
+{"query": "who won the contract for border surveillance technology", "expect": "usaspending"}
+{"query": "research on psilocybin for treatment-resistant depression", "expect": "pubmed"}
+{"query": "how much NIH money goes to Lyme disease", "expect": "nih_reporter"}
+{"query": "federal money available for water treatment plants", "expect": "grants_gov"}
+{"query": "UK rules on data protection after Brexit", "expect": "gov_uk"}
+{"query": "historical housing starts data", "expect": "fred"}
+{"query": "how much debt does the US government have", "expect": "treasury_fiscal"}
+
+{"query": "security flaw reported in log4j", "expect": "nvd"}
+{"query": "earthquakes near Japan this week", "expect": "usgs_earthquake"}
+{"query": "tornado warning issued in Texas", "expect": "nws"}
+{"query": "legal entity identifier for a company", "expect": "gleif"}
+{"query": "who owns this building in Manhattan", "expect": "nyc_open_data"}
+{"query": "crime reports in San Francisco", "expect": "sf_open_data"}
+{"query": "hospital star ratings in California", "expect": "cms_provider"}
+{"query": "court ruling on non-compete agreements", "expect": "courtlistener"}
+{"query": "super PAC spending in the senate race", "expect": "openfec"}
+{"query": "Australian open datasets about water quality", "expect": "data_gov_au"}
+{"query": "population of Brazil over time", "expect": "world_bank"}
+{"query": "unemployment rate from the bureau of labor statistics", "expect": "bls"}
+
+{"query": "hospital star ratings in Germany", "expect": null}
+{"query": "earthquakes in Japan this month", "expect": "usgs_earthquake"}
+{"query": "CVE-2021-44228", "expect": "nvd"}
+{"query": "CFTC", "expect": "cftc_cot"}
+
+
+
+

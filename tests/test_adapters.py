@@ -1,0 +1,240 @@
+from __future__ import annotations
+
+import pytest
+
+from mouseion.adapters import get_adapter
+
+
+def prepare(manifest, capability, params=None, cursor=None):
+    return get_adapter(manifest.adapter).prepare(manifest, capability, params or {}, cursor)
+
+
+def test_clinicaltrials_token_pagination(registry):
+    manifest = registry.get("clinicaltrials_gov")
+    cap = manifest.capabilities["search"]
+    req = prepare(manifest, cap, {"condition": "melanoma"})
+
+    assert req.url == "https://clinicaltrials.gov/api/v2/studies"
+    assert req.params["query.cond"] == "melanoma"
+    assert req.params["pageSize"] == 20
+    assert "pageToken" not in req.params
+
+    second = prepare(manifest, cap, {"condition": "melanoma"}, cursor="TOKEN-2")
+    assert second.params["pageToken"] == "TOKEN-2"
+
+
+def test_clinicaltrials_parses_projection_and_cursor(registry):
+    from tests.conftest import STUDIES_BODY
+
+    manifest = registry.get("clinicaltrials_gov")
+    cap = manifest.capabilities["search"]
+    adapter = get_adapter(manifest.adapter)
+    req = prepare(manifest, cap, {"condition": "melanoma"})
+    result = adapter.parse(manifest, cap, STUDIES_BODY, req)
+
+    assert len(result.records) == 1
+    record = result.records[0]
+    assert record.source_record_id == "NCT04631731"
+    assert record.source_url == "https://clinicaltrials.gov/study/NCT04631731"
+    assert record.data["phases"] == ["PHASE1", "PHASE2"]
+    assert record.data["enrollment"] == 200
+    assert "collaborators" in result.missing
+    assert result.next_cursor == "TOKEN-2"
+
+
+def test_path_substitution_quotes(registry):
+    manifest = registry.get("clinicaltrials_gov")
+    cap = manifest.capabilities["get"]
+    req = prepare(manifest, cap, {"nct_id": "NCT04631731"})
+    assert req.url.endswith("/studies/NCT04631731")
+
+
+def test_federal_register_aliases_and_page(registry):
+    manifest = registry.get("federal_register")
+    cap = manifest.capabilities["search"]
+    req = prepare(
+        manifest,
+        cap,
+        {"term": "artificial intelligence", "agency": ["gsa"], "limit": 7},
+    )
+    assert req.params["conditions[term]"] == "artificial intelligence"
+    assert req.params["conditions[agencies][]"] == ["gsa"]
+    assert req.params["per_page"] == 7
+    assert req.params["page"] == 1
+
+    page_two = prepare(manifest, cap, {"term": "x"}, cursor="2")
+    assert page_two.params["page"] == 2
+
+
+def test_federal_register_next_cursor_uses_total_pages(registry):
+    from tests.conftest import FEDREG_BODY
+
+    manifest = registry.get("federal_register")
+    cap = manifest.capabilities["search"]
+    adapter = get_adapter(manifest.adapter)
+    req = prepare(manifest, cap, {"term": "ai", "limit": 1})
+    result = adapter.parse(manifest, cap, FEDREG_BODY, req)
+    assert result.records[0].source_url == "https://www.federalregister.gov/d/2026-12345"
+    assert result.next_cursor == "2"
+
+
+def test_socrata_soql_and_pagination(registry):
+    manifest = registry.get("cftc_cot")
+    cap = manifest.capabilities["legacy_futures_only"]
+    req = prepare(manifest, cap, {"where": "market like '%CRUDE%'", "limit": 3})
+    assert "$limit" in req.params
+    assert "$offset" in req.params
+    assert "$select" in req.params
+    assert req.params["$limit"] == 3
+
+
+def test_limit_is_clamped_to_max(registry):
+    manifest = registry.get("openfda")
+    cap = manifest.capabilities["drug_recalls"]
+    req = prepare(manifest, cap, {"search": 'x:"y"', "limit": 99_999})
+    assert req.params["limit"] == 100
+
+
+def test_limit_is_clamped_to_upstream_minimum(registry):
+    """Federal Register silently ignores per_page=1 and returns its 20-row default."""
+    manifest = registry.get("federal_register")
+    cap = manifest.capabilities["search"]
+    req = prepare(manifest, cap, {"term": "ai", "limit": 1})
+    assert req.params["per_page"] == 2
+
+
+def test_missing_path_param_raises(registry):
+    from mouseion.envelope import ProviderError
+
+    manifest = registry.get("clinicaltrials_gov")
+    cap = manifest.capabilities["get"]
+    with pytest.raises(ProviderError) as exc:
+        prepare(manifest, cap, {})
+    assert "nct_id" in str(exc.value)
+
+
+# -- POST body APIs ------------------------------------------------------
+
+
+def test_body_template_renders_types_and_drops_optional_fields(registry):
+    manifest = registry.get("usaspending")
+    cap = manifest.capabilities["spending_by_award"]
+    req = prepare(manifest, cap, {"keywords": "cloud,computing", "limit": 2})
+
+    assert req.method == "POST"
+    assert req.json_body["filters"]["keywords"] == ["cloud", "computing"]
+    assert req.json_body["limit"] == 2
+    assert isinstance(req.json_body["limit"], int), "must stay an int, not a string"
+    assert req.json_body["page"] == 1
+    assert req.params == {}, "body params must not leak into the query string"
+
+
+def test_render_body_drops_unresolved_placeholders(registry):
+    manifest = registry.get("usaspending")
+    adapter = get_adapter(manifest.adapter)
+    rendered = adapter.render_body(
+        {"keep": "{x}", "drop": "{missing}", "nested": {"also": "{missing}"}, "list": ["{x}", "{missing}"]},
+        {"x": 7},
+    )
+    assert rendered == {"keep": 7, "list": [7]}
+
+
+def test_nih_reporter_posts_criteria(registry):
+    manifest = registry.get("nih_reporter")
+    cap = manifest.capabilities["search_projects"]
+    req = prepare(manifest, cap, {"query": "melanoma"})
+    assert req.json_body["criteria"]["advanced_text_search"]["search_text"] == "melanoma"
+    assert req.json_body["limit"] == 3
+
+
+def test_map_exclude_turns_keyed_maps_into_records():
+    from mouseion.adapters.base import extract_records
+
+    body = {"result": {"uids": ["1", "2"], "1": {"uid": "1"}, "2": {"uid": "2"}}}
+    records = extract_records(body, "result", ["uids"])
+    assert [record["uid"] for record in records] == ["1", "2"]
+
+
+# -- unstable upstream windows -------------------------------------------
+
+
+def test_local_window_slices_without_overlap(registry, monkeypatch):
+    monkeypatch.setenv("SEC_USER_AGENT", "test test@example.com")
+    manifest = registry.get("sec_edgar")
+    cap = manifest.capabilities["full_text_search"]
+    adapter = get_adapter(manifest.adapter)
+    body = {
+        "hits": {
+            "hits": [
+                {"_id": f"acc-{i}:doc.htm", "_source": {"display_names": [f"C{i}"], "ciks": [str(i)], "form": "10-K", "adsh": f"acc-{i}"}}
+                for i in range(12)
+            ],
+            "total": {"value": 100},
+        }
+    }
+
+    def page(cursor):
+        request = prepare(manifest, cap, {"q": "ai", "limit": 3}, cursor)
+        result = adapter.parse(manifest, cap, body, request)
+        return [record.data["document_id"] for record in result.records], result.next_cursor
+
+    first, next_one = page(None)
+    second, next_two = page(next_one)
+    assert first == ["acc-0:doc.htm", "acc-1:doc.htm", "acc-2:doc.htm"]
+    assert second == ["acc-3:doc.htm", "acc-4:doc.htm", "acc-5:doc.htm"]
+    assert not set(first) & set(second)
+    assert next_two == "6"
+
+
+# -- user-agent auth -----------------------------------------------------
+
+
+def test_user_agent_auth_requires_env(registry, monkeypatch):
+    from mouseion.envelope import ProviderError
+
+    monkeypatch.delenv("SEC_USER_AGENT", raising=False)
+    manifest = registry.get("sec_edgar")
+    cap = manifest.capabilities["full_text_search"]
+    with pytest.raises(ProviderError) as exc:
+        prepare(manifest, cap, {"q": "ai"})
+    assert "SEC_USER_AGENT" in (exc.value.hint or "")
+
+
+# -- required params, query templates, body param citations ---------------
+
+
+def test_missing_required_param_names_the_friendly_name(registry):
+    from mouseion.envelope import ProviderError
+
+    manifest = registry.get("pubmed")
+    cap = manifest.capabilities["summaries"]
+    with pytest.raises(ProviderError) as exc:
+        prepare(manifest, cap, {})
+    # 'ids' is what the caller was told to pass, even though it maps to 'id' upstream.
+    assert "ids" in str(exc.value)
+
+
+def test_query_template_flattens_and_drops_optional_groups(registry):
+    manifest = registry.get("cms_provider")
+    cap = manifest.capabilities["hospitals"]
+
+    with_state = prepare(manifest, cap, {"state": "CA", "limit": 5})
+    assert with_state.params["conditions[0][property]"] == "state"
+    assert with_state.params["conditions[0][value]"] == "CA"
+    assert with_state.params["conditions[0][operator]"] == "="
+    assert with_state.params["limit"] == 5
+
+    without_state = prepare(manifest, cap, {"limit": 5})
+    assert not any(key.startswith("conditions") for key in without_state.params), (
+        "an unanswered optional filter must not half-build a condition clause"
+    )
+
+
+def test_body_only_api_still_builds_a_citation_url(registry):
+    manifest = registry.get("bls")
+    cap = manifest.capabilities["series_observations"]
+    adapter = get_adapter(manifest.adapter)
+    request = prepare(manifest, cap, {"series_id": "LNS14000000", "limit": 2})
+    body = {"Results": {"series": [{"data": [{"year": "2026", "period": "M09", "value": "4.2"}]}]}}
+    result = adapter.parse(manifest, cap, body, request)
+    assert result.records[0].source_url == "https://data.bls.gov/timeseries/LNS14000000"
