@@ -125,13 +125,35 @@ class Toolkit:
     async def providers_search(
         self, query: str, category: str | None = None, limit: int = 8
     ) -> dict[str, Any]:
+        limit = max(1, min(limit, 25))
         try:
-            results = await self.router.search(query, category=category, limit=max(1, min(limit, 25)))
+            results = await self.router.search(query, category=category, limit=limit)
         except Exception as exc:  # noqa: BLE001 - a tool must never raise into the transport
             log.warning("router failed, falling back to lexical: %s", exc)
-            results = self.registry.search(query, category=category, limit=max(1, min(limit, 25)))
+            results = self.registry.search(query, category=category, limit=limit)
+
+        category_fallback = False
+        if not results and category:
+            # A model that guesses a category should not lose the whole search.
+            try:
+                results = await self.router.search(query, limit=limit)
+            except Exception as exc:  # noqa: BLE001
+                log.warning("unfiltered router fallback failed: %s", exc)
+                results = self.registry.search(query, limit=limit)
+            category_fallback = bool(results)
+
         out: dict[str, Any] = {"query": query, "count": len(results), "providers": results}
-        if not results:
+        if category_fallback:
+            out["category_fallback"] = True
+            out["hint"] = (
+                f"no provider matched category '{category}'; showing unfiltered results. "
+                f"next: provider_describe('{results[0]['id']}')"
+            )
+        elif results:
+            out["hint"] = (
+                f"next: provider_describe('{results[0]['id']}') to see its exact parameters"
+            )
+        else:
             out["web_search_required"] = True
             out["search_reason"] = "no_provider_match"
             out["hint"] = (
@@ -173,7 +195,10 @@ class Toolkit:
                 "0 records. Broaden the filter, or check the param names with provider_describe."
             )
         elif envelope.truncated:
-            out["hint"] = "more records available: pass cursor to continue"
+            out["hint"] = (
+                "more records available: pass cursor.next to continue, or answer with "
+                "these records if the user did not ask for exhaustive results"
+            )
         return out
 
     # -- tool 4 ---------------------------------------------------------

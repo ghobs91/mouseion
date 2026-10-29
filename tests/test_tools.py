@@ -63,6 +63,19 @@ def test_providers_search_ranks_openfda_for_recalls(config):
     assert out["providers"][0]["id"] == "openfda"
 
 
+def test_providers_search_retries_without_a_wrong_category(config):
+    app = make_app(config)
+    out = run(
+        app.toolkit.providers_search(
+            "Class I drug recalls recent FDA", category="government"
+        )
+    )
+    run(app.aclose())
+    assert out["providers"][0]["id"] == "openfda"
+    assert out["category_fallback"] is True
+    assert "provider_describe" in out["hint"]
+
+
 def test_provider_describe_exposes_params(config):
     app = make_app(config)
     out = run(app.toolkit.provider_describe("federal_register"))

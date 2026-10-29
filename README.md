@@ -391,6 +391,28 @@ llama-server -m model.gguf --jinja -c 8192
 **3. MCP.** `python -m mouseion.server` works with any MCP client (OpenCode, Claude Desktop,
 etc.) if you would rather the outer harness own the loop.
 
+### Unsloth Studio
+
+Unsloth Studio's API-only server is OpenAI-compatible but listens on **8889**, not
+llama.cpp's 8080, and requires a `model` field. The example auto-detects the loaded
+model from `/v1/models`:
+
+```bash
+.venv/bin/python examples/llamacpp_agent.py \
+  --question "Were there any Class I drug recalls recently?" \
+  --base-url http://127.0.0.1:8889 --mode tools
+```
+
+Qwen3-style reasoning models spend the token budget on `reasoning_content` before
+emitting a tool call. The example sends `chat_template_kwargs.enable_thinking=false`
+by default; pass `--thinking` to leave it on. It also caps each capability at one page
+so the loop terminates; pass `--max-pages 0` for exhaustive pagination.
+
+Unsloth's `/v1/embeddings` needs a loaded GGUF embedding model. The chat model alone
+does not provide embeddings, so the router stays lexical. For the calibrated 47/48
+router, use `MOUSEION_EMBED_BACKEND=fastembed` or point `MOUSEION_EMBED_URL` at a
+separate embedding server.
+
 ## What's here
 
 43 providers, 57 capabilities. The contract suite verifies every upstream live except the
@@ -459,7 +481,7 @@ never as an upstream 403.
 
 Two adapters (`rest_json`, `socrata`), SQLite cache with snapshot-safe cursors, rule +
 embedding + lexical router with a 48-question held-out eval, MCP server, CLI, GBNF export,
-228 offline tests and 57 live contract tests.
+235 offline tests and 57 live contract tests.
 
 Six upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -485,7 +507,7 @@ Six upstream behaviours the adapter contract had to grow for, all now generic:
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 228 offline: fixture replay
+pytest                    # 235 offline: fixture replay
 pytest -m live            # 57 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
