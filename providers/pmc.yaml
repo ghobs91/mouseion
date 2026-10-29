@@ -1,0 +1,127 @@
+id: pmc
+title: PubMed Central
+category: biomedical
+domain: academic_scientific
+sub_category: biomedical_literature
+description: >-
+  PubMed Central (PMC), the U.S. National Library of Medicine's full-text
+  biomedical archive. Two-step: `search` returns PMC ids, then `summaries`
+  returns title, journal, date, authors and citation identifiers. Keyless;
+  NCBI allows 3 requests/second without a key.
+docs_url: https://www.ncbi.nlm.nih.gov/pmc/tools/developers/
+keywords:
+  - pmc
+  - pubmed central
+  - full text
+  - biomedical
+  - literature
+  - paper
+  - article
+  - journal
+  - open access
+  - ncbi
+base: https://eutils.ncbi.nlm.nih.gov/entrez/eutils
+adapter: rest_json
+auth:
+  type: none
+attribution: "PubMed Central, U.S. National Library of Medicine"
+source:
+  is_primary: true
+  originator: "U.S. National Library of Medicine"
+  originator_domain: nih.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.ncbi.nlm.nih.gov/pmc/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 180
+    burst: 10
+    concurrency: 4
+cache_ttl: 3600
+limits:
+  rps: 3
+capabilities:
+  search:
+    description: >-
+      Search PubMed Central with full query syntax. Returns a list of numeric
+      PMC ids only; call `summaries` with those ids to get titles and authors.
+    path: /esearch.fcgi
+    params:
+      term:
+        type: string
+        required: true
+        description: >-
+          PMC query, e.g. "CRISPR", or fielded syntax such as
+          'melanoma[Title] AND immunotherapy[Abstract]'.
+      limit:
+        type: integer
+        description: PMC ids per page (1-100, default 20).
+        default: 20
+    defaults:
+      db: pmc
+      retmode: json
+      sort: relevance
+    pagination:
+      mode: offset
+      param: retstart
+      limit_param: retmax
+      default_limit: 20
+      max_limit: 100
+    record_path: esearchresult.idlist
+    id_field: pmc_id
+    query_map:
+      text: term
+      limit: limit
+    source_url_template: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC{pmc_id}/"
+    fields:
+      pmc_id: value
+    version_field: esearchresult.count
+    exemplars:
+      - full text articles about CRISPR
+      - PubMed Central papers on melanoma immunotherapy
+      - open access review of GLP-1 drugs
+    example:
+      term: CRISPR
+      limit: 5
+  summaries:
+    description: >-
+      Fetch title, journal, publication date, authors, volume, issue and pages
+      for up to 100 PMC ids. Pass ids as a comma-separated string of numeric
+      PMC ids, e.g. "5334499,7028577".
+    path: /esummary.fcgi
+    params:
+      ids:
+        type: string
+        required: true
+        description: Comma-separated numeric PMC ids from the search capability.
+    defaults:
+      db: pmc
+      retmode: json
+    alias:
+      ids: id
+    record_path: result
+    map_exclude:
+      - uids
+    id_field: pmc_id
+    source_url_template: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC{pmc_id}/"
+    fields:
+      pmc_id: uid
+      title: title
+      journal: source
+      pubdate: pubdate
+      authors: authors
+      volume: volume
+      issue: issue
+      pages: pages
+      doi: elocationid
+    pluck:
+      authors: name
+    exemplars:
+      - metadata for PMC article 5334499
+      - authors and journal of a PMC paper
+    example:
+      ids: "5334499"

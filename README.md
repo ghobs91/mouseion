@@ -338,7 +338,7 @@ optional):
 | `alias` | friendly param name → upstream name (`status` → `filter.overallStatus`). Pagination params are not aliasable |
 | `pagination` | `token` (next token from `next_field`), `offset`, or `page` |
 | `record_path` | dotted path to the record list; omit if the body *is* the list |
-| `fields` | target → dotted source path. Omit to pass the raw object through |
+| `fields` | target → dotted source path. A value may be a list of paths; the first non-null wins (language fallback). Omit to pass the raw object through |
 | `pluck` | collapse list-of-object fields to one attribute (`interventions: name`) |
 | `id_field` / `id_template` | stable record id; use a template for composite keys |
 | `source_url_template` | format string over normalized fields → citable URL |
@@ -415,12 +415,13 @@ separate embedding server.
 
 ## What's here
 
-43 providers, 57 capabilities. The contract suite verifies every upstream live except the
+48 providers, 66 capabilities. The contract suite verifies every upstream live except the
 four that need credentials this machine does not have (FRED, CourtListener, GitHub, and
 SEC's contact User-Agent is set but FRED's key is not). Their auth paths are verified.
 
 | Provider | Auth | Capabilities |
 |---|---|---|
+| arXiv | none | `search` |
 | BLS | none | `series_observations` |
 | Census Geocoder | none | `geocode_address` |
 | CFTC Commitments of Traders | none | `legacy_futures_only` |
@@ -453,15 +454,19 @@ SEC's contact User-Agent is set but FRED's key is not). Their auth paths are ver
 | FEC (openFEC) | shared DEMO_KEY | `committees` |
 | OpenFEMA | none | `disaster_declarations` |
 | OpenLibrary | none | `search_books` |
+| PMC | none | `search`, `summaries` |
+| PubChem | none | `search_compounds`, `compound` |
 | PubMed | none | `search`, `summaries` |
 | PyPI | none | `package`, `release` |
 | ROR | none | `search_organizations` |
 | SEC EDGAR | contact UA | `full_text_search`, `filings_by_cik` |
 | DataSF | none | `police_incidents` |
 | US Treasury Fiscal Data | none | `debt_to_penny`, `avg_interest_rates` |
+| UniProt | none | `search`, `entry` |
 | USAspending | none | `spending_by_award` |
 | USGS earthquakes | none | `query` |
 | USGS water services | none | `instantaneous_values` |
+| Wikidata | none | `search_entities`, `entity` |
 | World Bank | none | `indicator` |
 | Zenodo | none | `search_records` |
 
@@ -479,11 +484,11 @@ being unusable for more than a couple of calls; register a free key and pass it 
 `api_key`. Missing credentials surface as a structured error naming the exact variable,
 never as an upstream 403.
 
-Two adapters (`rest_json`, `socrata`), SQLite cache with snapshot-safe cursors, rule +
-embedding + lexical router with a 48-question held-out eval, MCP server, CLI, GBNF export,
-235 offline tests and 57 live contract tests.
+Three adapters (`rest_json`, `socrata`, `atom`), SQLite cache with snapshot-safe cursors,
+rule + embedding + lexical router with a 48-question held-out eval, MCP server, CLI, GBNF
+export, 254 offline tests and 66 live contract tests.
 
-Six upstream behaviours the adapter contract had to grow for, all now generic:
+Seven upstream behaviours the adapter contract had to grow for, all now generic:
 
 - **POST + JSON body** (USAspending, NIH RePORTER, Grants.gov, BLS). `body_template`
   renders a nested body, keeps integer types intact, and drops optional fields instead of
@@ -501,14 +506,16 @@ Six upstream behaviours the adapter contract had to grow for, all now generic:
   single response instead of inventing a page parameter the API does not have.
 - **Catalogs with no server-side search** (CISA KEV). `local_filter` narrows the parsed
   records to an exact identifier after fetching the catalog once.
+- **Atom XML feeds** (arXiv). The `atom` adapter parses `<entry>` elements and the
+  OpenSearch total, while the rest of the pipeline stays unchanged.
 
 ## Contract tests
 
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 235 offline: fixture replay
-pytest -m live            # 57 live: every upstream, with the manifest example
+pytest                    # 254 offline: fixture replay
+pytest -m live            # 66 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
 
@@ -530,7 +537,7 @@ page token before a user does.
 
 ## What's deliberately not here
 
-- **Coverage.** 43 providers is a spine, not an index. The current gap matrix is in
+- **Coverage.** 48 providers is a spine, not an index. The current gap matrix is in
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
   molecular repositories, archives, transit, and legislative registers. Most are
   keyless or free-key; each needs a manifest, a fixture, a live contract, and an

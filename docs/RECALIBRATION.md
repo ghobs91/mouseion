@@ -8,7 +8,7 @@ remain gated on the Phase 2 evaluation.
 fields, 36-manifest backfill, `mouseion audit`, audit tests, and CI. Phase 2 complete:
 canonical query, cluster-only failover, attempt tracing, rate limiting, circuit breaker,
 single-flight, and `mouseion lookup`. Phase 3 in progress: `developer_infrastructure`
-complete at 8 providers; the other six domains remain.
+and `academic_scientific` complete; the other five domains remain.
 **Basis:** the 2026-10-29 specification plus the repository as it actually stands:
 36 providers, 44 capabilities, 163 passing offline tests, 44 live contract tests.
 
@@ -390,7 +390,7 @@ spec's own examples plus the obvious adjacent authorities.
 | Domain | Current | Target | Named gaps | Priority |
 |---|---:|---:|---|---|
 | `financial_sovereign` | 6 | 10 | ECB, Bank of Japan, IMF, OECD, BIS; self-hosted Bitcoin/EVM node adapter | P1 |
-| `academic_scientific` | 9 | 12 | arXiv, PubMed Central OA, PubChem, UniProt, Wikidata SPARQL | P1 |
+| `academic_scientific` | 14 | 14 | Complete: arXiv, PMC, PubChem, UniProt, Wikidata; existing Crossref, DataCite, OpenAlex, ROR, Zenodo, PubMed, ClinicalTrials, NIH RePORTER, GBIF | P1 |
 | `developer_infrastructure` | 8 | 8 | Complete: npm, PyPI, crates.io, Go proxy, Maven Central, CISA KEV, GitHub REST | P1 |
 | `geo_earth_observation` | 7 | 10 | Nominatim, Overpass, NASA, NOAA NCEI; reject Open-Meteo as primary | P2 |
 | `archives_web_state` | 0 | 5 | Wayback CDX, NARA catalog, Library of Congress, one national archive | P2 |

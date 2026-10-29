@@ -215,7 +215,12 @@ class Adapter(ABC):
         if capability.fields:
             data: dict[str, Any] = {}
             for target, path in capability.fields.items():
-                value = dig(raw, path)
+                paths = path if isinstance(path, list) else [path]
+                value = None
+                for candidate in paths:
+                    value = dig(raw, candidate)
+                    if value is not None:
+                        break
                 if value is None:
                     missing.append(target)
                 else:

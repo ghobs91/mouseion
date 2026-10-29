@@ -1,0 +1,100 @@
+id: arxiv
+title: arXiv preprints
+category: research
+domain: academic_scientific
+sub_category: preprint_repository
+description: >-
+  arXiv's official API: preprint metadata across physics, mathematics, computer
+  science, quantitative biology, statistics and more. Returns title, abstract,
+  authors, categories, DOI, journal reference and PDF link. Keyless, but arXiv
+  asks for a three-second pause between requests.
+docs_url: https://info.arxiv.org/help/api/index.html
+keywords:
+  - arxiv
+  - preprint
+  - paper
+  - physics
+  - mathematics
+  - computer science
+  - machine learning
+  - quantum
+  - abstract
+  - citation
+  - eprint
+base: https://export.arxiv.org
+adapter: atom
+auth:
+  type: none
+attribution: "arXiv (Cornell University)"
+source:
+  is_primary: true
+  originator: "arXiv (Cornell University)"
+  originator_domain: arxiv.org
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://arxiv.org/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 20
+    burst: 2
+    concurrency: 1
+cache_ttl: 86400
+limits:
+  rps: 0.33
+  note: "arXiv asks for a three-second pause between requests."
+capabilities:
+  search:
+    description: >-
+      Search arXiv preprints with arXiv query syntax. Returns title, abstract,
+      authors, categories, DOI, journal reference, abstract page and PDF link.
+    path: /api/query
+    params:
+      search_query:
+        type: string
+        required: true
+        description: >-
+          arXiv query, e.g. 'all:"base editing"' or 'cat:cs.LG AND all:diffusion'.
+      limit:
+        type: integer
+        description: Records per page (1-100, default 10).
+        default: 10
+    defaults:
+      sortBy: relevance
+      sortOrder: descending
+    pagination:
+      mode: offset
+      param: start
+      limit_param: max_results
+      default_limit: 10
+      max_limit: 100
+    id_field: id
+    query_map:
+      text: search_query
+      limit: limit
+    source_url_template: "{url}"
+    fields:
+      id: id
+      title: title
+      summary: summary
+      published: published
+      updated: updated
+      authors: authors
+      categories: categories
+      primary_category: primary_category
+      comment: comment
+      journal_ref: journal_ref
+      doi: doi
+      url: url
+      pdf: pdf
+    exemplars:
+      - arxiv papers on base editing
+      - latest diffusion model preprints
+      - quantum computing papers on arxiv
+      - preprint about graph neural networks
+    example:
+      search_query: 'all:"base editing"'
+      limit: 5

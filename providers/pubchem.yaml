@@ -1,0 +1,95 @@
+id: pubchem
+title: PubChem compounds
+category: biomedical
+domain: academic_scientific
+sub_category: chemical_database
+description: >-
+  PubChem's PUG REST API: compound identifiers and computed properties from the
+  U.S. National Library of Medicine's chemical database. Search by name to get
+  CIDs, then read molecular formula, weight, IUPAC name and SMILES. Keyless.
+docs_url: https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest
+keywords:
+  - pubchem
+  - compound
+  - chemical
+  - molecule
+  - drug
+  - smiles
+  - molecular formula
+  - molecular weight
+  - iupac
+  - chemistry
+  - cid
+base: https://pubchem.ncbi.nlm.nih.gov/rest/pug
+adapter: rest_json
+auth:
+  type: none
+attribution: "PubChem, U.S. National Library of Medicine"
+source:
+  is_primary: true
+  originator: "U.S. National Library of Medicine"
+  originator_domain: nih.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://pubchem.ncbi.nlm.nih.gov/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  search_compounds:
+    description: >-
+      Find PubChem compound identifiers by exact or common name. Returns a list
+      of CIDs; call `compound` with a CID for properties.
+    path: /compound/name/{name}/cids/JSON
+    params:
+      name:
+        type: string
+        required: true
+        description: Compound name, e.g. aspirin or caffeine.
+    record_path: IdentifierList.CID
+    id_field: cid
+    query_map:
+      text: name
+    source_url_template: "https://pubchem.ncbi.nlm.nih.gov/compound/{cid}"
+    fields:
+      cid: value
+    exemplars:
+      - pubchem compound id for aspirin
+      - chemical identifier for caffeine
+      - find the molecule called ibuprofen
+    example:
+      name: aspirin
+  compound:
+    description: >-
+      Read computed properties for one PubChem compound by CID. Returns
+      molecular formula, molecular weight, IUPAC name and connectivity SMILES.
+    path: /compound/cid/{cid}/property/MolecularFormula,MolecularWeight,IUPACName,ConnectivitySMILES/JSON
+    params:
+      cid:
+        type: integer
+        required: true
+        description: PubChem compound id, e.g. 2244 for aspirin.
+    record_path: PropertyTable.Properties
+    id_field: cid
+    source_url_template: "https://pubchem.ncbi.nlm.nih.gov/compound/{cid}"
+    fields:
+      cid: CID
+      formula: MolecularFormula
+      molecular_weight: MolecularWeight
+      iupac_name: IUPACName
+      smiles: ConnectivitySMILES
+    exemplars:
+      - molecular formula and weight for PubChem CID 2244
+      - smiles for aspirin
+      - chemical properties of caffeine
+    example:
+      cid: 2244

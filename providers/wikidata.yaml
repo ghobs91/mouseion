@@ -1,0 +1,119 @@
+id: wikidata
+title: Wikidata knowledge graph
+category: reference
+domain: academic_scientific
+sub_category: knowledge_graph
+description: >-
+  Wikidata's official MediaWiki API: entity search and labels, descriptions and
+  aliases for structured entities. Keyless, but Wikimedia requires a descriptive
+  User-Agent; the runtime default is used. For raw claims, use the Wikidata Query
+  Service directly.
+docs_url: https://www.wikidata.org/wiki/Wikidata:Data_access
+keywords:
+  - wikidata
+  - knowledge graph
+  - entity
+  - ontology
+  - semantic
+  - qid
+  - label
+  - alias
+  - wikimedia
+base: https://www.wikidata.org/w
+adapter: rest_json
+auth:
+  type: none
+attribution: "Wikidata, Wikimedia Foundation"
+source:
+  is_primary: true
+  originator: "Wikimedia Foundation"
+  originator_domain: wikidata.org
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.wikidata.org/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  search_entities:
+    description: >-
+      Search Wikidata entities by label or alias. Returns QID, label, description
+      and concept URI. Use the QID with `entity` for aliases.
+    path: /api.php
+    params:
+      search:
+        type: string
+        required: true
+        description: Entity name, e.g. Douglas Adams or CRISPR.
+      language:
+        type: string
+        description: Language code (default en).
+        default: en
+      limit:
+        type: integer
+        description: Records per page (1-50, default 10).
+        default: 10
+    defaults:
+      action: wbsearchentities
+      format: json
+      uselang: en
+    record_path: search
+    id_field: id
+    query_map:
+      text: search
+      limit: limit
+    source_url_template: "https://www.wikidata.org/wiki/{id}"
+    fields:
+      id: id
+      label: label
+      description: description
+      concept_uri: concepturi
+    exemplars:
+      - wikidata entity for Douglas Adams
+      - QID for CRISPR
+      - structured knowledge graph entity for a country
+    example:
+      search: Douglas Adams
+      limit: 5
+  entity:
+    description: >-
+      Read labels, descriptions and aliases for one or more Wikidata entities by
+      QID. Pass ids as a pipe-separated string, e.g. "Q42|Q1".
+    path: /api.php
+    params:
+      ids:
+        type: string
+        required: true
+        description: Pipe-separated QIDs, e.g. Q42 or Q42|Q1.
+      languages:
+        type: string
+        description: Pipe-separated language codes (default en|mul).
+        default: "en|mul"
+    defaults:
+      action: wbgetentities
+      format: json
+      props: "labels|descriptions|aliases"
+    record_path: entities
+    id_field: id
+    source_url_template: "https://www.wikidata.org/wiki/{id}"
+    fields:
+      id: id
+      label: [labels.en.value, labels.mul.value]
+      description: [descriptions.en.value, descriptions.mul.value]
+      aliases: [aliases.en, aliases.mul]
+    pluck:
+      aliases: value
+    exemplars:
+      - wikidata labels and aliases for Q42
+      - what does Wikidata call Q1
+    example:
+      ids: Q42

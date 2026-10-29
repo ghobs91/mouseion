@@ -197,7 +197,9 @@ class ProviderClient:
         try:
             body = response.json()
         except ValueError:
-            body = {"_raw_text": response.text[:2000]}
+            # Keep the full text: the Atom adapter needs every <entry>, and the
+            # body-size limit above already bounds this.
+            body = {"_raw_text": response.text}
 
         if response.status_code >= 400:
             if response.status_code == 404 and cap.empty_on_404:

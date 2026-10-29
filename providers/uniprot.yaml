@@ -1,0 +1,113 @@
+id: uniprot
+title: UniProt protein knowledgebase
+category: biomedical
+domain: academic_scientific
+sub_category: protein_database
+description: >-
+  UniProt's REST API: protein entries by accession or free-text query, with
+  recommended protein name, organism, gene, sequence length, review status and
+  UniParc identifier. Keyless. The field list keeps responses small.
+docs_url: https://www.uniprot.org/help/api
+keywords:
+  - uniprot
+  - protein
+  - amino acid
+  - sequence
+  - enzyme
+  - gene
+  - proteome
+  - swiss-prot
+  - trembl
+  - accession
+base: https://rest.uniprot.org
+adapter: rest_json
+auth:
+  type: none
+attribution: "UniProt Consortium"
+source:
+  is_primary: true
+  originator: "UniProt Consortium"
+  originator_domain: uniprot.org
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.uniprot.org/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  search:
+    description: >-
+      Search UniProtKB by free text, gene, organism or accession. Returns
+      accession, protein name, organism, gene, sequence length and review status.
+    path: /uniprotkb/search
+    params:
+      query:
+        type: string
+        required: true
+        description: UniProt query, e.g. insulin, gene:INS, or organism_id:9606.
+      limit:
+        type: integer
+        description: Records per page (1-500, default 10).
+        default: 10
+    defaults:
+      format: json
+      fields: "accession,protein_name,gene_names,organism_name,length,reviewed"
+    alias:
+      limit: size
+    record_path: results
+    id_field: accession
+    query_map:
+      text: query
+      limit: limit
+    source_url_template: "https://www.uniprot.org/uniprotkb/{accession}/entry"
+    fields:
+      accession: primaryAccession
+      entry_type: entryType
+      protein: proteinDescription.recommendedName.fullName.value
+      organism: organism.scientificName
+      gene: genes.0.geneName.value
+      length: sequence.length
+      uniparc: extraAttributes.uniParcId
+    exemplars:
+      - uniprot entry for human insulin
+      - protein sequence length for P01308
+      - find the gene for a protein
+      - reviewed human kinase entries
+    example:
+      query: insulin
+      limit: 5
+  entry:
+    description: >-
+      Read one UniProtKB entry by accession. Returns protein name, organism,
+      gene, sequence length, review status and UniParc identifier.
+    path: /uniprotkb/{accession}.json
+    params:
+      accession:
+        type: string
+        required: true
+        description: UniProt accession, e.g. P01308.
+    record_path: null
+    id_field: accession
+    source_url_template: "https://www.uniprot.org/uniprotkb/{accession}/entry"
+    fields:
+      accession: primaryAccession
+      entry_type: entryType
+      protein: proteinDescription.recommendedName.fullName.value
+      organism: organism.scientificName
+      gene: genes.0.geneName.value
+      length: sequence.length
+      uniparc: extraAttributes.uniParcId
+    exemplars:
+      - uniprot metadata for P01308
+      - protein entry for human insulin
+    example:
+      accession: P01308

@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any, Literal, get_args
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validator
 
 ParamType = Literal["string", "integer", "number", "boolean", "array", "object"]
 
@@ -174,7 +174,8 @@ class Capability(BaseModel):
     #: Takes precedence over id_field when both are set.
     id_template: str | None = None
     #: Dotted paths to pull from the raw record. When present the record is projected.
-    fields: dict[str, str] | None = None
+    #: A value may be a list of paths; the first non-null path wins (language fallback).
+    fields: dict[str, str | list[str]] | None = None
     #: Collapse list-of-object fields to one attribute, e.g. {interventions: name}.
     pluck: dict[str, str] = Field(default_factory=dict)
     #: Keys to strip when no projection is declared.
@@ -231,7 +232,13 @@ class Capability(BaseModel):
 
     @field_validator("alias")
     @classmethod
-    def _no_pagination_alias(cls, value: dict[str, str]) -> dict[str, str]:
+    def _no_pagination_alias(
+        cls, value: dict[str, str], info: ValidationInfo
+    ) -> dict[str, str]:
+        # A capability with no pagination may use `limit` as an ordinary param
+        # (UniProt maps it to `size`). Only pagination-owned params are reserved.
+        if info.data.get("pagination") is None:
+            return value
         reserved = {"limit", "page", "offset", "cursor"}
         if reserved & set(value):
             raise ValueError(f"pagination params are not aliasable: {reserved & set(value)}")

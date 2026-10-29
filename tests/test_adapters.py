@@ -62,6 +62,28 @@ def test_local_filter_narrows_a_catalog(registry):
     assert result.upstream_version == "2026.10.28"
 
 
+def test_projection_field_fallbacks(registry):
+    manifest = registry.get("wikidata")
+    cap = manifest.capabilities["entity"]
+    adapter = get_adapter(manifest.adapter)
+    req = prepare(manifest, cap, {"ids": "Q42"})
+    body = {
+        "entities": {
+            "Q42": {
+                "id": "Q42",
+                "labels": {"mul": {"value": "Douglas Adams"}},
+                "descriptions": {},
+                "aliases": {"mul": [{"value": "DNA"}]},
+            }
+        }
+    }
+
+    result = adapter.parse(manifest, cap, body, req)
+
+    assert result.records[0].data["label"] == "Douglas Adams"
+    assert result.records[0].data["aliases"] == ["DNA"]
+
+
 def test_path_substitution_quotes(registry):
     manifest = registry.get("clinicaltrials_gov")
     cap = manifest.capabilities["get"]
