@@ -1,0 +1,73 @@
+id: go_proxy
+title: Go module proxy
+category: developer
+domain: developer_infrastructure
+sub_category: package_registry
+description: >-
+  The official Go module proxy: the latest published version of a module, its
+  timestamp, and the origin VCS repository, commit and ref. Keyless. Module
+  paths contain slashes; the proxy accepts them URL-encoded.
+docs_url: https://go.dev/ref/mod#goproxy-protocol
+keywords:
+  - go
+  - golang
+  - module
+  - package
+  - dependency
+  - go.mod
+  - proxy
+  - registry
+  - semver
+base: https://proxy.golang.org
+adapter: rest_json
+auth:
+  type: none
+attribution: "Go Module Proxy (Go Project)"
+source:
+  is_primary: true
+  originator: "Go Project"
+  originator_domain: golang.org
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://proxy.golang.org/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
+cache_ttl: 3600
+limits:
+  rps: 5
+capabilities:
+  latest:
+    description: >-
+      Read the latest version of one Go module. Returns the version, publish
+      time, origin VCS URL, commit hash and ref. Pass a full module path such
+      as github.com/gin-gonic/gin.
+    path: /{module}/@latest
+    params:
+      module:
+        type: string
+        required: true
+        description: Full module path, e.g. github.com/gin-gonic/gin.
+    id_field: version
+    query_map:
+      text: module
+    source_url_template: "https://pkg.go.dev/{module}@{version}"
+    fields:
+      version: Version
+      time: Time
+      vcs: Origin.VCS
+      repository: Origin.URL
+      commit: Origin.Hash
+      ref: Origin.Ref
+    exemplars:
+      - latest version of the gin go module
+      - go module metadata for github.com/gin-gonic/gin
+      - golang dependency version and commit
+    example:
+      module: github.com/gin-gonic/gin

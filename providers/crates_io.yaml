@@ -1,0 +1,123 @@
+id: crates_io
+title: crates.io registry
+category: developer
+domain: developer_infrastructure
+sub_category: package_registry
+description: >-
+  The Rust package registry: crate metadata, latest and maximum versions,
+  download counts, repository and documentation links. Keyless, but crates.io
+  asks clients to send a descriptive User-Agent and to stay near one request
+  per second.
+docs_url: https://crates.io/data-access
+keywords:
+  - crates
+  - crates.io
+  - rust
+  - cargo
+  - package
+  - dependency
+  - crate
+  - registry
+  - semver
+base: https://crates.io
+adapter: rest_json
+auth:
+  type: none
+attribution: "Rust Package Registry (crates.io)"
+source:
+  is_primary: true
+  originator: "Rust Package Registry (crates.io)"
+  originator_domain: crates.io
+  provenance: registry
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://crates.io/api/v1/crates/serde
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 60
+    burst: 5
+    concurrency: 1
+cache_ttl: 3600
+limits:
+  rps: 1
+  note: "crates.io asks for a descriptive User-Agent and ~1 request/second."
+capabilities:
+  search:
+    description: >-
+      Search crates by text. Returns crate name, max version, description,
+      total and recent downloads, repository, homepage and documentation links.
+    path: /api/v1/crates
+    params:
+      q:
+        type: string
+        required: true
+        description: Crate search text, e.g. "serde json".
+      limit:
+        type: integer
+        description: Records per page (1-100, default 10).
+        default: 10
+    pagination:
+      mode: token
+      param: page
+      limit_param: per_page
+      next_field: meta.next_page
+      default_limit: 10
+      max_limit: 100
+    record_path: crates
+    id_field: name
+    query_map:
+      text: q
+      limit: limit
+    source_url_template: "https://crates.io/crates/{name}"
+    fields:
+      name: name
+      max_version: max_version
+      description: description
+      downloads: downloads
+      recent_downloads: recent_downloads
+      repository: repository
+      homepage: homepage
+      documentation: documentation
+      updated: updated_at
+    exemplars:
+      - rust crate for json serialization
+      - latest version of serde on crates.io
+      - cargo dependency for async http
+    example:
+      q: serde
+      limit: 5
+  crate:
+    description: >-
+      Read one crate's registry record by exact name. Returns max version,
+      description, download counts, repository, homepage, documentation and
+      the number of published versions.
+    path: /api/v1/crates/{name}
+    params:
+      name:
+        type: string
+        required: true
+        description: Exact crate name, e.g. serde.
+    record_path: null
+    id_field: name
+    query_map:
+      text: name
+    source_url_template: "https://crates.io/crates/{name}"
+    fields:
+      name: crate.name
+      max_version: crate.max_version
+      description: crate.description
+      downloads: crate.downloads
+      recent_downloads: crate.recent_downloads
+      repository: crate.repository
+      homepage: crate.homepage
+      documentation: crate.documentation
+      updated: crate.updated_at
+      num_versions: crate.num_versions
+    exemplars:
+      - crates.io metadata for serde
+      - how many versions of the tokio crate
+    example:
+      name: serde

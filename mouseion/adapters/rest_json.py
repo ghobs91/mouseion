@@ -75,6 +75,17 @@ class RestJsonAdapter(Adapter):
         raw = extract_records(
             body, capability.record_path, capability.map_exclude, capability.transpose
         )
+        if capability.local_filter is not None:
+            value = request.template_params.get(capability.local_filter.param)
+            if value in (None, ""):
+                value = request.params.get(capability.local_filter.param)
+            if value not in (None, ""):
+                wanted = str(value).lower()
+                raw = [
+                    item
+                    for item in raw
+                    if str(dig(item, capability.local_filter.field, "")).lower() == wanted
+                ]
         result = self.build_records(capability, raw, request)
 
         if capability.local_window and capability.pagination:

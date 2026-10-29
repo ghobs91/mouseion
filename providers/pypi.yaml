@@ -1,0 +1,111 @@
+id: pypi
+title: PyPI package metadata
+category: developer
+domain: developer_infrastructure
+sub_category: package_registry
+description: >-
+  The Python Package Index: package metadata for the latest release or one
+  specified version, including summary, licence, Python requirement, project
+  URLs, author and declared dependencies. Keyless. PyPI has no public JSON
+  search endpoint; call `package` with an exact distribution name.
+docs_url: https://docs.pypi.org/api/
+keywords:
+  - pypi
+  - python
+  - pip
+  - package
+  - dependency
+  - wheel
+  - sdist
+  - library
+  - registry
+base: https://pypi.org
+adapter: rest_json
+auth:
+  type: none
+attribution: "Python Package Index (PyPI)"
+source:
+  is_primary: true
+  originator: "Python Package Index (PyPI)"
+  originator_domain: pypi.org
+  provenance: registry
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://pypi.org/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 180
+    burst: 10
+    concurrency: 4
+cache_ttl: 3600
+limits:
+  rps: 3
+capabilities:
+  package:
+    description: >-
+      Read metadata for the latest release of one Python distribution. Returns
+      name, version, summary, licence, Python requirement, project URLs, author
+      and declared dependencies.
+    path: /pypi/{name}/json
+    params:
+      name:
+        type: string
+        required: true
+        description: Exact distribution name, e.g. requests or django.
+    record_path: null
+    id_field: name
+    query_map:
+      text: name
+    source_url_template: "https://pypi.org/project/{name}/"
+    fields:
+      name: info.name
+      version: info.version
+      summary: info.summary
+      license: info.license
+      requires_python: info.requires_python
+      homepage: info.home_page
+      project_urls: info.project_urls
+      author: info.author
+      requires_dist: info.requires_dist
+    exemplars:
+      - latest version of the requests python package
+      - pypi metadata for django
+      - python package dependencies and python requirement
+    example:
+      name: requests
+  release:
+    description: >-
+      Read metadata for one specific release of a Python distribution. Returns
+      the same projected fields as `package`, pinned to the requested version.
+    path: /pypi/{name}/{version}/json
+    params:
+      name:
+        type: string
+        required: true
+        description: Exact distribution name, e.g. requests.
+      version:
+        type: string
+        required: true
+        description: Exact release version, e.g. 2.31.0.
+    record_path: null
+    id_template: "{name}:{version}"
+    source_url_template: "https://pypi.org/project/{name}/{version}/"
+    fields:
+      name: info.name
+      version: info.version
+      summary: info.summary
+      license: info.license
+      requires_python: info.requires_python
+      homepage: info.home_page
+      project_urls: info.project_urls
+      author: info.author
+      requires_dist: info.requires_dist
+    exemplars:
+      - pypi release metadata for requests 2.31.0
+      - dependencies of a specific python package version
+    example:
+      name: requests
+      version: "2.31.0"

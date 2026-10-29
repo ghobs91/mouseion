@@ -329,7 +329,8 @@ optional):
 | `sub_category` | finer topic within the domain, e.g. `economic_series` |
 | `source` | primary-source policy: `is_primary`, `originator`, `originator_domain`, `provenance`, `tier`, `auth_policy`, `rate_limit`, optional `exception_reason` |
 | `cluster` | failover group. Two capabilities may fail over only when they share a cluster |
-| `query_map` | required with `cluster`: canonical field → source param, e.g. `{text: query, limit: limit}` |
+| `query_map` | optional; enables `mouseion lookup`; required when `cluster` is set. Canonical field → source param, e.g. `{text: query, limit: limit}` |
+| `local_filter` | post-parse filter for catalogs with no server-side search: `{field: cveID, param: cve_id}` |
 | `category` | compatibility tag; `domain` is what the router uses |
 | `adapter` | `rest_json` (default) or `socrata` |
 | `path` | path under `base`; `{name}` segments are substituted from params |
@@ -392,18 +393,20 @@ etc.) if you would rather the outer harness own the loop.
 
 ## What's here
 
-36 providers, 44 capabilities. The contract suite verifies every upstream live except the
-three that need credentials this machine does not have (FRED, CourtListener, and SEC's
-contact User-Agent is set but FRED's key is not). Their auth paths are verified.
+43 providers, 57 capabilities. The contract suite verifies every upstream live except the
+four that need credentials this machine does not have (FRED, CourtListener, GitHub, and
+SEC's contact User-Agent is set but FRED's key is not). Their auth paths are verified.
 
 | Provider | Auth | Capabilities |
 |---|---|---|
 | BLS | none | `series_observations` |
 | Census Geocoder | none | `geocode_address` |
 | CFTC Commitments of Traders | none | `legacy_futures_only` |
+| CISA KEV | none | `catalog` |
 | ClinicalTrials.gov | none | `search`, `get` |
 | CMS Care Compare | none | `hospitals` |
 | CourtListener | free token | `search_opinions` |
+| crates.io | none | `search`, `crate` |
 | Crossref | none | `search_works` |
 | data.gov.au | none | `search_datasets` |
 | DataCite | none | `search_dois` |
@@ -411,12 +414,16 @@ contact User-Agent is set but FRED's key is not). Their auth paths are verified.
 | FRED | free key | `search_series`, `series_observations` |
 | GBIF | none | `search_occurrences` |
 | GLEIF | none | `search_lei` |
+| GitHub | free token | `search_repositories`, `repository`, `releases`, `commits` |
+| Go module proxy | none | `latest` |
 | GOV.UK | none | `search_content` |
 | Grants.gov | none | `search_opportunities` |
+| Maven Central | none | `search` |
 | NHC | none | `active_storms` |
 | NHTSA | none | `models_for_make` |
 | NIH RePORTER | none | `search_projects` |
 | NIST NVD | none | `search_cves` |
+| npm | none | `search`, `package` |
 | NWS alerting | none | `active_alerts` |
 | NYC Open Data | none | `parcels` |
 | OpenAlex | none | `search_works` |
@@ -425,6 +432,7 @@ contact User-Agent is set but FRED's key is not). Their auth paths are verified.
 | OpenFEMA | none | `disaster_declarations` |
 | OpenLibrary | none | `search_books` |
 | PubMed | none | `search`, `summaries` |
+| PyPI | none | `package`, `release` |
 | ROR | none | `search_organizations` |
 | SEC EDGAR | contact UA | `full_text_search`, `filings_by_cik` |
 | DataSF | none | `police_incidents` |
@@ -441,6 +449,7 @@ Credentials, before the first call:
 export SEC_USER_AGENT="mouseion/0.1 (Your Name you@example.com)"  # SEC refuses anonymous clients
 export FRED_API_KEY="..."                                        # free at fred.stlouisfed.org
 export COURTLISTENER_TOKEN="..."                                 # free; anonymous search now 401s
+export GITHUB_TOKEN="..."                                        # free; GitHub REST needs 5,000/hour
 ```
 
 openFEC ships with the shared `DEMO_KEY`, which works but is rate-limited to the point of
@@ -450,9 +459,9 @@ never as an upstream 403.
 
 Two adapters (`rest_json`, `socrata`), SQLite cache with snapshot-safe cursors, rule +
 embedding + lexical router with a 48-question held-out eval, MCP server, CLI, GBNF export,
-201 offline tests and 44 live contract tests.
+228 offline tests and 57 live contract tests.
 
-Five upstream behaviours the adapter contract had to grow for, all now generic:
+Six upstream behaviours the adapter contract had to grow for, all now generic:
 
 - **POST + JSON body** (USAspending, NIH RePORTER, Grants.gov, BLS). `body_template`
   renders a nested body, keeps integer types intact, and drops optional fields instead of
@@ -468,14 +477,16 @@ Five upstream behaviours the adapter contract had to grow for, all now generic:
   overlap.
 - **Unpaginated endpoints** (NWS alerts). The same `local_window` mechanism slices a
   single response instead of inventing a page parameter the API does not have.
+- **Catalogs with no server-side search** (CISA KEV). `local_filter` narrows the parsed
+  records to an exact identifier after fetching the catalog once.
 
 ## Contract tests
 
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 201 offline: fixture replay
-pytest -m live            # 44 live: every upstream, with the manifest example
+pytest                    # 228 offline: fixture replay
+pytest -m live            # 57 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
 
@@ -497,11 +508,11 @@ page token before a user does.
 
 ## What's deliberately not here
 
-- **Coverage.** 36 providers is a spine, not an index. The current gap matrix is in
+- **Coverage.** 43 providers is a spine, not an index. The current gap matrix is in
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
-  molecular repositories, package registries, archives, transit, and legislative
-  registers. Most are keyless or free-key; each needs a manifest, a fixture, a live
-  contract, and an audit entry before it counts.
+  molecular repositories, archives, transit, and legislative registers. Most are
+  keyless or free-key; each needs a manifest, a fixture, a live contract, and an
+  audit entry before it counts.
 - **Write paths.** Everything here reads. No filings, no comments, no purchases.
 
 ## Honest ceiling

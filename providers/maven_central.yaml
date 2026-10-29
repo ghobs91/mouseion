@@ -1,0 +1,90 @@
+id: maven_central
+title: Maven Central
+category: developer
+domain: developer_infrastructure
+sub_category: package_registry
+description: >-
+  Maven Central's official search index: Java and JVM artifacts by group,
+  artifact or free text, with the latest version, version count, packaging and
+  repository. Keyless. Use it for dependency coordinates and release metadata.
+docs_url: https://search.maven.org/
+keywords:
+  - maven
+  - maven central
+  - java
+  - jvm
+  - jar
+  - artifact
+  - groupid
+  - artifactid
+  - dependency
+  - gradle
+  - registry
+base: https://search.maven.org
+adapter: rest_json
+auth:
+  type: none
+attribution: "Maven Central (Sonatype)"
+source:
+  is_primary: true
+  originator: "Maven Central (Sonatype)"
+  originator_domain: maven.org
+  provenance: registry
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://search.maven.org/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
+cache_ttl: 3600
+limits:
+  rps: 5
+capabilities:
+  search:
+    description: >-
+      Search Maven Central artifacts by free text, group id or artifact id.
+      Returns the group:artifact coordinate, latest version, version count,
+      packaging and repository.
+    path: /solrsearch/select
+    params:
+      q:
+        type: string
+        required: true
+        description: Search text, e.g. "guava" or "g:com.google.guava AND a:guava".
+      limit:
+        type: integer
+        description: Records per page (1-200, default 20).
+        default: 20
+    pagination:
+      mode: offset
+      param: start
+      limit_param: rows
+      default_limit: 20
+      max_limit: 200
+    record_path: response.docs
+    id_field: id
+    query_map:
+      text: q
+      limit: limit
+    source_url_template: "https://search.maven.org/artifact/{group}/{artifact}"
+    fields:
+      id: id
+      group: g
+      artifact: a
+      latest_version: latestVersion
+      version_count: versionCount
+      repository: repositoryId
+      packaging: p
+      timestamp: timestamp
+    exemplars:
+      - maven coordinates for guava
+      - latest version of org.apache.commons commons-lang3
+      - java library for json parsing on maven central
+    example:
+      q: guava
+      limit: 5

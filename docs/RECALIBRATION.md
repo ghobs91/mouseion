@@ -7,7 +7,8 @@ remain gated on the Phase 2 evaluation.
 `candidates_auto/` removed and ignored as regenerable output. Phase 1 complete: schema
 fields, 36-manifest backfill, `mouseion audit`, audit tests, and CI. Phase 2 complete:
 canonical query, cluster-only failover, attempt tracing, rate limiting, circuit breaker,
-single-flight, and `mouseion lookup`. Phase 3 breadth remains.
+single-flight, and `mouseion lookup`. Phase 3 in progress: `developer_infrastructure`
+complete at 8 providers; the other six domains remain.
 **Basis:** the 2026-10-29 specification plus the repository as it actually stands:
 36 providers, 44 capabilities, 163 passing offline tests, 44 live contract tests.
 
@@ -390,7 +391,7 @@ spec's own examples plus the obvious adjacent authorities.
 |---|---:|---:|---|---|
 | `financial_sovereign` | 6 | 10 | ECB, Bank of Japan, IMF, OECD, BIS; self-hosted Bitcoin/EVM node adapter | P1 |
 | `academic_scientific` | 9 | 12 | arXiv, PubMed Central OA, PubChem, UniProt, Wikidata SPARQL | P1 |
-| `developer_infrastructure` | 1 | 8 | npm, PyPI, crates.io, Go proxy, Maven Central, CISA KEV, GitHub REST | P1 |
+| `developer_infrastructure` | 8 | 8 | Complete: npm, PyPI, crates.io, Go proxy, Maven Central, CISA KEV, GitHub REST | P1 |
 | `geo_earth_observation` | 7 | 10 | Nominatim, Overpass, NASA, NOAA NCEI; reject Open-Meteo as primary | P2 |
 | `archives_web_state` | 0 | 5 | Wayback CDX, NARA catalog, Library of Congress, one national archive | P2 |
 | `transport_infrastructure` | 0 | 8 | 5–8 transit agencies with GTFS/GTFS-RT; State Dept travel; ISBN via OpenLibrary (exception) | P3 |

@@ -42,6 +42,26 @@ def test_clinicaltrials_parses_projection_and_cursor(registry):
     assert result.next_cursor == "TOKEN-2"
 
 
+def test_local_filter_narrows_a_catalog(registry):
+    manifest = registry.get("cisa_kev")
+    cap = manifest.capabilities["catalog"]
+    adapter = get_adapter(manifest.adapter)
+    req = prepare(manifest, cap, {"cve_id": "CVE-2024-0001", "limit": 10})
+    body = {
+        "catalogVersion": "2026.10.28",
+        "vulnerabilities": [
+            {"cveID": "CVE-2024-0001", "vendorProject": "A", "product": "P"},
+            {"cveID": "CVE-2024-0002", "vendorProject": "B", "product": "Q"},
+        ],
+    }
+
+    result = adapter.parse(manifest, cap, body, req)
+
+    assert len(result.records) == 1
+    assert result.records[0].data["cve_id"] == "CVE-2024-0001"
+    assert result.upstream_version == "2026.10.28"
+
+
 def test_path_substitution_quotes(registry):
     manifest = registry.get("clinicaltrials_gov")
     cap = manifest.capabilities["get"]

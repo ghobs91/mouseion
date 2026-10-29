@@ -1,0 +1,209 @@
+id: github
+title: GitHub REST API
+category: developer
+domain: developer_infrastructure
+sub_category: source_code_repository
+description: >-
+  GitHub's official REST API: repository metadata, official releases, commit
+  logs and repository search. Covers GitHub-hosted projects only. A free
+  personal access token is required for a usable rate limit; unauthenticated
+  access is 60 requests per hour and is not what this manifest uses.
+docs_url: https://docs.github.com/en/rest
+keywords:
+  - github
+  - repository
+  - repo
+  - source code
+  - release
+  - tag
+  - commit
+  - open source
+  - stars
+  - issues
+base: https://api.github.com
+adapter: rest_json
+auth:
+  type: api_key
+  env: GITHUB_TOKEN
+  param: Authorization
+  location: header
+  prefix: "Bearer "
+headers:
+  X-GitHub-Api-Version: "2022-11-28"
+attribution: "GitHub REST API"
+source:
+  is_primary: true
+  originator: "GitHub, Inc."
+  originator_domain: github.com
+  provenance: official
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://docs.github.com/en/rest/authentication/authenticating-to-the-rest-api
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 60
+    burst: 10
+    concurrency: 4
+cache_ttl: 1800
+limits:
+  rps: 1
+  note: "authenticated 5,000 requests/hour; GITHUB_TOKEN required."
+capabilities:
+  search_repositories:
+    description: >-
+      Search GitHub repositories by text. Returns full name, description,
+      HTML URL, stars, forks, language, last update and licence.
+    path: /search/repositories
+    params:
+      q:
+        type: string
+        required: true
+        description: Repository search text, e.g. "language:rust http client".
+      limit:
+        type: integer
+        description: Records per page (1-100, default 10).
+        default: 10
+    pagination:
+      mode: page
+      param: page
+      limit_param: per_page
+      default_limit: 10
+      max_limit: 100
+    record_path: items
+    id_field: full_name
+    query_map:
+      text: q
+      limit: limit
+    source_url_template: "https://github.com/{full_name}"
+    fields:
+      full_name: full_name
+      description: description
+      url: html_url
+      stars: stargazers_count
+      forks: forks_count
+      language: language
+      updated: updated_at
+      license: license.spdx_id
+      owner: owner.login
+    exemplars:
+      - github repositories for rust http clients
+      - most starred python machine learning repository
+      - github project for opencode
+    example:
+      q: opencode
+      limit: 5
+  repository:
+    description: >-
+      Read one repository's metadata by owner and name. Returns description,
+      stars, forks, open issues, default branch, licence and timestamps.
+    path: /repos/{owner}/{repo}
+    params:
+      owner:
+        type: string
+        required: true
+        description: Repository owner, e.g. anomalyco.
+      repo:
+        type: string
+        required: true
+        description: Repository name, e.g. opencode.
+    id_field: full_name
+    source_url_template: "https://github.com/{full_name}"
+    fields:
+      full_name: full_name
+      description: description
+      url: html_url
+      stars: stargazers_count
+      forks: forks_count
+      open_issues: open_issues_count
+      language: language
+      default_branch: default_branch
+      license: license.spdx_id
+      created: created_at
+      updated: updated_at
+    exemplars:
+      - github metadata for anomalyco/opencode
+      - stars and open issues of a repository
+    example:
+      owner: anomalyco
+      repo: opencode
+  releases:
+    description: >-
+      List official releases for a repository. Returns tag, release name,
+      publication date, HTML URL, prerelease and draft flags.
+    path: /repos/{owner}/{repo}/releases
+    params:
+      owner:
+        type: string
+        required: true
+        description: Repository owner, e.g. anomalyco.
+      repo:
+        type: string
+        required: true
+        description: Repository name, e.g. opencode.
+      limit:
+        type: integer
+        description: Records per page (1-100, default 10).
+        default: 10
+    pagination:
+      mode: page
+      param: page
+      limit_param: per_page
+      default_limit: 10
+      max_limit: 100
+    id_field: tag
+    source_url_template: "{url}"
+    fields:
+      tag: tag_name
+      name: name
+      published: published_at
+      url: html_url
+      prerelease: prerelease
+      draft: draft
+    exemplars:
+      - latest release of anomalyco/opencode
+      - github release tags for a repository
+    example:
+      owner: anomalyco
+      repo: opencode
+      limit: 5
+  commits:
+    description: >-
+      List recent commits for a repository. Returns SHA, commit message,
+      author date and HTML URL.
+    path: /repos/{owner}/{repo}/commits
+    params:
+      owner:
+        type: string
+        required: true
+        description: Repository owner, e.g. anomalyco.
+      repo:
+        type: string
+        required: true
+        description: Repository name, e.g. opencode.
+      limit:
+        type: integer
+        description: Records per page (1-100, default 10).
+        default: 10
+    pagination:
+      mode: page
+      param: page
+      limit_param: per_page
+      default_limit: 10
+      max_limit: 100
+    id_field: sha
+    source_url_template: "{url}"
+    fields:
+      sha: sha
+      message: commit.message
+      date: commit.author.date
+      url: html_url
+    exemplars:
+      - recent commits in anomalyco/opencode
+      - github commit log for a repository
+    example:
+      owner: anomalyco
+      repo: opencode
+      limit: 5

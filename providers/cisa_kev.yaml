@@ -1,0 +1,94 @@
+id: cisa_kev
+title: CISA Known Exploited Vulnerabilities
+category: developer
+domain: developer_infrastructure
+sub_category: vulnerability_catalog
+description: >-
+  CISA's authoritative catalog of vulnerabilities known to be exploited in the
+  wild: CVE id, vendor, product, date added, remediation due date, ransomware
+  use and required action. Keyless. The feed is one large JSON catalog, so the
+  adapter filters it locally when an exact CVE id is supplied.
+docs_url: https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+keywords:
+  - cisa
+  - kev
+  - known exploited
+  - vulnerability
+  - cve
+  - exploit
+  - ransomware
+  - patch
+  - security advisory
+  - actively exploited
+base: https://www.cisa.gov
+adapter: rest_json
+auth:
+  type: none
+attribution: "CISA Known Exploited Vulnerabilities Catalog (public domain)"
+source:
+  is_primary: true
+  originator: "Cybersecurity and Infrastructure Security Agency"
+  originator_domain: cisa.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  catalog:
+    description: >-
+      Read the CISA KEV catalog, or filter it to one CVE id. Returns CVE id,
+      vendor, product, vulnerability name, date added, remediation due date,
+      ransomware use, required action and weaknesses.
+    path: /sites/default/files/feeds/known_exploited_vulnerabilities.json
+    params:
+      cve_id:
+        type: string
+        description: Exact CVE id to filter locally, e.g. CVE-2021-44228.
+      limit:
+        type: integer
+        description: Records per page (1-100, default 20).
+        default: 20
+    pagination:
+      mode: offset
+      default_limit: 20
+      max_limit: 100
+    local_window: true
+    record_path: vulnerabilities
+    id_field: cve_id
+    query_map:
+      identifier: cve_id
+      limit: limit
+    local_filter:
+      field: cveID
+      param: cve_id
+    source_url_template: "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+    fields:
+      cve_id: cveID
+      vendor: vendorProject
+      product: product
+      name: vulnerabilityName
+      date_added: dateAdded
+      due_date: dueDate
+      ransomware: knownRansomwareCampaignUse
+      required_action: requiredAction
+      description: shortDescription
+      cwes: cwes
+    version_field: catalogVersion
+    exemplars:
+      - is CVE-2021-44228 known exploited
+      - CISA known exploited vulnerabilities catalog
+      - which vulnerabilities are actively exploited
+      - ransomware exploited CVE list
+    example:
+      limit: 5

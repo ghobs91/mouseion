@@ -119,6 +119,20 @@ class RateLimit(BaseModel):
     concurrency: int = Field(default=4, gt=0)
 
 
+class LocalFilter(BaseModel):
+    """Post-parse filter for catalogs with no server-side search.
+
+    Keep records where `field` (a dotted path in the raw record) equals the
+    caller's `param`. CISA KEV is the motivating case: the feed is one large
+    catalog, and the only useful question is "is this CVE in it?".
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    field: str
+    param: str
+
+
 class SourcePolicy(BaseModel):
     """Who originated the data, under what access terms, at what rate.
 
@@ -186,6 +200,8 @@ class Capability(BaseModel):
     #: Canonical field -> source param, e.g. {text: query, limit: limit}. The engine
     #: uses this to translate a CanonicalQuery into a source-specific request.
     query_map: dict[str, str] = Field(default_factory=dict)
+    #: Post-parse filter for catalogs with no server-side search.
+    local_filter: LocalFilter | None = None
     #: JSON body template for POST APIs. All params go to the body, not the query.
     #: ``"{name}"`` is replaced by the raw value; keys with no value are dropped.
     body_template: dict[str, Any] | None = None

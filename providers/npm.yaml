@@ -1,0 +1,121 @@
+id: npm
+title: npm registry
+category: developer
+domain: developer_infrastructure
+sub_category: package_registry
+description: >-
+  The npm package registry: package metadata, latest versions, dependencies,
+  maintainers, licence and download counts. Keyless. Use `search` for package
+  discovery and `package` for one package's latest manifest.
+docs_url: https://docs.npmjs.com/
+keywords:
+  - npm
+  - node
+  - nodejs
+  - javascript
+  - typescript
+  - package
+  - dependency
+  - library
+  - module
+  - registry
+  - semver
+base: https://registry.npmjs.org
+adapter: rest_json
+auth:
+  type: none
+attribution: "npm Registry (npm, Inc.)"
+source:
+  is_primary: true
+  originator: "npm Registry (npm, Inc.)"
+  originator_domain: npmjs.org
+  provenance: registry
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://registry.npmjs.org/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
+cache_ttl: 1800
+limits:
+  rps: 5
+capabilities:
+  search:
+    description: >-
+      Search npm packages by text. Returns name, latest version, description,
+      licence, publish date, homepage, repository and monthly downloads.
+    path: /-/v1/search
+    params:
+      text:
+        type: string
+        required: true
+        description: Package search text, e.g. "react router".
+      limit:
+        type: integer
+        description: Records per page (1-250, default 10).
+        default: 10
+    pagination:
+      mode: offset
+      param: from
+      limit_param: size
+      default_limit: 10
+      max_limit: 250
+    record_path: objects
+    id_field: name
+    query_map:
+      text: text
+      limit: limit
+    source_url_template: "https://www.npmjs.com/package/{name}"
+    fields:
+      name: package.name
+      version: package.version
+      description: package.description
+      license: package.license
+      published: package.date
+      homepage: package.links.homepage
+      repository: package.links.repository
+      monthly_downloads: downloads.monthly
+    exemplars:
+      - npm package for react router
+      - latest version of express on npm
+      - javascript library for parsing dates
+      - npm package licence and dependencies
+    example:
+      text: react router
+      limit: 5
+  package:
+    description: >-
+      Read one npm package's latest manifest by name. Returns version, licence,
+      homepage, repository, tarball, runtime dependencies and peer dependencies.
+    path: /{name}/latest
+    params:
+      name:
+        type: string
+        required: true
+        description: Exact package name, e.g. react or @types/node.
+    id_field: name
+    query_map:
+      text: name
+    source_url_template: "https://www.npmjs.com/package/{name}/v/{version}"
+    fields:
+      name: name
+      version: version
+      description: description
+      license: license
+      homepage: homepage
+      repository: repository.url
+      tarball: dist.tarball
+      shasum: dist.shasum
+      dependencies: dependencies
+      peer_dependencies: peerDependencies
+    exemplars:
+      - dependencies of the express npm package
+      - npm package metadata for @types/node
+      - what version of react is latest
+    example:
+      name: react

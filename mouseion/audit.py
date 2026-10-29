@@ -264,11 +264,18 @@ def audit_manifest(manifest: Manifest, *, today: date | None = None) -> list[Fin
                         "query_map_unknown_param",
                         f"capability '{name}' maps '{canonical}' to unknown param '{param}'",
                     )
-        elif cap.query_map:
-            warn(
-                "query_map_without_cluster",
-                f"capability '{name}' has query_map but no cluster; it cannot fail over",
-            )
+        if cap.local_filter is not None:
+            if not cap.local_filter.field:
+                err(
+                    "local_filter_missing_field",
+                    f"capability '{name}' has local_filter without a field",
+                )
+            if cap.local_filter.param not in cap.params:
+                err(
+                    "local_filter_unknown_param",
+                    f"capability '{name}' filters on unknown param "
+                    f"'{cap.local_filter.param}'",
+                )
 
     return out
 
