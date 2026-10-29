@@ -450,7 +450,7 @@ never as an upstream 403.
 
 Two adapters (`rest_json`, `socrata`), SQLite cache with snapshot-safe cursors, rule +
 embedding + lexical router with a 48-question held-out eval, MCP server, CLI, GBNF export,
-163 offline tests and 44 live contract tests.
+201 offline tests and 44 live contract tests.
 
 Five upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -474,7 +474,7 @@ Five upstream behaviours the adapter contract had to grow for, all now generic:
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 163 offline: fixture replay
+pytest                    # 201 offline: fixture replay
 pytest -m live            # 44 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```

@@ -8,6 +8,7 @@ conflict never calls anything, and a missing Tier 2 key is skipped before the wi
 from __future__ import annotations
 
 import asyncio
+import time
 from typing import Any
 
 from mouseion.config import Settings
@@ -411,6 +412,25 @@ def test_negative_cache_short_circuits_repeated_failures():
     assert first.attempts[0].outcome == "retryable"
     assert second.attempts[0].outcome == "negative_cache:retryable"
     assert len(client.calls) == 1  # 429 is not retried within the source
+
+
+def test_engine_overhead_stays_under_50ms_per_lookup():
+    alpha = manifest("alpha")
+    engine, _ = make_engine(
+        [alpha],
+        [Candidate("alpha", "search", 1.0)],
+        {"alpha": envelope("alpha")},
+    )
+
+    async def scenario():
+        for _ in range(50):
+            result = await engine.lookup("anything")
+            assert result.web_search_required is False
+
+    started = time.perf_counter()
+    run(scenario())
+    per_lookup_ms = (time.perf_counter() - started) * 1000 / 50
+    assert per_lookup_ms < 50
 
 
 def test_token_bucket_refuses_a_wait_beyond_its_budget():
