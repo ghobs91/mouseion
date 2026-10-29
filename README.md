@@ -415,7 +415,7 @@ separate embedding server.
 
 ## What's here
 
-48 providers, 66 capabilities. The contract suite verifies every upstream live except the
+49 providers, 69 capabilities. The contract suite verifies every upstream live except the
 four that need credentials this machine does not have (FRED, CourtListener, GitHub, and
 SEC's contact User-Agent is set but FRED's key is not). Their auth paths are verified.
 
@@ -433,6 +433,7 @@ SEC's contact User-Agent is set but FRED's key is not). Their auth paths are ver
 | Crossref | none | `search_works` |
 | data.gov.au | none | `search_datasets` |
 | DataCite | none | `search_dois` |
+| ECB | none | `yield_curve`, `exchange_rates`, `policy_rate` |
 | Federal Register | none | `search`, `get` |
 | FRED | free key | `search_series`, `series_observations` |
 | GBIF | none | `search_occurrences` |
@@ -484,11 +485,11 @@ being unusable for more than a couple of calls; register a free key and pass it 
 `api_key`. Missing credentials surface as a structured error naming the exact variable,
 never as an upstream 403.
 
-Three adapters (`rest_json`, `socrata`, `atom`), SQLite cache with snapshot-safe cursors,
-rule + embedding + lexical router with a 48-question held-out eval, MCP server, CLI, GBNF
-export, 254 offline tests and 66 live contract tests.
+Four adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`), SQLite cache with
+snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
+eval, MCP server, CLI, GBNF export, 261 offline tests and 69 live contract tests.
 
-Seven upstream behaviours the adapter contract had to grow for, all now generic:
+Eight upstream behaviours the adapter contract had to grow for, all now generic:
 
 - **POST + JSON body** (USAspending, NIH RePORTER, Grants.gov, BLS). `body_template`
   renders a nested body, keeps integer types intact, and drops optional fields instead of
@@ -508,14 +509,16 @@ Seven upstream behaviours the adapter contract had to grow for, all now generic:
   records to an exact identifier after fetching the catalog once.
 - **Atom XML feeds** (arXiv). The `atom` adapter parses `<entry>` elements and the
   OpenSearch total, while the rest of the pipeline stays unchanged.
+- **SDMX-JSON series** (ECB). The `sdmx_json` adapter flattens dimension-indexed
+  series and observations into one row per time period.
 
 ## Contract tests
 
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 254 offline: fixture replay
-pytest -m live            # 66 live: every upstream, with the manifest example
+pytest                    # 261 offline: fixture replay
+pytest -m live            # 69 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
 
@@ -537,7 +540,7 @@ page token before a user does.
 
 ## What's deliberately not here
 
-- **Coverage.** 48 providers is a spine, not an index. The current gap matrix is in
+- **Coverage.** 49 providers is a spine, not an index. The current gap matrix is in
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
   molecular repositories, archives, transit, and legislative registers. Most are
   keyless or free-key; each needs a manifest, a fixture, a live contract, and an

@@ -7,8 +7,9 @@ remain gated on the Phase 2 evaluation.
 `candidates_auto/` removed and ignored as regenerable output. Phase 1 complete: schema
 fields, 36-manifest backfill, `mouseion audit`, audit tests, and CI. Phase 2 complete:
 canonical query, cluster-only failover, attempt tracing, rate limiting, circuit breaker,
-single-flight, and `mouseion lookup`. Phase 3 in progress: `developer_infrastructure`
-and `academic_scientific` complete; the other five domains remain.
+single-flight, and `mouseion lookup`. Phase 3 in progress: `financial_sovereign`,
+`academic_scientific`, and `developer_infrastructure` have met their targets; the other
+four domains remain. IMF, BoJ, OECD, BIS, and on-chain nodes remain as Cat 1 stretch.
 **Basis:** the 2026-10-29 specification plus the repository as it actually stands:
 36 providers, 44 capabilities, 163 passing offline tests, 44 live contract tests.
 
@@ -389,12 +390,12 @@ spec's own examples plus the obvious adjacent authorities.
 
 | Domain | Current | Target | Named gaps | Priority |
 |---|---:|---:|---|---|
-| `financial_sovereign` | 6 | 10 | ECB, Bank of Japan, IMF, OECD, BIS; self-hosted Bitcoin/EVM node adapter | P1 |
+| `financial_sovereign` | 10 | 10 | Target met: ECB; existing BLS, CFTC, FRED, GLEIF, openFEC, SEC, Treasury, USAspending, World Bank. Stretch: IMF, BoJ, OECD, BIS, on-chain nodes | P1 |
 | `academic_scientific` | 14 | 14 | Complete: arXiv, PMC, PubChem, UniProt, Wikidata; existing Crossref, DataCite, OpenAlex, ROR, Zenodo, PubMed, ClinicalTrials, NIH RePORTER, GBIF | P1 |
 | `developer_infrastructure` | 8 | 8 | Complete: npm, PyPI, crates.io, Go proxy, Maven Central, CISA KEV, GitHub REST | P1 |
-| `geo_earth_observation` | 7 | 10 | Nominatim, Overpass, NASA, NOAA NCEI; reject Open-Meteo as primary | P2 |
-| `archives_web_state` | 0 | 5 | Wayback CDX, NARA catalog, Library of Congress, one national archive | P2 |
-| `transport_infrastructure` | 0 | 8 | 5–8 transit agencies with GTFS/GTFS-RT; State Dept travel; ISBN via OpenLibrary (exception) | P3 |
+| `geo_earth_observation` | 8 | 10 | Nominatim, Overpass, NASA, NOAA NCEI; reject Open-Meteo as primary | P2 |
+| `archives_web_state` | 1 | 5 | Wayback CDX, NARA catalog, Library of Congress, one national archive | P2 |
+| `transport_infrastructure` | 1 | 8 | 5–8 transit agencies with GTFS/GTFS-RT; State Dept travel; ISBN via OpenLibrary (exception) | P3 |
 | `governance_legislative` | 7 | 10 | Congress.gov, GovInfo, EUR-Lex, UK Parliament | P2 |
 
 Notes on specific targets:

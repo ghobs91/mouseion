@@ -17,6 +17,7 @@ def test_all_manifests_load(registry):
         "crossref",
         "data_gov_au",
         "datacite",
+        "ecb",
         "federal_register",
         "fred",
         "gbif",

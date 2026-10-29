@@ -5,13 +5,13 @@ import pytest
 
 def test_summary_counts(registry):
     summary = registry.summary()
-    assert summary["providers"] == 48
-    assert summary["capabilities"] == 66
+    assert summary["providers"] == 49
+    assert summary["capabilities"] == 69
     assert summary["categories"] == {
         "government": 8,
         "places": 7,
         "developer": 7,
-        "finance": 6,
+        "finance": 7,
         "research": 6,
         "biomedical": 6,
         "health": 2,

@@ -1,0 +1,203 @@
+id: ecb
+title: European Central Bank data
+category: finance
+domain: financial_sovereign
+sub_category: central_banking
+description: >-
+  The European Central Bank's Data Portal via SDMX-JSON: euro area yield curves,
+  euro exchange rates and the ECB policy rate. Returns one row per observation
+  with time period, value and the SDMX series dimensions. Keyless.
+docs_url: https://data.ecb.europa.eu/help/api/overview
+keywords:
+  - ecb
+  - european central bank
+  - euro area
+  - interest rate
+  - policy rate
+  - yield curve
+  - government bond
+  - exchange rate
+  - euro
+  - monetary policy
+  - euribor
+base: https://data-api.ecb.europa.eu/service/data
+adapter: sdmx_json
+auth:
+  type: none
+attribution: "European Central Bank"
+source:
+  is_primary: true
+  originator: "European Central Bank"
+  originator_domain: ecb.europa.eu
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.ecb.europa.eu/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
+cache_ttl: 3600
+limits:
+  rps: 5
+capabilities:
+  yield_curve:
+    description: >-
+      Euro area AAA government bond yield curve at one maturity. Returns daily
+      observations with time period, value and the SDMX series dimensions.
+    path: /YC/B.U2.EUR.4F.G_N_A.SV_C_YM.SR_{maturity}
+    params:
+      maturity:
+        type: string
+        description: Curve point, e.g. 10Y, 5Y, 2Y or 30Y.
+        default: 10Y
+      start_period:
+        type: string
+        description: First period, e.g. 2024-01 or 2024-01-01.
+      end_period:
+        type: string
+        description: Last period, e.g. 2024-03 or 2024-03-31.
+      last_n:
+        type: integer
+        description: Latest N observations from the upstream (default 10).
+        default: 10
+      limit:
+        type: integer
+        description: Observations per page (1-1000, default 100).
+        default: 100
+    defaults:
+      format: jsondata
+      detail: dataonly
+    alias:
+      start_period: startPeriod
+      end_period: endPeriod
+      last_n: lastNObservations
+    pagination:
+      mode: offset
+      default_limit: 100
+      max_limit: 1000
+    id_template: "{series_key}:{time_period}"
+    source_url_template: "https://data.ecb.europa.eu/data/datasets/YC"
+    fields:
+      time_period: TIME_PERIOD
+      value: value
+      series_key: series_key
+      frequency: FREQ
+      reference_area: REF_AREA
+      instrument: INSTRUMENT_FM
+      maturity: DATA_TYPE_FM
+    exemplars:
+      - euro area 10 year government bond yield
+      - ECB yield curve for 2 year bonds
+      - euro area sovereign yield history
+    example:
+      maturity: 10Y
+      start_period: "2024-01"
+      end_period: "2024-03"
+      limit: 5
+  exchange_rates:
+    description: >-
+      ECB euro reference exchange rate for one currency. Returns daily
+      observations with time period, value and currency dimensions.
+    path: /EXR/D.{currency}.EUR.SP00.A
+    params:
+      currency:
+        type: string
+        description: ISO currency code, e.g. USD, GBP or JPY.
+        default: USD
+      start_period:
+        type: string
+        description: First period, e.g. 2024-01-01.
+      end_period:
+        type: string
+        description: Last period, e.g. 2024-01-31.
+      last_n:
+        type: integer
+        description: Latest N observations from the upstream (default 10).
+        default: 10
+      limit:
+        type: integer
+        description: Observations per page (1-1000, default 100).
+        default: 100
+    defaults:
+      format: jsondata
+      detail: dataonly
+    alias:
+      start_period: startPeriod
+      end_period: endPeriod
+      last_n: lastNObservations
+    pagination:
+      mode: offset
+      default_limit: 100
+      max_limit: 1000
+    id_template: "{series_key}:{time_period}"
+    source_url_template: "https://data.ecb.europa.eu/data/datasets/EXR"
+    fields:
+      time_period: TIME_PERIOD
+      value: value
+      series_key: series_key
+      frequency: FREQ
+      currency: CURRENCY
+      denominator: CURRENCY_DENOM
+    exemplars:
+      - euro dollar exchange rate
+      - ECB reference rate for GBP
+      - euro to yen daily rate
+    example:
+      currency: USD
+      start_period: "2024-01-01"
+      end_period: "2024-01-10"
+      limit: 5
+  policy_rate:
+    description: >-
+      ECB main refinancing operations rate. Returns daily observations with time
+      period, value and the SDMX series dimensions.
+    path: /FM/D.U2.EUR.4F.KR.MRR_FR.LEV
+    params:
+      start_period:
+        type: string
+        description: First period, e.g. 2024-01.
+      end_period:
+        type: string
+        description: Last period, e.g. 2024-12.
+      last_n:
+        type: integer
+        description: Latest N observations from the upstream (default 10).
+        default: 10
+      limit:
+        type: integer
+        description: Observations per page (1-1000, default 100).
+        default: 100
+    defaults:
+      format: jsondata
+      detail: dataonly
+    alias:
+      start_period: startPeriod
+      end_period: endPeriod
+      last_n: lastNObservations
+    pagination:
+      mode: offset
+      default_limit: 100
+      max_limit: 1000
+    id_template: "{series_key}:{time_period}"
+    source_url_template: "https://data.ecb.europa.eu/data/datasets/FM"
+    fields:
+      time_period: TIME_PERIOD
+      value: value
+      series_key: series_key
+      frequency: FREQ
+      reference_area: REF_AREA
+      instrument: INSTRUMENT_FM
+      rate_type: PROVIDER_FM_ID
+    exemplars:
+      - ECB main refinancing operations rate
+      - European Central Bank policy interest rate
+      - ECB rate decision history
+    example:
+      start_period: "2024-01"
+      end_period: "2024-03"
+      limit: 5

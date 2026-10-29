@@ -84,6 +84,47 @@ def test_projection_field_fallbacks(registry):
     assert result.records[0].data["aliases"] == ["DNA"]
 
 
+def test_sdmx_json_flattens_series(registry):
+    manifest = registry.get("ecb")
+    cap = manifest.capabilities["yield_curve"]
+    adapter = get_adapter(manifest.adapter)
+    req = prepare(manifest, cap, {"maturity": "10Y", "limit": 10})
+    body = {
+        "header": {"prepared": "2026-10-29T00:00:00Z"},
+        "dataSets": [
+            {
+                "series": {
+                    "0:0:0": {
+                        "observations": {"0": [2.1], "1": [2.2]},
+                    }
+                }
+            }
+        ],
+        "structure": {
+            "dimensions": {
+                "series": [
+                    {"id": "FREQ", "values": [{"id": "B"}]},
+                    {"id": "REF_AREA", "values": [{"id": "U2"}]},
+                    {"id": "DATA_TYPE_FM", "values": [{"id": "SR_10Y"}]},
+                ],
+                "observation": [
+                    {
+                        "id": "TIME_PERIOD",
+                        "values": [{"id": "2024-01-02"}, {"id": "2024-01-03"}],
+                    }
+                ],
+            }
+        },
+    }
+
+    result = adapter.parse(manifest, cap, body, req)
+
+    assert len(result.records) == 2
+    assert result.records[0].data["time_period"] == "2024-01-02"
+    assert result.records[0].data["maturity"] == "SR_10Y"
+    assert result.upstream_version == "2026-10-29T00:00:00Z"
+
+
 def test_path_substitution_quotes(registry):
     manifest = registry.get("clinicaltrials_gov")
     cap = manifest.capabilities["get"]
