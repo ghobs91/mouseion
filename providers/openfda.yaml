@@ -1,6 +1,8 @@
 id: openfda
 title: openFDA
 category: health
+domain: governance_legislative
+sub_category: health_regulation
 regions: [US]
 description: >-
   US FDA drug, food and device enforcement recalls plus structured drug labeling,
@@ -24,6 +26,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "openFDA, U.S. Food and Drug Administration"
+source:
+  is_primary: true
+  originator: "U.S. Food and Drug Administration"
+  originator_domain: fda.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://open.fda.gov/apis/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 240
+    burst: 10
+    concurrency: 4
 terms: "Do not rely on openFDA to make decisions regarding medical care; results are unvalidated."
 cache_ttl: 1800
 limits:

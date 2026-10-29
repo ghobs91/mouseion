@@ -1,6 +1,8 @@
 id: crossref
 title: Crossref DOI metadata
 category: research
+domain: academic_scientific
+sub_category: doi_registry
 description: >-
   Crossref: registered DOI metadata for journal articles, books, datasets and
   preprints, with title, authors, container, year and citation counts. Keyless.
@@ -19,11 +21,29 @@ adapter: rest_json
 auth:
   type: none
 attribution: "Crossref"
+source:
+  is_primary: true
+  originator: "Crossref"
+  originator_domain: crossref.org
+  provenance: registry
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://api.crossref.org/swagger-ui/index.html
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 3600
 limits:
   rps: 5
 capabilities:
   search_works:
+    cluster: scholarly_work_search
+    query_map: {text: query, limit: limit}
     description: >-
       Search Crossref metadata by text. Returns DOI, title, container, year, type and
       citation count.

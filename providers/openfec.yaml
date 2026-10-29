@@ -1,6 +1,8 @@
 id: openfec
 title: FEC campaign finance
 category: finance
+domain: financial_sovereign
+sub_category: campaign_finance
 regions: [US]
 description: >-
   US Federal Election Commission campaign finance: committees and candidates with
@@ -22,6 +24,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "Federal Election Commission (public domain)"
+source:
+  is_primary: true
+  originator: "Federal Election Commission"
+  originator_domain: fec.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://api.open.fec.gov/developers/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 6
+    burst: 2
+    concurrency: 1
 cache_ttl: 86400
 limits:
   rps: 0.1

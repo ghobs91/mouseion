@@ -6,13 +6,35 @@ bespoke upstreams (ASP.NET session dances, JS-rendered portals) need Python.
 
 from __future__ import annotations
 
+from datetime import date
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, get_args
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 ParamType = Literal["string", "integer", "number", "boolean", "array", "object"]
+
+#: The seven routing domains. A manifest declares exactly one; `sub_category`
+#: carries the finer topic that used to live in the free-form `category` tag.
+Domain = Literal[
+    "financial_sovereign",
+    "academic_scientific",
+    "developer_infrastructure",
+    "geo_earth_observation",
+    "archives_web_state",
+    "transport_infrastructure",
+    "governance_legislative",
+]
+DOMAINS: tuple[str, ...] = get_args(Domain)
+
+Provenance = Literal[
+    "official",
+    "intergovernmental",
+    "registry",
+    "self_hosted_node",
+    "aggregator_exception",
+]
 
 _TYPE_ALIASES = {
     "str": "string",
@@ -73,6 +95,50 @@ class Auth(BaseModel):
     prefix: str = ""
 
 
+class AuthPolicy(BaseModel):
+    """The free-access claim, with the evidence and the date it was checked.
+
+    A script cannot prove "permanently free"; it can enforce that a human recorded
+    why they believed it and when. The audit fails stale evidence.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    free: bool = True
+    credit_card_required: bool = False
+    trial: bool = False
+    evidence_url: str
+    verified_at: date
+
+
+class RateLimit(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    per_min: int = Field(default=60, gt=0)
+    burst: int = Field(default=10, gt=0)
+    concurrency: int = Field(default=4, gt=0)
+
+
+class SourcePolicy(BaseModel):
+    """Who originated the data, under what access terms, at what rate.
+
+    `is_primary` is a claim about the originator, not about usefulness. A secondary
+    index that is still worth shipping must say so: `provenance: aggregator_exception`
+    plus `exception_reason`, and it is excluded from Tier 1 failover.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    is_primary: bool = True
+    originator: str
+    originator_domain: str
+    provenance: Provenance = "official"
+    tier: Literal[1, 2] = 1
+    auth_policy: AuthPolicy
+    rate_limit: RateLimit = Field(default_factory=RateLimit)
+    exception_reason: str | None = None
+
+
 class Capability(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -114,6 +180,12 @@ class Capability(BaseModel):
     exemplars: list[str] = Field(default_factory=list)
     #: Regexes that identify this capability outright, e.g. an NCT number or a DOI.
     patterns: list[str] = Field(default_factory=list)
+    #: Failover group. Two capabilities may fail over only when they share a cluster
+    #: and can accept the same canonical fields. No cluster means no failover.
+    cluster: str | None = None
+    #: Canonical field -> source param, e.g. {text: query, limit: limit}. The engine
+    #: uses this to translate a CanonicalQuery into a source-specific request.
+    query_map: dict[str, str] = Field(default_factory=dict)
     #: JSON body template for POST APIs. All params go to the body, not the query.
     #: ``"{name}"`` is replaced by the raw value; keys with no value are dropped.
     body_template: dict[str, Any] | None = None
@@ -203,6 +275,11 @@ class Manifest(BaseModel):
     id: str
     title: str
     category: str = "public-records"
+    #: Required routing domain (one of the seven) and its finer sub-category.
+    domain: Domain
+    sub_category: str = Field(min_length=1)
+    #: Primary-source and access policy. Required so the audit has something to check.
+    source: SourcePolicy
     description: str = ""
     docs_url: str | None = None
     keywords: list[str] = Field(default_factory=list)
@@ -227,11 +304,23 @@ class Manifest(BaseModel):
     def ttl(self, default: float) -> float:
         return self.cache_ttl if self.cache_ttl is not None else default
 
+    @property
+    def requires_key(self) -> bool:
+        return self.auth.type == "api_key"
+
+    @property
+    def env_key_name(self) -> str | None:
+        return self.auth.env if self.requires_key else None
+
     def compact(self) -> dict[str, Any]:
         """The cheap form shown by providers_search. Keep it small."""
         return {
             "id": self.id,
             "title": self.title,
+            "domain": self.domain,
+            "sub_category": self.sub_category,
+            "tier": self.source.tier,
+            "is_primary": self.source.is_primary,
             "category": self.category,
             "auth": self.auth.type,
             "capabilities": [
@@ -268,10 +357,34 @@ class Manifest(BaseModel):
             "id": self.id,
             "title": self.title,
             "category": self.category,
+            "domain": self.domain,
+            "sub_category": self.sub_category,
             "description": self.description,
             "docs_url": self.docs_url,
             "auth": self.auth.type,
             "auth_env": self.auth.env,
+            "source": {
+                "is_primary": self.source.is_primary,
+                "originator": self.source.originator,
+                "originator_domain": self.source.originator_domain,
+                "provenance": self.source.provenance,
+                "tier": self.source.tier,
+                "requires_key": self.requires_key,
+                "env_key_name": self.env_key_name,
+                "auth_policy": {
+                    "free": self.source.auth_policy.free,
+                    "credit_card_required": self.source.auth_policy.credit_card_required,
+                    "trial": self.source.auth_policy.trial,
+                    "evidence_url": self.source.auth_policy.evidence_url,
+                    "verified_at": self.source.auth_policy.verified_at.isoformat(),
+                },
+                "rate_limit": self.source.rate_limit.model_dump(),
+                **(
+                    {"exception_reason": self.source.exception_reason}
+                    if self.source.exception_reason
+                    else {}
+                ),
+            },
             "attribution": self.attribution,
             "terms": self.terms,
             "regions": self.regions or "global",

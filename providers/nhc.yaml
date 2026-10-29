@@ -1,6 +1,8 @@
 id: nhc
 title: NOAA National Hurricane Center
 category: places
+domain: geo_earth_observation
+sub_category: tropical_cyclones
 description: >-
   NOAA National Hurricane Center: tropical cyclones currently being advised, with
   position, intensity, pressure and movement. Keyless, public domain.
@@ -20,6 +22,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "NOAA National Hurricane Center (public domain)"
+source:
+  is_primary: true
+  originator: "NOAA National Hurricane Center"
+  originator_domain: noaa.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.nhc.noaa.gov/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 300
 limits:
   rps: 5

@@ -1,6 +1,8 @@
 id: grants_gov
 title: Grants.gov
 category: government
+domain: governance_legislative
+sub_category: grants
 regions: [US]
 description: >-
   Official US federal funding opportunity search: posted and forecasted
@@ -23,6 +25,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "Grants.gov, U.S. Department of Health and Human Services"
+source:
+  is_primary: true
+  originator: "U.S. Department of Health and Human Services"
+  originator_domain: grants.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.grants.gov/api
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 3600
 limits:
   rps: 5

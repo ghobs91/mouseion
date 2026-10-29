@@ -1,6 +1,8 @@
 id: zenodo
 title: Zenodo research repository
 category: research
+domain: academic_scientific
+sub_category: research_repository
 description: >-
   Zenodo: open research outputs — datasets, software, preprints and reports — with
   DOI, creators, type and publication date. Use for data behind a paper or a citable
@@ -20,11 +22,29 @@ adapter: rest_json
 auth:
   type: none
 attribution: "Zenodo (CERN)"
+source:
+  is_primary: true
+  originator: "CERN"
+  originator_domain: zenodo.org
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://developers.zenodo.org/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 3600
 limits:
   rps: 5
 capabilities:
   search_records:
+    cluster: scholarly_work_search
+    query_map: {text: q, limit: limit}
     description: >-
       Search Zenodo records. Returns DOI, title, resource type, publication date,
       access rights and creators.

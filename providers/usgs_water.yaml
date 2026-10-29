@@ -1,6 +1,8 @@
 id: usgs_water
 title: USGS water services
 category: places
+domain: geo_earth_observation
+sub_category: hydrology
 description: >-
   USGS Water Services: real-time streamflow, gauge height, temperature and water
   quality at monitoring locations across the United States. Keyless. Use a USGS site
@@ -20,6 +22,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "USGS Water Services (public domain)"
+source:
+  is_primary: true
+  originator: "U.S. Geological Survey"
+  originator_domain: usgs.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://waterservices.usgs.gov/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 900
 limits:
   rps: 5

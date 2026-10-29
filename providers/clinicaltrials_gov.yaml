@@ -1,6 +1,8 @@
 id: clinicaltrials_gov
 title: ClinicalTrials.gov
 category: biomedical
+domain: academic_scientific
+sub_category: clinical_trials
 description: >-
   ClinicalTrials.gov study registry via the public v2 REST API. Search studies by
   condition, intervention, sponsor, free text or status; fetch one study by NCT number.
@@ -23,6 +25,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "ClinicalTrials.gov, U.S. National Library of Medicine"
+source:
+  is_primary: true
+  originator: "ClinicalTrials.gov, U.S. National Library of Medicine"
+  originator_domain: clinicaltrials.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://clinicaltrials.gov/data-api/api
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 3000
+    burst: 20
+    concurrency: 8
 cache_ttl: 3600
 limits:
   rps: 50

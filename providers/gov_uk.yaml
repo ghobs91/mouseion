@@ -1,6 +1,8 @@
 id: gov_uk
 title: GOV.UK
 category: government
+domain: governance_legislative
+sub_category: government_content
 regions: [GB]
 description: >-
   UK government content from the official GOV.UK search API: guidance, policy
@@ -24,11 +26,29 @@ adapter: rest_json
 auth:
   type: none
 attribution: "GOV.UK, licensed under the Open Government Licence v3.0"
+source:
+  is_primary: true
+  originator: "UK Government Digital Service"
+  originator_domain: gov.uk
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.gov.uk/api/search.json
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 3600
 limits:
   rps: 5
 capabilities:
   search_content:
+    cluster: government_content_search
+    query_map: {text: q, limit: limit}
     description: >-
       Search GOV.UK pages by keyword. Returns title, path, description, format,
       last-updated timestamp and publishing organisations.

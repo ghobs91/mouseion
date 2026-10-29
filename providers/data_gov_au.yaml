@@ -1,6 +1,8 @@
 id: data_gov_au
 title: data.gov.au open data catalogue
 category: government
+domain: governance_legislative
+sub_category: open_data_catalogue
 regions: [AU]
 description: >-
   Australia's national open data catalogue (CKAN): search ~100,000 datasets published
@@ -20,6 +22,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "data.gov.au (CC BY 3.0 Australia)"
+source:
+  is_primary: true
+  originator: "Australian Government data.gov.au"
+  originator_domain: data.gov.au
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.gov.au/data/api/3/action/package_search
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 86400
 limits:
   rps: 5

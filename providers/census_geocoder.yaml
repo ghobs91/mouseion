@@ -1,6 +1,8 @@
 id: census_geocoder
 title: US Census geocoder
 category: places
+domain: geo_earth_observation
+sub_category: geocoding
 description: >-
   US Census Bureau geocoder: resolve a street address to coordinates and to census
   geography (state, county, tract, block). Keyless. Use it before any other
@@ -21,6 +23,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "U.S. Census Bureau"
+source:
+  is_primary: true
+  originator: "U.S. Census Bureau"
+  originator_domain: census.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://geocoding.geo.census.gov/geocoder/Geocoding_Services_API.html
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 86400
 limits:
   rps: 5

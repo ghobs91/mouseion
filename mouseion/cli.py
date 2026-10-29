@@ -60,6 +60,22 @@ async def _run(args: argparse.Namespace) -> int:
 
     app = build()
     try:
+        if args.command == "audit":
+            from .audit import audit_live, audit_registry, summarize
+
+            findings = audit_registry(app.registry)
+            if args.provider:
+                findings = [f for f in findings if f.provider == args.provider]
+            if args.live:
+                live = await audit_live(app.registry, config=app.toolkit.config)
+                if args.provider:
+                    live = [f for f in live if f.provider == args.provider]
+                findings += live
+            report = summarize(findings)
+            if args.strict and report["warnings"]:
+                report["ok"] = False
+            _print(report)
+            return 0 if report["ok"] else 1
         if args.command == "providers":
             _print(app.registry.summary())
             for manifest in app.registry.manifests.values():
@@ -133,6 +149,11 @@ def main() -> None:
     sub.add_parser("tools", help="emit OpenAI-format tool definitions")
     sub.add_parser("grammar", help="emit the GBNF grammar for a tool call")
     sub.add_parser("index", help="embed every provider document (needs MOUSEION_EMBED_URL)")
+
+    p = sub.add_parser("audit", help="validate source policy and manifest invariants")
+    p.add_argument("--live", action="store_true", help="also check evidence URLs")
+    p.add_argument("--provider", help="audit one provider")
+    p.add_argument("--strict", action="store_true", help="treat warnings as failures")
 
     p = sub.add_parser("route", help="show ranked routing candidates")
     p.add_argument("query")

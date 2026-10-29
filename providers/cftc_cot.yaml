@@ -1,6 +1,8 @@
 id: cftc_cot
 title: CFTC Commitments of Traders
 category: finance
+domain: financial_sovereign
+sub_category: derivatives_positioning
 regions: [US]
 description: >-
   US Commodity Futures Trading Commission Commitments of Traders reports: weekly
@@ -23,6 +25,22 @@ adapter: socrata
 auth:
   type: none
 attribution: "U.S. Commodity Futures Trading Commission"
+source:
+  is_primary: true
+  originator: "U.S. Commodity Futures Trading Commission"
+  originator_domain: cftc.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://publicreporting.cftc.gov/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 3600
 limits:
   rps: 5

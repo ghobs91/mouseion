@@ -1,6 +1,8 @@
 id: nhtsa
 title: NHTSA vehicle specifications
 category: government
+domain: transport_infrastructure
+sub_category: vehicle_safety
 description: >-
   NHTSA vPIC: vehicle makes and models with the manufacturer identifiers other
   recall and safety datasets use. Keyless, public domain.
@@ -18,6 +20,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "NHTSA vPIC (public domain)"
+source:
+  is_primary: true
+  originator: "National Highway Traffic Safety Administration"
+  originator_domain: dot.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://vpic.nhtsa.dot.gov/api/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 86400
 limits:
   rps: 5

@@ -1,6 +1,8 @@
 id: openalex
 title: OpenAlex scholarly works
 category: research
+domain: academic_scientific
+sub_category: scholarly_index
 description: >-
   OpenAlex: 250M+ scholarly works with title, year, DOI, venue, citation counts and
   type. Keyless at low volume, but anonymous use shares a $0.10/day budget per IP;
@@ -21,11 +23,30 @@ adapter: rest_json
 auth:
   type: none
 attribution: "OpenAlex (CC0)"
+source:
+  is_primary: false
+  originator: "OurResearch"
+  originator_domain: openalex.org
+  provenance: aggregator_exception
+  exception_reason: "OpenAlex is a secondary scholarly index built from Crossref, PubMed, arXiv and others; it is not the DOI registrar."
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://docs.openalex.org/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 60
+    burst: 10
+    concurrency: 2
 cache_ttl: 3600
 limits:
   note: "anonymous requests share a small daily budget; a free key raises it."
 capabilities:
   search_works:
+    cluster: scholarly_work_search
+    query_map: {text: search, limit: limit}
     description: >-
       Search scholarly works by text. Returns title, publication year, DOI, venue,
       citation count and work type, ranked by relevance.

@@ -14,6 +14,7 @@ from __future__ import annotations
 import asyncio
 import re
 from dataclasses import dataclass
+from datetime import date
 from typing import Any
 from urllib.parse import urlparse
 
@@ -266,6 +267,26 @@ def manifest_from(result: ProbeResult) -> dict[str, Any]:
         "id": f"auto_{slug[:60]}",
         "title": result.candidate.title or parsed.path,
         "category": "government",
+        "domain": "governance_legislative",
+        "sub_category": "auto_discovered",
+        "source": {
+            "is_primary": False,
+            "originator": result.candidate.agency,
+            "originator_domain": parsed.netloc,
+            "provenance": "aggregator_exception",
+            "exception_reason": (
+                "Auto-discovered and unreviewed; not yet verified as a primary originator."
+            ),
+            "tier": 1,
+            "auth_policy": {
+                "free": True,
+                "credit_card_required": False,
+                "trial": False,
+                "evidence_url": result.candidate.url,
+                "verified_at": date.today().isoformat(),
+            },
+            "rate_limit": {"per_min": 60, "burst": 10, "concurrency": 2},
+        },
         "description": (
             f"{result.candidate.title} — {result.candidate.agency} JSON endpoint, "
             "auto-discovered from the agency data.json catalogue. Unreviewed: the "
@@ -274,6 +295,7 @@ def manifest_from(result: ProbeResult) -> dict[str, Any]:
         "base": f"{parsed.scheme}://{parsed.netloc}",
         "adapter": "rest_json",
         "auth": {"type": "none"},
+        "cache_ttl": 3600,
         "capabilities": {
             "list": {
                 "description": (

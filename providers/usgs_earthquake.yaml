@@ -1,6 +1,8 @@
 id: usgs_earthquake
 title: USGS earthquake catalog
 category: places
+domain: geo_earth_observation
+sub_category: seismology
 description: >-
   USGS ANSS Comprehensive Earthquake Catalog (ComCat): worldwide earthquakes with
   magnitude, place, depth and time, filterable by region, magnitude and date. Public
@@ -21,6 +23,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "USGS Earthquake Hazards Program (public domain)"
+source:
+  is_primary: true
+  originator: "U.S. Geological Survey"
+  originator_domain: usgs.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://earthquake.usgs.gov/fdsnws/event/1/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 300
 limits:
   rps: 5

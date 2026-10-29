@@ -1,6 +1,8 @@
 id: openlibrary
 title: Open Library
 category: reference
+domain: archives_web_state
+sub_category: bibliographic_library
 description: >-
   Open Library: bibliographic records for books and editions, with title, authors,
   first publication year, edition count and language. Keyless. Use it to identify a
@@ -19,6 +21,23 @@ adapter: rest_json
 auth:
   type: none
 attribution: "Open Library, Internet Archive"
+source:
+  is_primary: false
+  originator: "Internet Archive"
+  originator_domain: openlibrary.org
+  provenance: aggregator_exception
+  exception_reason: "Open Library is an Internet Archive catalog of bibliographic metadata; it is not a national ISBN agency."
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://openlibrary.org/developers/api
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 180
+    burst: 10
+    concurrency: 4
 cache_ttl: 86400
 limits:
   rps: 3

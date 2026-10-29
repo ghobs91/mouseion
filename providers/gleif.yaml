@@ -1,6 +1,8 @@
 id: gleif
 title: GLEIF legal entity identifiers
 category: company
+domain: financial_sovereign
+sub_category: entity_identifiers
 description: >-
   Global Legal Entity Identifier (LEI) records: registered legal name, address,
   jurisdiction, registration status and parent relationships. Keyless. Use it to
@@ -20,11 +22,29 @@ adapter: rest_json
 auth:
   type: none
 attribution: "GLEIF (CC0 1.0)"
+source:
+  is_primary: true
+  originator: "Global Legal Entity Identifier Foundation"
+  originator_domain: gleif.org
+  provenance: registry
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.gleif.org/en/lei-data/gleif-api
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 86400
 limits:
   rps: 5
 capabilities:
   search_lei:
+    cluster: entity_name_search
+    query_map: {entity: name, limit: limit}
     description: >-
       Search LEI records by entity name. Returns the LEI, legal name, jurisdiction,
       status and address.

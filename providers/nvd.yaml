@@ -1,6 +1,8 @@
 id: nvd
 title: NIST National Vulnerability Database
 category: security
+domain: developer_infrastructure
+sub_category: vulnerability_database
 description: >-
   CVE vulnerability records from NIST NVD: identifier, description, CVSS score and
   severity, publication dates and references. Keyless, but rate-limited to 5 requests
@@ -23,6 +25,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "NIST National Vulnerability Database"
+source:
+  is_primary: true
+  originator: "National Institute of Standards and Technology"
+  originator_domain: nist.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://nvd.nist.gov/developers/vulnerabilities
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 10
+    burst: 4
+    concurrency: 2
 cache_ttl: 3600
 limits:
   rps: 0.17

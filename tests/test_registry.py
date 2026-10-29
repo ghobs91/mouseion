@@ -56,5 +56,15 @@ def test_describe_includes_auth_and_limits(registry):
 
 def test_compact_cards_are_small(registry):
     card = registry.search("clinicaltrials")[0]
-    assert set(card) == {"id", "title", "category", "auth", "capabilities"}
+    assert set(card) == {
+        "id",
+        "title",
+        "domain",
+        "sub_category",
+        "tier",
+        "is_primary",
+        "category",
+        "auth",
+        "capabilities",
+    }
     assert all(len(cap["description"]) <= 110 for cap in card["capabilities"])

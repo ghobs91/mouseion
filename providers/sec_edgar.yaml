@@ -1,6 +1,8 @@
 id: sec_edgar
 title: SEC EDGAR full-text search
 category: government
+domain: financial_sovereign
+sub_category: corporate_filings
 regions: [US]
 description: >-
   US Securities and Exchange Commission EDGAR: full-text search across corporate
@@ -29,6 +31,22 @@ auth:
   type: user_agent
   env: SEC_USER_AGENT
 attribution: "U.S. Securities and Exchange Commission"
+source:
+  is_primary: true
+  originator: "U.S. Securities and Exchange Commission"
+  originator_domain: sec.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.sec.gov/edgar/sec-api-documentation
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 3600
 limits:
   rps: 5

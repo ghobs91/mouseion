@@ -1,6 +1,8 @@
 id: nyc_open_data
 title: NYC Open Data property records
 category: places
+domain: geo_earth_observation
+sub_category: municipal_spatial
 regions: [US]
 description: >-
   New York City property and parcel records from NYC Open Data (Socrata): address,
@@ -23,6 +25,22 @@ adapter: socrata
 auth:
   type: none
 attribution: "NYC Open Data (public domain)"
+source:
+  is_primary: true
+  originator: "City of New York"
+  originator_domain: cityofnewyork.us
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.cityofnewyork.us/d/64uk-42ks
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 86400
 limits:
   rps: 5

@@ -1,6 +1,8 @@
 id: usaspending
 title: USAspending federal awards
 category: government
+domain: financial_sovereign
+sub_category: federal_spending
 regions: [US]
 description: >-
   US federal spending: contract awards with recipient, amount, awarding agency and
@@ -24,6 +26,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "USAspending.gov, U.S. Department of the Treasury"
+source:
+  is_primary: true
+  originator: "U.S. Department of the Treasury"
+  originator_domain: usaspending.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://api.usaspending.gov/docs/endpoints
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 1800
 limits:
   rps: 5

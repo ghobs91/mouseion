@@ -1,6 +1,8 @@
 id: cms_provider
 title: CMS Care Compare hospital data
 category: health
+domain: governance_legislative
+sub_category: health_program_data
 regions: [US]
 description: >-
   US Centers for Medicare & Medicaid Services Care Compare: hospital identity,
@@ -22,6 +24,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "Centers for Medicare & Medicaid Services (public domain)"
+source:
+  is_primary: true
+  originator: "Centers for Medicare & Medicaid Services"
+  originator_domain: cms.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.cms.gov/provider-data/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 86400
 limits:
   rps: 5

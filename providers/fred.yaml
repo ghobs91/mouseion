@@ -1,6 +1,8 @@
 id: fred
 title: FRED (Federal Reserve Economic Data)
 category: finance
+domain: financial_sovereign
+sub_category: economic_series
 description: >-
   FRED, the St. Louis Fed's database of 800,000+ economic time series: unemployment,
   CPI, GDP, payrolls, the federal funds rate, Treasury yields and more. Search for a
@@ -27,6 +29,22 @@ auth:
   param: api_key
   location: query
 attribution: "Federal Reserve Bank of St. Louis"
+source:
+  is_primary: true
+  originator: "Federal Reserve Bank of St. Louis"
+  originator_domain: stlouisfed.org
+  provenance: official
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://fred.stlouisfed.org/docs/api/api_key.html
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 3600
 limits:
   rps: 5

@@ -1,6 +1,8 @@
 id: bls
 title: BLS labor statistics
 category: finance
+domain: financial_sovereign
+sub_category: labor_statistics
 regions: [US]
 description: >-
   US Bureau of Labor Statistics time series: unemployment, payrolls, CPI and wages by
@@ -23,6 +25,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "U.S. Bureau of Labor Statistics"
+source:
+  is_primary: true
+  originator: "U.S. Bureau of Labor Statistics"
+  originator_domain: bls.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.bls.gov/developers/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 60
+    burst: 10
+    concurrency: 2
 cache_ttl: 3600
 limits:
   rps: 1

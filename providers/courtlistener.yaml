@@ -1,6 +1,8 @@
 id: courtlistener
 title: CourtListener case law
 category: legal
+domain: governance_legislative
+sub_category: case_law
 regions: [US]
 description: >-
   CourtListener: US federal and state court opinions and dockets, searchable by
@@ -28,6 +30,23 @@ auth:
   location: header
   prefix: "Token "
 attribution: "CourtListener, Free Law Project"
+source:
+  is_primary: false
+  originator: "Free Law Project"
+  originator_domain: courtlistener.com
+  provenance: aggregator_exception
+  exception_reason: "Free Law Project aggregates opinions from courts and PACER; it is an open secondary index, not a court."
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.courtlistener.com/help/api/rest/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 12
+    burst: 4
+    concurrency: 2
 cache_ttl: 3600
 limits:
   rps: 0.2

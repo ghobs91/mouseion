@@ -63,7 +63,18 @@ def test_param_shorthand_and_aliasing():
         {
             "id": "demo",
             "title": "Demo",
+            "domain": "developer_infrastructure",
+            "sub_category": "demo",
             "base": "https://example.test",
+            "source": {
+                "originator": "Example",
+                "originator_domain": "example.test",
+                "tier": 1,
+                "auth_policy": {
+                    "evidence_url": "https://example.test/docs",
+                    "verified_at": "2026-10-29",
+                },
+            },
             "capabilities": {
                 "search": {
                     "description": "d",

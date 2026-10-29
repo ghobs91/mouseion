@@ -240,9 +240,24 @@ A provider is a YAML file in `providers/`. Only genuinely bespoke upstreams need
 id: fred
 title: FRED (Federal Reserve Economic Data)
 category: finance
+domain: financial_sovereign
+sub_category: economic_series
 base: https://api.stlouisfed.org/fred
 auth: {type: api_key, env: FRED_API_KEY, param: api_key, location: query}
 attribution: "Federal Reserve Bank of St. Louis"
+source:
+  is_primary: true
+  originator: "Federal Reserve Bank of St. Louis"
+  originator_domain: stlouisfed.org
+  provenance: official
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://fred.stlouisfed.org/docs/api/api_key.html
+    verified_at: 2026-10-29
+  rate_limit: {per_min: 300, burst: 10, concurrency: 4}
 cache_ttl: 3600
 capabilities:
   series_observations:
@@ -258,10 +273,17 @@ capabilities:
     fields: {date: date, value: value}
 ```
 
-Field reference (all optional unless marked):
+Field reference (`domain`, `sub_category`, and `source` are required; the rest are
+optional):
 
 | Key | Meaning |
 |---|---|
+| `domain` | one of the seven routing domains: `financial_sovereign`, `academic_scientific`, `developer_infrastructure`, `geo_earth_observation`, `archives_web_state`, `transport_infrastructure`, `governance_legislative` |
+| `sub_category` | finer topic within the domain, e.g. `economic_series` |
+| `source` | primary-source policy: `is_primary`, `originator`, `originator_domain`, `provenance`, `tier`, `auth_policy`, `rate_limit`, optional `exception_reason` |
+| `cluster` | failover group. Two capabilities may fail over only when they share a cluster |
+| `query_map` | required with `cluster`: canonical field → source param, e.g. `{text: query, limit: limit}` |
+| `category` | compatibility tag; `domain` is what the router uses |
 | `adapter` | `rest_json` (default) or `socrata` |
 | `path` | path under `base`; `{name}` segments are substituted from params |
 | `params` | name → `{type, description, required, default, enum}`; a bare string is shorthand for the type |
@@ -284,6 +306,17 @@ Field reference (all optional unless marked):
 Add a file, run `mouseion providers`, and it is live. Unknown caller params are dropped
 rather than forwarded, so a hallucinated parameter is a no-op instead of a 400 the model
 cannot interpret.
+
+Before committing a manifest, run the policy audit:
+
+```bash
+mouseion audit          # static: tier/auth, originator domain, evidence age, blocklist, TTL
+mouseion audit --live   # also checks that every evidence URL still resolves
+```
+
+The audit is the gate that keeps "primary source" from becoming a comment. It fails on
+a stale evidence date, a Tier 1 source that needs a key, a Tier 2 source that requires a
+card or trial, a secondary host, or a failover cluster without a query map.
 
 ## llama.cpp
 

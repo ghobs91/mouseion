@@ -1,6 +1,8 @@
 id: datacite
 title: DataCite DOI metadata
 category: research
+domain: academic_scientific
+sub_category: doi_registry
 description: >-
   DataCite: DOI metadata for research datasets and software, with creators,
   publisher, resource type, year and URL. Complements Crossref, which covers
@@ -19,11 +21,29 @@ adapter: rest_json
 auth:
   type: none
 attribution: "DataCite (CC0)"
+source:
+  is_primary: true
+  originator: "DataCite"
+  originator_domain: datacite.org
+  provenance: registry
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://support.datacite.org/docs/api
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 3600
 limits:
   rps: 5
 capabilities:
   search_dois:
+    cluster: scholarly_work_search
+    query_map: {text: query, limit: limit}
     description: >-
       Search DataCite DOIs for datasets and software. Returns DOI, title, publisher,
       year, resource type and landing URL.

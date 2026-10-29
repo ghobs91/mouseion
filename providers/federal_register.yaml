@@ -1,6 +1,8 @@
 id: federal_register
 title: Federal Register
 category: government
+domain: governance_legislative
+sub_category: federal_register
 regions: [US]
 description: >-
   The US Federal Register: rules, proposed rules, notices and presidential documents,
@@ -24,11 +26,29 @@ adapter: rest_json
 auth:
   type: none
 attribution: "Federal Register, U.S. National Archives and Records Administration"
+source:
+  is_primary: true
+  originator: "U.S. National Archives and Records Administration"
+  originator_domain: federalregister.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.federalregister.gov/developers/documentation/api/v1
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 1800
 limits:
   rps: 5
 capabilities:
   search:
+    cluster: government_content_search
+    query_map: {text: term, limit: limit}
     description: >-
       Search Federal Register documents by term, agency, document type and publication
       date window. Returns newest first by default.

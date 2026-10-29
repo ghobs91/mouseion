@@ -1,6 +1,8 @@
 id: nih_reporter
 title: NIH RePORTER
 category: biomedical
+domain: academic_scientific
+sub_category: research_funding
 regions: [US]
 description: >-
   NIH-funded research projects: title, abstract, principal investigators,
@@ -23,6 +25,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "NIH RePORTER, U.S. National Institutes of Health"
+source:
+  is_primary: true
+  originator: "U.S. National Institutes of Health"
+  originator_domain: nih.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://api.reporter.nih.gov/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 3600
 limits:
   rps: 5

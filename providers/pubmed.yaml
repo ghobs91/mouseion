@@ -1,6 +1,8 @@
 id: pubmed
 title: PubMed and PMC
 category: biomedical
+domain: academic_scientific
+sub_category: biomedical_literature
 description: >-
   Biomedical literature from PubMed (NIH National Library of Medicine). Two-step:
   `search` returns PMIDs for a query, then `summaries` returns titles, journals,
@@ -23,6 +25,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "PubMed, U.S. National Library of Medicine"
+source:
+  is_primary: true
+  originator: "U.S. National Library of Medicine"
+  originator_domain: nih.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.ncbi.nlm.nih.gov/books/NBK25499/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 180
+    burst: 10
+    concurrency: 4
 cache_ttl: 3600
 limits:
   rps: 3

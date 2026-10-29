@@ -1,6 +1,8 @@
 id: nws
 title: National Weather Service alerts
 category: places
+domain: geo_earth_observation
+sub_category: hydrometeorology
 regions: [US]
 description: >-
   Active US weather alerts from api.weather.gov: watches, warnings and advisories with
@@ -24,6 +26,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "NOAA / National Weather Service (public domain)"
+source:
+  is_primary: true
+  originator: "NOAA National Weather Service"
+  originator_domain: weather.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.weather.gov/documentation/services-web-api
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 300
 limits:
   rps: 5

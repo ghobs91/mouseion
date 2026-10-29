@@ -1,6 +1,8 @@
 id: gbif
 title: GBIF species occurrences
 category: life-sciences
+domain: academic_scientific
+sub_category: biodiversity_occurrences
 description: >-
   GBIF: global biodiversity occurrence records — where and when a species was
   observed, with coordinates, dataset and basis of record. Keyless. Use for species
@@ -21,6 +23,23 @@ adapter: rest_json
 auth:
   type: none
 attribution: "GBIF.org (CC BY 4.0)"
+source:
+  is_primary: false
+  originator: "Global Biodiversity Information Facility"
+  originator_domain: gbif.org
+  provenance: aggregator_exception
+  exception_reason: "GBIF aggregates occurrence records published by institutions; it is not the originating collection."
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://techdocs.gbif.org/en/openapi/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 3600
 limits:
   rps: 5

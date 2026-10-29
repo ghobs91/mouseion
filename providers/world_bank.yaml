@@ -1,6 +1,8 @@
 id: world_bank
 title: World Bank indicators
 category: finance
+domain: financial_sovereign
+sub_category: international_fiscal
 description: >-
   World Bank Open Data: development indicators (population, GDP, literacy, life
   expectancy, CO2 and ~1,400 more) by country and year, from the keyless Indicators
@@ -21,6 +23,22 @@ adapter: rest_json
 auth:
   type: none
 attribution: "World Bank Open Data (CC BY 4.0)"
+source:
+  is_primary: true
+  originator: "World Bank Group"
+  originator_domain: worldbank.org
+  provenance: intergovernmental
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://datahelpdesk.worldbank.org/knowledgebase/articles/889392
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
 cache_ttl: 86400
 limits:
   rps: 5
