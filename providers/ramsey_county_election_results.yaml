@@ -1,0 +1,71 @@
+id: ramsey_county_election_results
+title: Ramsey County General Election Results
+category: government
+domain: civic_local
+sub_category: election_results
+transport: http
+adapter: socrata
+base: https://data.ramseycountymn.gov
+regions: [US]
+description: >-
+  General election results for Ramsey County, Minnesota, by precinct, office and
+  candidate, with party, votes and share of the office total.
+docs_url: https://data.ramseycountymn.gov/d/84zd-yzqv
+keywords:
+  - election results
+  - ramsey county
+  - minnesota
+  - saint paul
+  - precinct results
+  - vote counts
+attribution: "Ramsey County, Minnesota"
+source:
+  is_primary: true
+  originator: "Ramsey County, Minnesota"
+  originator_domain: data.ramseycountymn.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.ramseycountymn.gov/d/84zd-yzqv
+    verified_at: 2026-10-30
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 86400
+capabilities:
+  results:
+    description: >-
+      Search Ramsey County general election results by office, candidate,
+      precinct or year. Returns votes, party and share of the office total.
+    path: /resource/84zd-yzqv.json
+    params:
+      query: {type: string, description: "full-text search over office, candidate and precinct"}
+      office: {type: string, description: "office name, exact match"}
+      candidate: {type: string, description: "candidate name, exact match"}
+      election_year: {type: integer, description: "e.g. 2024"}
+      limit: {type: integer, default: 25}
+    alias: {query: q, office: office_name, candidate: candidate_name}
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 1000}
+    id_template: "{candidate_id}:{precinct_number}:{office_id}"
+    fields:
+      candidate_id: candidate_id
+      precinct_number: precinct_number
+      office_id: office_id
+      election_year: election_year
+      date: voting_date
+      precinct: precinct_name
+      office: office_name
+      district: district_or_municipal_fips_code
+      candidate: candidate_name
+      party: party_name
+      votes: votes_for_candidate
+      share: percentage_of_votes_for_candidate_by_office
+      office_total: total_number_of_votes_for_office
+    source_url_template: "https://data.ramseycountymn.gov/d/84zd-yzqv"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - Ramsey County election results by precinct
+      - Saint Paul vote counts by candidate
+      - Ramsey County election turnout
+    example: {limit: 3}

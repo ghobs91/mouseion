@@ -1,0 +1,79 @@
+id: dallas_campaign_finance
+title: Dallas Campaign Finance
+category: government
+domain: civic_local
+sub_category: campaign_finance
+transport: http
+adapter: socrata
+base: https://www.dallasopendata.com
+regions: [US]
+description: >-
+  Campaign finance transactions filed with the City of Dallas: one row per
+  contribution or expenditure, with candidate, donor or payee, amount, schedule
+  and the filed report.
+docs_url: https://www.dallasopendata.com/d/ndxz-gccx
+keywords:
+  - campaign finance
+  - campaign contributions
+  - dallas
+  - texas
+  - city council
+  - mayor
+  - donors
+  - who funded
+attribution: "City of Dallas"
+source:
+  is_primary: true
+  originator: "City of Dallas"
+  originator_domain: dallasopendata.com
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.dallasopendata.com/d/ndxz-gccx
+    verified_at: 2026-10-30
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 86400
+capabilities:
+  transactions:
+    description: >-
+      Search Dallas campaign finance transactions by candidate, donor or free
+      text. Returns amount, schedule, date and the report link.
+    path: /resource/ndxz-gccx.json
+    params:
+      query: {type: string, description: "full-text search over candidate, name and business"}
+      candidate: {type: string, description: "candidate name, exact match"}
+      record_type: {type: string, description: "e.g. contribution or expenditure"}
+      limit: {type: integer, default: 25}
+    alias: {query: q, candidate: candidate_name}
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 1000}
+    id_field: id
+    fields:
+      id: id
+      record_id: record_id
+      report_id: report_id
+      candidate: candidate_name
+      first_name: first_name
+      last_name: last_name
+      business: business_name
+      contact_type: contact_type
+      record_type: record_type
+      amount: amount
+      schedule: schedule_type
+      election_date: election_date
+      date: transaction_date
+      street: street
+      city: city
+      state: state
+      zip: zipcode
+      report_url: file_link
+    pluck: {report_url: url}
+    source_url_template: "{report_url}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - who contributed to a Dallas mayoral campaign
+      - Dallas city council campaign finance
+      - Dallas campaign expenditures
+    example: {limit: 3}

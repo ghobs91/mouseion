@@ -1,0 +1,77 @@
+id: ny_campaign_filers
+title: New York Campaign Finance Filers
+category: government
+domain: civic_local
+sub_category: campaign_finance
+transport: http
+adapter: socrata
+base: https://data.ny.gov
+regions: [US]
+description: >-
+  The registry of campaign committees and filers registered with the New York
+  State Board of Elections since 1974: committee name, type, status, office,
+  district, county and treasurer. Use it to resolve a committee before querying
+  its transactions.
+docs_url: https://data.ny.gov/d/7x2g-h32p
+keywords:
+  - campaign committee
+  - filer
+  - new york
+  - treasurer
+  - political committee
+  - campaign finance
+  - committee lookup
+attribution: "New York State Board of Elections"
+source:
+  is_primary: true
+  originator: "New York State Board of Elections"
+  originator_domain: data.ny.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.ny.gov/d/7x2g-h32p
+    verified_at: 2026-10-30
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 86400
+capabilities:
+  filers:
+    description: >-
+      Find a New York campaign committee by name, office, county or free text.
+      Returns its filer id, type, status and treasurer.
+    path: /resource/7x2g-h32p.json
+    params:
+      query: {type: string, description: "full-text search over committee and treasurer"}
+      filer_id: {type: string, description: "exact filer id"}
+      office: {type: string, description: "office sought, exact match"}
+      county: {type: string, description: "county name, exact match"}
+      limit: {type: integer, default: 25}
+    alias: {query: q, office: office_desc, county: county_desc}
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 1000}
+    id_field: filer_id
+    fields:
+      filer_id: filer_id
+      name: filer_name
+      compliance_type: compliance_type_desc
+      filer_type: filer_type_desc
+      status: filer_status
+      committee_type: committee_type_desc
+      office: office_desc
+      district: district
+      county: county_desc
+      municipality: municipality_desc_subdivision
+      treasurer_first: treasurer_first_name
+      treasurer_last: treasurer_last_name
+      address: address
+      city: city
+      state: state
+      zip: zipcode
+    source_url_template: "https://data.ny.gov/d/7x2g-h32p"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - find a New York campaign committee by name
+      - New York campaign treasurer lookup
+      - which committees are registered in a New York county
+    example: {limit: 3}

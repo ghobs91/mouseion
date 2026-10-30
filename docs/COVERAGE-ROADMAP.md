@@ -181,9 +181,9 @@ Remaining work is promotion, not seeding:
 4. Promote sources in waves, format-first:
    - **wave 1: JSON/Socrata — done.** `mouseion civic datasets` searches Socrata's
      national catalog and ranks official tables by row count. 89 datasets across 13
-     portals have at least 1,000 rows; five are live providers: `ny_campaign_finance`,
-     `wa_campaign_finance`, `nyc_campaign_finance`, `la_campaign_finance`, and
-     `hawaii_campaign_spending`.
+     portals have at least 1,000 rows; thirteen are live providers covering New York
+     state and city, Washington, Hawaii, Los Angeles, Austin, Oakland, Dallas,
+     Maryland, Fulton County (GA) and Ramsey County (MN).
    - wave 2: CSV/bulk downloads
    - wave 3: HTML tables where no machine-readable surface exists
 5. Every promoted source still gets a manifest, fixture, live contract, audit

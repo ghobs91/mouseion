@@ -1,0 +1,74 @@
+id: wa_campaign_expenditures
+title: Washington Campaign Expenditures
+category: government
+domain: civic_local
+sub_category: campaign_finance
+transport: http
+adapter: socrata
+base: https://data.wa.gov
+regions: [US]
+description: >-
+  Expenditures by Washington state and local candidates and political
+  committees, reported to the Public Disclosure Commission. One row per
+  expenditure, with payee, amount, purpose code, committee and race.
+docs_url: https://data.wa.gov/d/tijg-9zyp
+keywords:
+  - campaign finance
+  - campaign spending
+  - expenditures
+  - washington state
+  - public disclosure commission
+  - who was paid
+attribution: "Washington State Public Disclosure Commission"
+source:
+  is_primary: true
+  originator: "Washington State Public Disclosure Commission"
+  originator_domain: data.wa.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.wa.gov/d/tijg-9zyp
+    verified_at: 2026-10-30
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 86400
+capabilities:
+  expenditures:
+    description: >-
+      Search Washington campaign expenditures by committee, payee, office,
+      jurisdiction or free text. Returns amount, date and purpose code.
+    path: /resource/tijg-9zyp.json
+    params:
+      query: {type: string, description: "full-text search over filer, recipient and description"}
+      filer: {type: string, description: "committee or candidate name, exact match"}
+      election_year: {type: integer, description: "e.g. 2024"}
+      jurisdiction: {type: string, description: "e.g. 'Statewide', 'King County'"}
+      limit: {type: integer, default: 25}
+    alias: {query: q, filer: filer_name}
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 1000}
+    id_field: id
+    fields:
+      id: id
+      filer: filer_name
+      office: office
+      party: party
+      jurisdiction: jurisdiction
+      election_year: election_year
+      amount: amount
+      date: expenditure_date
+      description: description
+      recipient: recipient_name
+      recipient_city: recipient_city
+      recipient_state: recipient_state
+      purpose_code: code
+      report_url: url
+    pluck: {report_url: url}
+    source_url_template: "{report_url}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - what did a Washington campaign spend its money on
+      - Washington campaign expenditures by vendor
+      - Public Disclosure Commission spending
+    example: {limit: 3}

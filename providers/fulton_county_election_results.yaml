@@ -1,0 +1,72 @@
+id: fulton_county_election_results
+title: Fulton County Election Results
+category: government
+domain: civic_local
+sub_category: election_results
+transport: http
+adapter: socrata
+base: https://data.fultoncountyga.gov
+regions: [US]
+description: >-
+  Election results for Fulton County, Georgia, by race, candidate and precinct,
+  with election-day, absentee, advance and provisional vote counts, plus
+  registered voters and turnout.
+docs_url: https://data.fultoncountyga.gov/d/y7fy-g8wd
+keywords:
+  - election results
+  - fulton county
+  - georgia
+  - atlanta
+  - precinct results
+  - turnout
+  - vote counts
+attribution: "Fulton County, Georgia"
+source:
+  is_primary: true
+  originator: "Fulton County, Georgia"
+  originator_domain: data.fultoncountyga.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.fultoncountyga.gov/d/y7fy-g8wd
+    verified_at: 2026-10-30
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 86400
+capabilities:
+  results:
+    description: >-
+      Search Fulton County election results by race, candidate, precinct or
+      election name. Returns vote counts by method and turnout.
+    path: /resource/y7fy-g8wd.json
+    params:
+      query: {type: string, description: "full-text search over race, candidate and election"}
+      race: {type: string, description: "race or contest name, exact match"}
+      candidate: {type: string, description: "candidate name, exact match"}
+      election: {type: string, description: "election name, exact match"}
+      limit: {type: integer, default: 25}
+    alias: {query: q, candidate: candidate, election: election_name}
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 1000}
+    fields:
+      race: race
+      candidate: candidate
+      precinct: precinct
+      election: election_name
+      election_date: election_date
+      election_day: election_day
+      absentee: absentee_by_mail
+      advance: advance_in_person
+      provisional: provisional
+      total_votes: total_votes
+      registered_voters: registered_voters
+      ballots_cast: ballots_cast
+      turnout: voter_turnout
+    source_url_template: "https://data.fultoncountyga.gov/d/y7fy-g8wd"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - Fulton County election results by precinct
+      - Atlanta precinct vote counts
+      - Fulton County voter turnout
+    example: {limit: 3}

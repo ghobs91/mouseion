@@ -1,0 +1,80 @@
+id: oakland_campaign_finance
+title: Oakland Campaign Contributions (FPPC Form 460, Schedule A)
+category: government
+domain: civic_local
+sub_category: campaign_finance
+transport: http
+adapter: socrata
+base: https://data.oaklandca.gov
+regions: [US]
+description: >-
+  Monetary contributions reported on California FPPC Form 460 Schedule A by
+  Oakland city candidates and committees. One row per contribution, with filer,
+  contributor, employer, occupation, amount and office.
+docs_url: https://data.oaklandca.gov/d/3xq4-ermg
+keywords:
+  - campaign finance
+  - campaign contributions
+  - oakland
+  - california
+  - fppc
+  - form 460
+  - city council
+  - donors
+attribution: "City of Oakland"
+source:
+  is_primary: true
+  originator: "City of Oakland"
+  originator_domain: data.oaklandca.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.oaklandca.gov/d/3xq4-ermg
+    verified_at: 2026-10-30
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 86400
+capabilities:
+  contributions:
+    description: >-
+      Search Oakland campaign contributions by filer, contributor, office or
+      free text. Returns amount, date, employer and occupation.
+    path: /resource/3xq4-ermg.json
+    params:
+      query: {type: string, description: "full-text search over filer, contributor and committee"}
+      filer: {type: string, description: "filer name, exact match"}
+      contributor: {type: string, description: "contributor last name, exact match"}
+      limit: {type: integer, default: 25}
+    alias: {query: q, filer: filer_naml, contributor: tran_naml}
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 1000}
+    id_field: tran_id
+    fields:
+      tran_id: tran_id
+      filer: filer_naml
+      filer_id: filer_id
+      committee_id: cmte_id
+      committee_type: committee_type
+      report_num: report_num
+      report_date: rpt_date
+      election_date: elect_date
+      contributor_last: tran_naml
+      contributor_first: tran_namf
+      city: tran_city
+      state: tran_state
+      zip: tran_zip4
+      employer: tran_emp
+      occupation: tran_occ
+      amount: tran_amt1
+      date: tran_date
+      description: tran_dscr
+      office: tbldetltran_offic_dscr
+      district: dist_no
+    source_url_template: "https://data.oaklandca.gov/d/3xq4-ermg"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - who contributed to an Oakland mayoral campaign
+      - Oakland city council campaign donors
+      - Oakland FPPC Form 460 contributions
+    example: {limit: 3}

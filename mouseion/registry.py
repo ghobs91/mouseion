@@ -26,6 +26,10 @@ _STOP = {
     "is", "it", "of", "on", "or", "that", "the", "to", "was", "what", "when",
     "where", "which", "who", "with", "about", "me", "my", "i", "do", "does",
     "this", "these", "those", "there", "any", "all", "can", "you", "tell",
+    # Time words are relative to the question, not the topic: "rules this year"
+    # must not match every dataset that happens to have a year column.
+    "year", "years", "month", "months", "week", "weeks", "day", "days",
+    "today", "recent", "recently", "latest", "current", "now",
 }
 
 #: Tokens that appear in provider names but say nothing about the topic. "new" is

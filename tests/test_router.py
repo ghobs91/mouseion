@@ -125,8 +125,8 @@ def test_search_orders_the_matched_capability_first(registry, cache):
 
 def test_eval_baseline_holds(registry, cache):
     report = run(evaluate(Router(registry, cache), load_cases()))
-    assert report["total"] == 53
-    assert report["top1"] >= 43, report["misses"]
+    assert report["total"] == 61
+    assert report["top1"] >= 48, report["misses"]
     assert report["top3"] >= report["top1"]
 
 

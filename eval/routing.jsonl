@@ -69,3 +69,11 @@
 {"query": "New York City Council campaign contributions", "expect": "nyc_campaign_finance"}
 {"query": "who funded the Los Angeles mayor race", "expect": "la_campaign_finance"}
 {"query": "Hawaii candidate campaign expenditures", "expect": "hawaii_campaign_spending"}
+{"query": "what did a Washington campaign spend its money on", "expect": "wa_campaign_expenditures"}
+{"query": "find a New York campaign committee by name", "expect": "ny_campaign_filers"}
+{"query": "who contributed to an Austin city council campaign", "expect": "austin_campaign_finance"}
+{"query": "Oakland city council campaign donors", "expect": "oakland_campaign_finance"}
+{"query": "Dallas mayoral campaign finance", "expect": "dallas_campaign_finance"}
+{"query": "Fulton County election results by precinct", "expect": "fulton_county_election_results"}
+{"query": "Ramsey County election results by precinct", "expect": "ramsey_county_election_results"}
+{"query": "which Maryland lobbyists gave to candidates", "expect": "maryland_lobbyist_contributions"}

@@ -1,0 +1,72 @@
+id: austin_campaign_finance
+title: Austin Campaign Contributions
+category: government
+domain: civic_local
+sub_category: campaign_finance
+transport: http
+adapter: socrata
+base: https://datahub.austintexas.gov
+regions: [US]
+description: >-
+  Campaign contributions reported to the City of Austin: one row per
+  contribution, with donor, recipient, amount, date, occupation, employer and
+  the filed report.
+docs_url: https://datahub.austintexas.gov/d/3kfv-biw6
+keywords:
+  - campaign finance
+  - campaign contributions
+  - austin
+  - texas
+  - city council
+  - donors
+  - who funded
+attribution: "City of Austin"
+source:
+  is_primary: true
+  originator: "City of Austin"
+  originator_domain: datahub.austintexas.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://datahub.austintexas.gov/d/3kfv-biw6
+    verified_at: 2026-10-30
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 86400
+capabilities:
+  contributions:
+    description: >-
+      Search Austin campaign contributions by recipient, donor, year or free
+      text. Returns amount, occupation, employer and the filed report link.
+    path: /resource/3kfv-biw6.json
+    params:
+      query: {type: string, description: "full-text search over donor, recipient and employer"}
+      recipient: {type: string, description: "recipient name, exact match"}
+      contribution_year: {type: integer, description: "e.g. 2024"}
+      limit: {type: integer, default: 25}
+    alias: {query: q}
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 1000}
+    id_field: transaction_id
+    fields:
+      transaction_id: transaction_id
+      donor: donor
+      recipient: recipient
+      amount: contribution_amount
+      date: contribution_date
+      donor_type: donor_type
+      occupation: donor_reported_occupation
+      employer: donor_reported_employer
+      contribution_type: contribution_type
+      in_kind: in_kind_description
+      report_filed: report_filed
+      report_url: view_report
+    pluck: {report_url: url}
+    source_url_template: "{report_url}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - who contributed to an Austin city council campaign
+      - Austin mayoral campaign donors
+      - Austin campaign finance reports
+    example: {limit: 3}

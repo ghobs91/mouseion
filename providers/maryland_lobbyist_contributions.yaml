@@ -1,0 +1,63 @@
+id: maryland_lobbyist_contributions
+title: Maryland Lobbyist Campaign Contributions
+category: government
+domain: civic_local
+sub_category: campaign_finance
+transport: http
+adapter: socrata
+base: https://opendata.maryland.gov
+regions: [US]
+description: >-
+  Campaign contributions reported by registered lobbyists in Maryland, from the
+  state Lobbying Reporting System: lobbyist, reporting period, recipient and
+  amount.
+docs_url: https://opendata.maryland.gov/d/g76a-nfxj
+keywords:
+  - campaign contributions
+  - lobbying
+  - lobbyist
+  - maryland
+  - disclosure
+  - who funded
+attribution: "Maryland State Ethics Commission"
+source:
+  is_primary: true
+  originator: "Maryland State Ethics Commission"
+  originator_domain: opendata.maryland.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://opendata.maryland.gov/d/g76a-nfxj
+    verified_at: 2026-10-30
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 86400
+capabilities:
+  contributions:
+    description: >-
+      Search Maryland lobbyist campaign contributions by lobbyist, recipient,
+      reporting period or free text. Returns the amount and recipient.
+    path: /resource/g76a-nfxj.json
+    params:
+      query: {type: string, description: "full-text search over lobbyist and recipient"}
+      lobbyist: {type: string, description: "lobbyist last name, exact match"}
+      recipient: {type: string, description: "recipient name, exact match"}
+      limit: {type: integer, default: 25}
+    alias: {query: q, lobbyist: lobbyist_last_name, recipient: recipient}
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 1000}
+    fields:
+      lobbyist_id: lobbyist_id
+      lobbyist_last: lobbyist_last_name
+      lobbyist_first: lobbyist_first_name
+      period: reporting_period
+      recipient: recipient
+      amount: contribution_amount
+    source_url_template: "https://opendata.maryland.gov/d/g76a-nfxj"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - which Maryland lobbyists gave to candidates
+      - Maryland lobbyist campaign contributions
+      - who did a lobbyist contribute to in Maryland
+    example: {limit: 3}

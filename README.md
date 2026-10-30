@@ -367,15 +367,23 @@ Because landing pages hide the good data, wave 1 does not rely on them. `civic
 datasets` queries Socrata's national catalog for structured campaign-finance and
 election tables on official portals and ranks them by row count. The committed run
 (`eval/civic-datasets.json`) finds 89 datasets with at least 1,000 rows across 13
-government portals. Five are promoted to providers:
+government portals. Thirteen are promoted to providers:
 
 | Provider | Jurisdiction | Rows | Capability |
 |---|---|---|---|
 | `ny_campaign_finance` | New York (state) | 18.7M | `disclosures` |
 | `wa_campaign_finance` | Washington (state) | 6.4M | `contributions` |
 | `nyc_campaign_finance` | New York City | 1.7M | `contributions` |
+| `wa_campaign_expenditures` | Washington (state) | 1.1M | `expenditures` |
 | `hawaii_campaign_spending` | Hawaii | 500K | `ledger` |
 | `la_campaign_finance` | Los Angeles | 428K | `contributions` |
+| `fulton_county_election_results` | Fulton County, GA | 248K | `results` |
+| `austin_campaign_finance` | Austin | 132K | `contributions` |
+| `oakland_campaign_finance` | Oakland | 73K | `contributions` |
+| `ny_campaign_filers` | New York (state) | 65K | `filers` |
+| `ramsey_county_election_results` | Ramsey County, MN | 46K | `results` |
+| `maryland_lobbyist_contributions` | Maryland | 20K | `contributions` |
+| `dallas_campaign_finance` | Dallas | 11K | `transactions` |
 
 Each is a Socrata resource with a column projection, a recorded fixture, a live
 contract test, and a routing eval case. They share no failover cluster: a New York
@@ -566,7 +574,7 @@ itself. Mouseion's own remote-MCP proxy is for keeping one unified tool surface.
 
 ## What's here
 
-67 providers, 91 capabilities. The contract suite verifies every upstream live except the
+75 providers, 99 capabilities. The contract suite verifies every upstream live except the
 seven that need credentials this machine does not have (FRED, CourtListener, GitHub,
 Congress.gov, GovInfo, Shopify, and SEC's contact User-Agent is set but FRED's key is
 not). Their auth paths are verified.
@@ -595,6 +603,8 @@ not). Their auth paths are verified.
 | GitHub | free token | `search_repositories`, `repository`, `releases`, `commits` |
 | Internet Archive | none | `search`, `metadata` |
 | Library of Congress | none | `search` |
+| Maryland Lobbyist Contributions | none | `contributions` |
+| Oakland Campaign Finance | none | `contributions` |
 | Los Angeles Campaign Finance | none | `contributions` |
 | Go module proxy | none | `latest` |
 | GOV.UK | none | `search_content` |
@@ -603,6 +613,7 @@ not). Their auth paths are verified.
 | Hawaii Campaign Spending | none | `ledger` |
 | Maven Central | none | `search` |
 | New York Campaign Finance | none | `disclosures` |
+| New York Campaign Filers | none | `filers` |
 | New York City Campaign Finance | none | `contributions` |
 | NASA EONET | none | `events` |
 | NHC | none | `active_storms` |
@@ -629,7 +640,12 @@ not). Their auth paths are verified.
 | Shopify Global Catalog | free client credentials | `tools` (runtime, read-only) |
 | DataSF | none | `police_incidents` |
 | US Treasury Fiscal Data | none | `debt_to_penny`, `avg_interest_rates` |
+| Washington Campaign Expenditures | none | `expenditures` |
 | Washington Campaign Finance | none | `contributions` |
+| Austin Campaign Finance | none | `contributions` |
+| Dallas Campaign Finance | none | `transactions` |
+| Fulton County Election Results | none | `results` |
+| Ramsey County Election Results | none | `results` |
 | UK National Archives | none | `search` |
 | UK Parliament | none | `bills` |
 | UniProt | none | `search`, `entry` |
@@ -661,7 +677,7 @@ never as an upstream 403.
 
 Five adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`, `cdx`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 334 offline tests and 89 live contract tests.
+eval, MCP server, CLI, GBNF export, 350 offline tests and 97 live contract tests.
 
 Eleven upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -697,7 +713,7 @@ Eleven upstream behaviours the adapter contract had to grow for, all now generic
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 334 offline: fixture replay
+pytest                    # 350 offline: fixture replay
 pytest -m live            # 84 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
@@ -720,7 +736,7 @@ page token before a user does.
 
 ## What's deliberately not here
 
-- **Coverage.** 67 providers is a spine, not an index. The current gap matrix is in
+- **Coverage.** 75 providers is a spine, not an index. The current gap matrix is in
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
   molecular repositories, transit, and the Cat 1 stretch. Most are keyless or free-key;
   each needs a manifest, a fixture, a live contract, and an audit entry before it counts.
