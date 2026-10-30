@@ -87,17 +87,7 @@ class RestJsonAdapter(Adapter):
                     if str(dig(item, capability.local_filter.field, "")).lower() == wanted
                 ]
         result = self.build_records(capability, raw, request)
-
-        if capability.local_window and capability.pagination:
-            offset = request.pagination_state.get("window_offset", 0)
-            limit = request.pagination_state.get("limit", capability.pagination.default_limit)
-            total = len(result.records)
-            result.records = result.records[offset : offset + limit]
-            request.pagination_state["count"] = len(result.records)
-            following = offset + limit
-            result.next_cursor = str(following) if following < total else None
-        else:
-            result.next_cursor = self.next_cursor(capability, body, request.pagination_state)
+        self.paginate_local(capability, result, request, body)
 
         if capability.terms_field:
             result.terms = dig(body, capability.terms_field)

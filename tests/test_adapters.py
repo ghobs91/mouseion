@@ -338,3 +338,75 @@ def test_body_only_api_still_builds_a_citation_url(registry):
     body = {"Results": {"series": [{"data": [{"year": "2026", "period": "M09", "value": "4.2"}]}]}}
     result = adapter.parse(manifest, cap, body, request)
     assert result.records[0].source_url == "https://data.bls.gov/timeseries/LNS14000000"
+
+
+# -- CSV bulk exports -----------------------------------------------------
+
+
+def _csv_manifest():
+    from mouseion.manifest import Manifest
+
+    return Manifest.model_validate(
+        {
+            "id": "example_csv",
+            "title": "Example Campaign Finance",
+            "domain": "civic_local",
+            "sub_category": "campaign_finance",
+            "source": {
+                "originator": "Example State",
+                "originator_domain": "example.gov",
+                "auth_policy": {
+                    "evidence_url": "https://example.gov",
+                    "verified_at": "2026-10-30",
+                },
+            },
+            "base": "https://example.gov",
+            "adapter": "csv",
+            "capabilities": {
+                "filings": {
+                    "description": "Candidate filings",
+                    "path": "/filings.csv",
+                    "fields": {"name": "name", "office": "office"},
+                    "pagination": {"mode": "offset", "default_limit": 2},
+                    "local_window": True,
+                }
+            },
+        }
+    )
+
+
+def test_csv_adapter_projects_and_pages_locally():
+    manifest = _csv_manifest()
+    cap = manifest.capabilities["filings"]
+    adapter = get_adapter(manifest.adapter)
+    body = {"_raw_text": "name,office\nA,Mayor\nB,Council\nC,Clerk\n"}
+
+    first = adapter.parse(manifest, cap, body, prepare(manifest, cap, {"limit": 2}))
+    assert [record.data["name"] for record in first.records] == ["A", "B"]
+    assert first.next_cursor == "2"
+
+    second = adapter.parse(
+        manifest, cap, body, prepare(manifest, cap, {"limit": 2}, cursor="2")
+    )
+    assert [record.data["name"] for record in second.records] == ["C"]
+    assert second.next_cursor is None
+
+
+def test_csv_adapter_handles_bom_and_semicolons():
+    manifest = _csv_manifest()
+    cap = manifest.capabilities["filings"]
+    adapter = get_adapter(manifest.adapter)
+    body = {"_raw_text": "\ufeffname;office\nA;Mayor\n"}
+
+    result = adapter.parse(manifest, cap, body, prepare(manifest, cap, {}))
+    assert result.records[0].data == {"name": "A", "office": "Mayor"}
+
+
+def test_csv_adapter_rejects_a_non_csv_body():
+    from mouseion.envelope import ProviderError
+
+    manifest = _csv_manifest()
+    cap = manifest.capabilities["filings"]
+    adapter = get_adapter(manifest.adapter)
+    with pytest.raises(ProviderError):
+        adapter.parse(manifest, cap, {"unexpected": True}, prepare(manifest, cap, {}))

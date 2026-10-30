@@ -212,6 +212,29 @@ class Adapter(ABC):
             return next_page if count == limit else None
         return None
 
+    def paginate_local(
+        self,
+        capability: Capability,
+        result: AdapterResult,
+        request: PreparedRequest,
+        body: Any = None,
+    ) -> None:
+        """Slice an already-fetched window locally, or read an upstream cursor.
+
+        Bulk files (CSV exports, fixed search windows) arrive whole; paging them
+        locally keeps the cursor semantics identical to a paginated API.
+        """
+        if capability.local_window and capability.pagination:
+            offset = request.pagination_state.get("window_offset", 0)
+            limit = request.pagination_state.get("limit", capability.pagination.default_limit)
+            total = len(result.records)
+            result.records = result.records[offset : offset + limit]
+            request.pagination_state["count"] = len(result.records)
+            following = offset + limit
+            result.next_cursor = str(following) if following < total else None
+            return
+        result.next_cursor = self.next_cursor(capability, body, request.pagination_state)
+
     def normalize(
         self, capability: Capability, raw: dict[str, Any]
     ) -> tuple[dict[str, Any], list[str]]:

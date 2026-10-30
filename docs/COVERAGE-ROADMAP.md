@@ -150,23 +150,46 @@ evidence URL, rate limit, fixture, live contract, audit entry, and eval cases.
 - **PDF** — defer. PDF extraction is a different reliability class; use only for
   voter guides after the CSV/JSON path is exhausted.
 
-### 3.5 Bulk-first milestone
+### 3.5 Bulk-first milestone — registry and discovery implemented
 
-The unit is the **jurisdiction registry**, not a hand-picked pilot:
+The unit is the **jurisdiction registry**, not a hand-picked pilot. Steps 1–3 are
+built:
 
-1. Seed all 50 states, DC, and the major cities in `jurisdictions.yaml`.
-2. For each entry, record the official election authority, campaign-finance
-   authority, official URLs, known formats, and a status:
-   `api`, `csv`, `html`, `pdf`, `manual`, or `unavailable`.
-3. Run a parallel `mouseion civic discover` pass over the seeds:
-   fetch the official pages, detect JSON/CSV/HTML links, probe them, and write a
-   coverage matrix.
+1. **Seeded.** `jurisdictions.yaml` holds 96 entries: 50 states, DC, five
+   territories, and 40 major cities. Every entry names its official election
+   authority; 86 also name a campaign-finance authority. State election URLs come
+   from the USA.gov state and local election office directory.
+2. **Modelled.** Each authority is a URL plus a note, not a guessed format. Format
+   is measured, not declared.
+3. **Probed.** `mouseion civic discover` fetches every authority page in parallel,
+   follows machine-readable links, and writes `eval/civic-coverage.json`.
+
+The first full pass covers 182 authority URLs:
+
+| Format | Count | Meaning |
+|---|---|---|
+| `html` | 123 | prose or a JS shell |
+| `blocked` | 33 | HTTP 403 at an edge WAF |
+| `html_tables` | 19 | tables, no export |
+| `tls_error` | 3 | incomplete certificate chain |
+| `unreachable` | 2 | timeout or dead DNS |
+| `csv` | 1 | Wyoming candidate list |
+| `error` | 1 | stale seed (El Paso County elections) |
+
+Remaining work is promotion, not seeding:
+
 4. Promote sources in waves, format-first:
    - wave 1: JSON/Socrata
    - wave 2: CSV/bulk downloads
    - wave 3: HTML tables where no machine-readable surface exists
 5. Every promoted source still gets a manifest, fixture, live contract, audit
    entry, and eval cases.
+
+Two findings shape the waves. First, most state portals expose no export link on
+the landing page; the data sits behind an ASP.NET form or a JS app, so wave 3
+needs a table scraper rather than a URL probe. Second, a third of the authorities
+reject a plain HTTP client at the edge (HTTP 403 even with a browser User-Agent),
+so those need a browser-capable probe before they can be classified at all.
 
 This is how “all states and major cities” is approached without pretending every
 jurisdiction has an API. A jurisdiction with no machine-readable source is marked

@@ -1,0 +1,1092 @@
+# Jurisdiction registry for local elections.
+#
+# Every entry names the official election authority and, where one exists, the
+# campaign-finance authority. URLs are seeds, not claims: `mouseion civic
+# discover` probes each one and records what it actually serves. A source is
+# promoted to a provider only after it passes that probe.
+#
+# Level is `state`, `territory`, or `city`. State election-office URLs come from
+# the USA.gov state and local election office directory
+# (https://www.usa.gov/state-election-office). Campaign-finance URLs point at the
+# state or municipal disclosure authority, not at an aggregator.
+#
+# When an authority is `null`, the note says who actually holds the data. That is
+# a gap in the matrix, not a guess.
+
+jurisdictions:
+  # -- states ----------------------------------------------------------
+  - id: US-AL
+    name: Alabama
+    level: state
+    state: AL
+    election:
+      name: Alabama Secretary of State
+      url: https://www.sos.alabama.gov/alabama-votes
+    campaign_finance:
+      name: Alabama Secretary of State, Campaign Finance
+      url: https://fcpa.alabamavotes.gov/
+
+  - id: US-AK
+    name: Alaska
+    level: state
+    state: AK
+    election:
+      name: Alaska Division of Elections
+      url: https://www.elections.alaska.gov/
+    campaign_finance:
+      name: Alaska Public Offices Commission
+      url: https://aws.state.ak.us/ApocReports/
+
+  - id: US-AZ
+    name: Arizona
+    level: state
+    state: AZ
+    election:
+      name: Arizona Secretary of State, Elections
+      url: https://azsos.gov/elections
+    campaign_finance:
+      name: Arizona Secretary of State, Campaign Finance
+      url: https://azsos.gov/campaign-finance
+
+  - id: US-AR
+    name: Arkansas
+    level: state
+    state: AR
+    election:
+      name: Arkansas Secretary of State, Elections
+      url: https://www.sos.arkansas.gov/elections
+    campaign_finance:
+      name: Arkansas Secretary of State, Ethics Filings
+      url: https://www.sos.arkansas.gov/elections/for-ethics-filings
+
+  - id: US-CA
+    name: California
+    level: state
+    state: CA
+    election:
+      name: California Secretary of State, Elections
+      url: https://www.sos.ca.gov/elections
+    campaign_finance:
+      name: California Fair Political Practices Commission
+      url: https://www.fppc.ca.gov/
+
+  - id: US-CO
+    name: Colorado
+    level: state
+    state: CO
+    election:
+      name: Colorado Secretary of State, Elections
+      url: https://www.sos.state.co.us/pubs/elections/main.html
+    campaign_finance:
+      name: Colorado Secretary of State, Campaign Finance
+      url: https://www.coloradosos.gov/pubs/elections/CampaignFinance/home.html
+
+  - id: US-CT
+    name: Connecticut
+    level: state
+    state: CT
+    election:
+      name: Connecticut Secretary of the State, Elections
+      url: https://portal.ct.gov/sots/common-elements/v5-template---redesign/elections--voting--home-page
+    campaign_finance:
+      name: Connecticut State Elections Enforcement Commission
+      url: https://seec.ct.gov/
+
+  - id: US-DE
+    name: Delaware
+    level: state
+    state: DE
+    election:
+      name: Delaware Department of Elections
+      url: https://elections.delaware.gov/index.shtml
+    campaign_finance:
+      name: Delaware Campaign Finance Reporting System
+      url: https://cfrs.elections.delaware.gov/
+
+  - id: US-DC
+    name: District of Columbia
+    level: state
+    state: DC
+    election:
+      name: DC Board of Elections
+      url: https://dcboe.org/
+    campaign_finance:
+      name: DC Office of Campaign Finance
+      url: https://ocf.dc.gov/
+
+  - id: US-FL
+    name: Florida
+    level: state
+    state: FL
+    election:
+      name: Florida Division of Elections
+      url: https://www.dos.myflorida.com/elections/
+    campaign_finance:
+      name: Florida Division of Elections, Campaign Finance
+      url: https://www.dos.myflorida.com/elections/candidates-committees/campaign-finance/
+
+  - id: US-GA
+    name: Georgia
+    level: state
+    state: GA
+    election:
+      name: Georgia Secretary of State, Elections Division
+      url: https://sos.ga.gov/elections-division-georgia-secretary-states-office
+    campaign_finance:
+      name: Georgia Government Transparency and Campaign Finance Commission
+      url: https://ethics.ga.gov/
+
+  - id: US-HI
+    name: Hawaii
+    level: state
+    state: HI
+    election:
+      name: Hawaii Office of Elections
+      url: https://elections.hawaii.gov/
+    campaign_finance:
+      name: Hawaii Campaign Spending Commission
+      url: https://ags.hawaii.gov/campaign/
+
+  - id: US-ID
+    name: Idaho
+    level: state
+    state: ID
+    election:
+      name: Idaho Secretary of State, Elections
+      url: https://voteidaho.gov/
+    notes: Campaign-finance filings are handled by the Secretary of State; no public filing portal URL was verified, so this stays a gap.
+
+  - id: US-IL
+    name: Illinois
+    level: state
+    state: IL
+    election:
+      name: Illinois State Board of Elections
+      url: https://www.elections.il.gov/
+    campaign_finance:
+      name: Illinois State Board of Elections, Campaign Disclosure
+      url: https://www.elections.il.gov/CampaignDisclosure/
+
+  - id: US-IN
+    name: Indiana
+    level: state
+    state: IN
+    election:
+      name: Indiana Secretary of State, Elections
+      url: https://indianavoters.in.gov/
+    campaign_finance:
+      name: Indiana Secretary of State, Campaign Finance
+      url: https://www.in.gov/sos/elections/campaign-finance/
+
+  - id: US-IA
+    name: Iowa
+    level: state
+    state: IA
+    election:
+      name: Iowa Secretary of State, Elections
+      url: https://sos.iowa.gov/elections/voterinformation/index.html
+    campaign_finance:
+      name: Iowa Secretary of State, Campaign Finance
+      url: https://sos.iowa.gov/elections/campaignfinance/
+
+  - id: US-KS
+    name: Kansas
+    level: state
+    state: KS
+    election:
+      name: Kansas Secretary of State, Elections
+      url: https://sos.ks.gov/elections/elections.html
+    campaign_finance:
+      name: Kansas Secretary of State, Campaign Finance
+      url: https://sos.ks.gov/elections/campaign-finance.html
+
+  - id: US-KY
+    name: Kentucky
+    level: state
+    state: KY
+    election:
+      name: Kentucky State Board of Elections
+      url: https://elect.ky.gov/Pages/default.aspx
+    campaign_finance:
+      name: Kentucky Registry of Election Finance
+      url: https://kref.ky.gov/
+
+  - id: US-LA
+    name: Louisiana
+    level: state
+    state: LA
+    election:
+      name: Louisiana Secretary of State, Elections and Voting
+      url: https://www.sos.la.gov/elections-voting
+    campaign_finance:
+      name: Louisiana Board of Ethics
+      url: https://ethics.la.gov/
+
+  - id: US-ME
+    name: Maine
+    level: state
+    state: ME
+    election:
+      name: Maine Secretary of State, Elections
+      url: https://www.maine.gov/sos/cec/elec/index.html
+    campaign_finance:
+      name: Maine Commission on Governmental Ethics and Election Practices
+      url: https://www.maine.gov/ethics/
+
+  - id: US-MD
+    name: Maryland
+    level: state
+    state: MD
+    election:
+      name: Maryland State Board of Elections
+      url: https://elections.maryland.gov/
+    campaign_finance:
+      name: Maryland State Board of Elections, Campaign Finance
+      url: https://campaignfinance.maryland.gov/
+
+  - id: US-MA
+    name: Massachusetts
+    level: state
+    state: MA
+    election:
+      name: Massachusetts Secretary of the Commonwealth, Elections
+      url: https://www.sec.state.ma.us/divisions/elections/elections-and-voting.htm
+    campaign_finance:
+      name: Massachusetts Office of Campaign and Political Finance
+      url: https://www.ocpf.us/
+
+  - id: US-MI
+    name: Michigan
+    level: state
+    state: MI
+    election:
+      name: Michigan Secretary of State, Elections
+      url: https://www.michigan.gov/sos/elections
+    campaign_finance:
+      name: Michigan Secretary of State, Elections
+      url: https://www.michigan.gov/sos/elections
+      note: Campaign-finance reporting sits inside the elections section.
+
+  - id: US-MN
+    name: Minnesota
+    level: state
+    state: MN
+    election:
+      name: Minnesota Secretary of State, Elections and Voting
+      url: https://www.sos.state.mn.us/elections-voting/
+    campaign_finance:
+      name: Minnesota Campaign Finance and Public Disclosure Board
+      url: https://cfb.mn.gov/
+
+  - id: US-MS
+    name: Mississippi
+    level: state
+    state: MS
+    election:
+      name: Mississippi Secretary of State, Elections and Voting
+      url: https://www.sos.ms.gov/elections-voting
+    campaign_finance:
+      name: Mississippi Secretary of State, Campaign Finance
+      url: https://www.sos.ms.gov/elections-voting/campaign-finance
+
+  - id: US-MO
+    name: Missouri
+    level: state
+    state: MO
+    election:
+      name: Missouri Secretary of State, Elections
+      url: https://www.sos.mo.gov/elections/
+    campaign_finance:
+      name: Missouri Ethics Commission
+      url: https://www.mec.mo.gov/
+
+  - id: US-MT
+    name: Montana
+    level: state
+    state: MT
+    election:
+      name: Montana Secretary of State, Elections
+      url: https://sosmt.gov/elections/
+    campaign_finance:
+      name: Montana Commissioner of Political Practices
+      url: https://politicalpractices.mt.gov/
+
+  - id: US-NE
+    name: Nebraska
+    level: state
+    state: NE
+    election:
+      name: Nebraska Secretary of State, Elections
+      url: https://www.nebraska.gov/featured/elections-voting/
+    campaign_finance:
+      name: Nebraska Accountability and Disclosure Commission
+      url: https://nadc.nebraska.gov/
+
+  - id: US-NV
+    name: Nevada
+    level: state
+    state: NV
+    election:
+      name: Nevada Secretary of State, Elections
+      url: https://www.nvsos.gov/sos/elections
+    campaign_finance:
+      name: Nevada Secretary of State, Campaign Finance
+      url: https://www.nvsos.gov/sos/elections/campaign-finance
+
+  - id: US-NH
+    name: New Hampshire
+    level: state
+    state: NH
+    election:
+      name: New Hampshire Secretary of State, Elections
+      url: https://www.sos.nh.gov/elections/voters
+    campaign_finance:
+      name: New Hampshire Secretary of State, Campaign Finance
+      url: https://www.sos.nh.gov/campaign-finance
+
+  - id: US-NJ
+    name: New Jersey
+    level: state
+    state: NJ
+    election:
+      name: New Jersey Division of Elections
+      url: https://www.nj.gov/state/elections/vote.shtml
+    campaign_finance:
+      name: New Jersey Election Law Enforcement Commission
+      url: https://www.elec.state.nj.us/
+
+  - id: US-NM
+    name: New Mexico
+    level: state
+    state: NM
+    election:
+      name: New Mexico Secretary of State, Voting and Elections
+      url: https://www.sos.nm.gov/voting-and-elections/
+    campaign_finance:
+      name: New Mexico Secretary of State, Candidates and Campaigns
+      url: https://www.sos.nm.gov/candidate-and-campaigns/
+
+  - id: US-NY
+    name: New York
+    level: state
+    state: NY
+    election:
+      name: New York State Board of Elections
+      url: https://www.elections.ny.gov/
+    campaign_finance:
+      name: New York State Board of Elections, Campaign Finance
+      url: https://www.elections.ny.gov/CampaignFinance.html
+
+  - id: US-NC
+    name: North Carolina
+    level: state
+    state: NC
+    election:
+      name: North Carolina State Board of Elections
+      url: https://www.ncsbe.gov/
+    campaign_finance:
+      name: North Carolina State Board of Elections, Campaign Finance
+      url: https://www.ncsbe.gov/campaign-finance
+
+  - id: US-ND
+    name: North Dakota
+    level: state
+    state: ND
+    election:
+      name: North Dakota Secretary of State, Elections
+      url: https://vip.sos.nd.gov/PortalList.aspx
+    campaign_finance:
+      name: North Dakota Secretary of State, Campaign Disclosure
+      url: https://www.nd.gov/eforms/
+      note: Filings are paper forms; no statewide electronic disclosure portal identified.
+
+  - id: US-OH
+    name: Ohio
+    level: state
+    state: OH
+    election:
+      name: Ohio Secretary of State, Elections
+      url: https://www.ohiosos.gov/elections/
+    campaign_finance:
+      name: Ohio Secretary of State, Campaign Finance
+      url: https://www.ohiosos.gov/campaign-finance/
+
+  - id: US-OK
+    name: Oklahoma
+    level: state
+    state: OK
+    election:
+      name: Oklahoma State Election Board
+      url: https://oklahoma.gov/elections.html
+    campaign_finance:
+      name: Oklahoma Ethics Commission
+      url: https://www.ok.gov/ethics/
+
+  - id: US-OR
+    name: Oregon
+    level: state
+    state: OR
+    election:
+      name: Oregon Secretary of State, Elections
+      url: https://sos.oregon.gov/voting-elections/Pages/default.aspx
+    campaign_finance:
+      name: Oregon Secretary of State, Campaign Finance
+      url: https://sos.oregon.gov/elections/Pages/campaign-finance.aspx
+
+  - id: US-PA
+    name: Pennsylvania
+    level: state
+    state: PA
+    election:
+      name: Pennsylvania Department of State, Voting and Elections
+      url: https://www.dos.pa.gov/VotingElections/Pages/default.aspx
+    campaign_finance:
+      name: Pennsylvania Department of State, Campaign Finance Online
+      url: https://www.campaignfinanceonline.pa.gov/
+
+  - id: US-RI
+    name: Rhode Island
+    level: state
+    state: RI
+    election:
+      name: Rhode Island Secretary of State, Elections
+      url: https://vote.sos.ri.gov/
+    campaign_finance:
+      name: Rhode Island Board of Elections, Campaign Finance
+      url: https://ricampaignfinance.com/
+
+  - id: US-SC
+    name: South Carolina
+    level: state
+    state: SC
+    election:
+      name: South Carolina Election Commission
+      url: https://www.scvotes.org/
+    campaign_finance:
+      name: South Carolina State Ethics Commission
+      url: https://ethics.sc.gov/
+
+  - id: US-SD
+    name: South Dakota
+    level: state
+    state: SD
+    election:
+      name: South Dakota Secretary of State, Elections
+      url: https://sdsos.gov/elections-voting/default.aspx
+    campaign_finance:
+      name: South Dakota Secretary of State, Campaign Finance
+      url: https://sdsos.gov/elections-voting/campaign-finance/default.aspx
+
+  - id: US-TN
+    name: Tennessee
+    level: state
+    state: TN
+    election:
+      name: Tennessee Secretary of State, Elections
+      url: https://sos.tn.gov/elections
+    campaign_finance:
+      name: Tennessee Registry of Election Finance
+      url: https://www.tn.gov/tref.html
+
+  - id: US-TX
+    name: Texas
+    level: state
+    state: TX
+    election:
+      name: Texas Secretary of State, Elections
+      url: https://www.sos.state.tx.us/elections/index.shtml
+    campaign_finance:
+      name: Texas Ethics Commission
+      url: https://www.ethics.state.tx.us/
+
+  - id: US-UT
+    name: Utah
+    level: state
+    state: UT
+    election:
+      name: Utah Lieutenant Governor, Elections
+      url: https://vote.utah.gov/
+    campaign_finance:
+      name: Utah Campaign Finance Disclosure
+      url: https://disclosures.utah.gov/
+
+  - id: US-VT
+    name: Vermont
+    level: state
+    state: VT
+    election:
+      name: Vermont Secretary of State, Elections
+      url: https://sos.vermont.gov/elections/
+    campaign_finance:
+      name: Vermont Secretary of State, Campaign Finance
+      url: https://sos.vermont.gov/elections/campaign-finance/
+
+  - id: US-VA
+    name: Virginia
+    level: state
+    state: VA
+    election:
+      name: Virginia Department of Elections
+      url: https://www.elections.virginia.gov/
+    campaign_finance:
+      name: Virginia Department of Elections, Candidate and PAC Information
+      url: https://www.elections.virginia.gov/candidatepac-info/
+
+  - id: US-WA
+    name: Washington
+    level: state
+    state: WA
+    election:
+      name: Washington Secretary of State, Elections
+      url: https://www.sos.wa.gov/elections
+    campaign_finance:
+      name: Washington Public Disclosure Commission
+      url: https://www.pdc.wa.gov/
+
+  - id: US-WV
+    name: West Virginia
+    level: state
+    state: WV
+    election:
+      name: West Virginia Secretary of State, Elections
+      url: https://sos.wv.gov/elections/pages/default.aspx
+    campaign_finance:
+      name: West Virginia Secretary of State, Elections
+      url: https://sos.wv.gov/elections
+      note: Campaign-finance guidance sits inside the elections section.
+
+  - id: US-WI
+    name: Wisconsin
+    level: state
+    state: WI
+    election:
+      name: Wisconsin Elections Commission
+      url: https://myvote.wi.gov/en-us/
+    campaign_finance:
+      name: Wisconsin Ethics Commission
+      url: https://ethics.wi.gov/
+
+  - id: US-WY
+    name: Wyoming
+    level: state
+    state: WY
+    election:
+      name: Wyoming Secretary of State, Elections
+      url: https://sos.wyo.gov/Elections/Default.aspx
+    campaign_finance:
+      name: Wyoming Campaign Finance Reporting System
+      url: https://www.wycampaignfinance.gov
+
+  # -- territories -----------------------------------------------------
+  - id: US-PR
+    name: Puerto Rico
+    level: territory
+    state: PR
+    election:
+      name: Puerto Rico State Elections Commission
+      url: https://ww2.ceepur.org/
+    campaign_finance:
+      name: Puerto Rico Office of Government Ethics
+      url: https://www.oeg.pr.gov/
+
+  - id: US-GU
+    name: Guam
+    level: territory
+    state: GU
+    election:
+      name: Guam Election Commission
+      url: https://gec.guam.gov/
+
+  - id: US-VI
+    name: U.S. Virgin Islands
+    level: territory
+    state: VI
+    election:
+      name: Virgin Islands Office of the Supervisor of Elections
+      url: https://vivote.gov/
+
+  - id: US-AS
+    name: American Samoa
+    level: territory
+    state: AS
+    election:
+      name: American Samoa Election Office
+      url: https://www.americansamoa.gov/
+      note: Territory portal; the election-office subdomain did not resolve on discovery.
+
+  - id: US-MP
+    name: Northern Mariana Islands
+    level: territory
+    state: MP
+    election:
+      name: Northern Mariana Islands Election Commission
+      url: https://www.votecnmi.gov.mp/
+
+  # -- major cities ----------------------------------------------------
+  # City races are usually administered by the county, so `election` names the
+  # county authority and the note says so. `campaign_finance` is the municipal
+  # body where one exists; where it is null, the state authority handles local
+  # filings or no online portal was identified.
+
+  - id: US-NY-NEW-YORK
+    name: New York City
+    level: city
+    state: NY
+    election:
+      name: New York City Board of Elections
+      url: https://vote.nyc/
+    campaign_finance:
+      name: New York City Campaign Finance Board
+      url: https://www.nyccfb.info/
+
+  - id: US-CA-LOS-ANGELES
+    name: Los Angeles
+    level: city
+    state: CA
+    election:
+      name: Los Angeles County Registrar-Recorder/County Clerk
+      url: https://lavote.gov/
+      note: County administers city elections.
+    campaign_finance:
+      name: Los Angeles City Ethics Commission
+      url: https://ethics.lacity.org/
+
+  - id: US-IL-CHICAGO
+    name: Chicago
+    level: city
+    state: IL
+    election:
+      name: Chicago Board of Elections
+      url: https://www.chicagoelections.gov/
+    campaign_finance:
+      name: Chicago Board of Ethics
+      url: https://www.chicago.gov/city/en/depts/ethics.html
+
+  - id: US-TX-HOUSTON
+    name: Houston
+    level: city
+    state: TX
+    election:
+      name: Harris County Elections
+      url: https://www.harrisvotes.com/
+      note: County administers city elections.
+    campaign_finance:
+      name: Houston City Secretary
+      url: https://www.houstontx.gov/citysec/
+
+  - id: US-AZ-PHOENIX
+    name: Phoenix
+    level: city
+    state: AZ
+    election:
+      name: Maricopa County Elections
+      url: https://elections.maricopa.gov/
+      note: County administers city elections.
+    campaign_finance:
+      name: Phoenix City Clerk
+      url: https://www.phoenix.gov/cityclerk
+
+  - id: US-PA-PHILADELPHIA
+    name: Philadelphia
+    level: city
+    state: PA
+    election:
+      name: Philadelphia City Commissioners
+      url: https://vote.phila.gov/
+    campaign_finance:
+      name: Philadelphia Board of Ethics
+      url: https://www.phila.gov/departments/board-of-ethics/
+
+  - id: US-TX-SAN-ANTONIO
+    name: San Antonio
+    level: city
+    state: TX
+    election:
+      name: Bexar County Elections
+      url: https://www.bexar.org/1568/Elections
+      note: County administers city elections.
+    campaign_finance:
+      name: San Antonio City Clerk
+      url: https://www.sanantonio.gov/clerk
+
+  - id: US-CA-SAN-DIEGO
+    name: San Diego
+    level: city
+    state: CA
+    election:
+      name: San Diego County Registrar of Voters
+      url: https://www.sdvote.com/
+      note: County administers city elections.
+    campaign_finance:
+      name: San Diego Ethics Commission
+      url: https://www.sandiego.gov/ethics
+
+  - id: US-TX-DALLAS
+    name: Dallas
+    level: city
+    state: TX
+    election:
+      name: Dallas County Elections
+      url: https://www.dallascountyvotes.org/
+      note: County administers city elections.
+    notes: Dallas City Secretary holds municipal campaign-finance filings; the department URL was not verified, so this stays a gap.
+
+  - id: US-CA-SAN-JOSE
+    name: San Jose
+    level: city
+    state: CA
+    election:
+      name: Santa Clara County Registrar of Voters
+      url: https://www.sccgov.org/sites/rov
+      note: County administers city elections.
+    campaign_finance:
+      name: San Jose City Clerk
+      url: https://www.sanjoseca.gov/your-government/departments/city-clerk
+
+  - id: US-TX-AUSTIN
+    name: Austin
+    level: city
+    state: TX
+    election:
+      name: Travis County Clerk, Elections
+      url: https://www.votetravis.gov/
+      note: County administers city elections.
+    campaign_finance:
+      name: Austin City Clerk
+      url: https://www.austintexas.gov/department/city-clerk
+
+  - id: US-FL-JACKSONVILLE
+    name: Jacksonville
+    level: city
+    state: FL
+    election:
+      name: Duval County Supervisor of Elections
+      url: https://www.duvalelections.com/
+    notes: Jacksonville Office of Ethics holds municipal filings; the department URL was not verified, so this stays a gap.
+
+  - id: US-TX-FORT-WORTH
+    name: Fort Worth
+    level: city
+    state: TX
+    election:
+      name: Tarrant County Elections
+      url: https://www.tarrantcounty.com/en/elections.html
+      note: County administers city elections.
+    campaign_finance:
+      name: Fort Worth City Secretary
+      url: https://www.fortworthtexas.gov/departments/city-secretary
+
+  - id: US-OH-COLUMBUS
+    name: Columbus
+    level: city
+    state: OH
+    election:
+      name: Franklin County Board of Elections
+      url: https://vote.franklincountyohio.gov/
+      note: County administers city elections.
+    campaign_finance:
+      name: Columbus City Clerk
+      url: https://www.columbus.gov/Government/City-Clerk
+
+  - id: US-NC-CHARLOTTE
+    name: Charlotte
+    level: city
+    state: NC
+    election:
+      name: Mecklenburg County Board of Elections
+      url: https://www.meckboe.org/
+      note: County administers city elections.
+    campaign_finance:
+      name: Charlotte City Clerk
+      url: https://charlottenc.gov/CityClerk/Pages/default.aspx
+
+  - id: US-IN-INDIANAPOLIS
+    name: Indianapolis
+    level: city
+    state: IN
+    election:
+      name: Marion County Election Board
+      url: https://www.indy.gov/agency/marion-county-election-board
+    campaign_finance:
+      name: Indianapolis City-County Clerk
+      url: https://www.indy.gov/agency/clerk
+
+  - id: US-CA-SAN-FRANCISCO
+    name: San Francisco
+    level: city
+    state: CA
+    election:
+      name: San Francisco Department of Elections
+      url: https://sfelections.sfgov.org/
+    campaign_finance:
+      name: San Francisco Ethics Commission
+      url: https://www.sfethics.org/
+
+  - id: US-WA-SEATTLE
+    name: Seattle
+    level: city
+    state: WA
+    election:
+      name: King County Elections
+      url: https://kingcounty.gov/en/dept/elections
+      note: County administers city elections.
+    campaign_finance:
+      name: Seattle Ethics and Elections Commission
+      url: https://www.seattle.gov/ethics
+
+  - id: US-CO-DENVER
+    name: Denver
+    level: city
+    state: CO
+    election:
+      name: Denver Elections Division
+      url: https://www.denvergov.org/elections
+    campaign_finance:
+      name: Denver Elections Division, Campaign Finance
+      url: https://www.denvergov.org/elections
+      note: Elections Division administers municipal campaign finance.
+
+  - id: US-TN-NASHVILLE
+    name: Nashville
+    level: city
+    state: TN
+    election:
+      name: Davidson County Election Commission
+      url: https://www.nashville.gov/departments/elections
+      note: County administers metro elections.
+    notes: No municipal campaign-finance portal was verified; filings may sit with the Metropolitan Board of Ethical Conduct.
+
+  - id: US-OK-OKLAHOMA-CITY
+    name: Oklahoma City
+    level: city
+    state: OK
+    election:
+      name: Oklahoma County Election Board
+      url: https://www.ok.gov/elections/
+      note: County administers city elections.
+    campaign_finance:
+      name: Oklahoma City Clerk
+      url: https://www.okc.gov/departments/city-clerk
+
+  - id: US-TX-EL-PASO
+    name: El Paso
+    level: city
+    state: TX
+    election:
+      name: El Paso County Elections
+      url: https://www.epcounty.com/elections/
+      note: County administers city elections.
+    campaign_finance:
+      name: El Paso City Clerk
+      url: https://www.elpasotexas.gov/city-clerk/
+
+  - id: US-MA-BOSTON
+    name: Boston
+    level: city
+    state: MA
+    election:
+      name: Boston Election Department
+      url: https://www.boston.gov/departments/elections
+    campaign_finance:
+      name: Massachusetts Office of Campaign and Political Finance
+      url: https://www.ocpf.us/
+      note: State agency covers municipal filings.
+
+  - id: US-OR-PORTLAND
+    name: Portland
+    level: city
+    state: OR
+    election:
+      name: Multnomah County Elections
+      url: https://multco.us/elections
+      note: County administers city elections.
+    campaign_finance:
+      name: Portland City Auditor, Elections
+      url: https://www.portland.gov/auditor
+
+  - id: US-NV-LAS-VEGAS
+    name: Las Vegas
+    level: city
+    state: NV
+    election:
+      name: Clark County Election Department
+      url: https://www.clarkcountynv.gov/elections
+      note: County administers city elections.
+    campaign_finance:
+      name: Las Vegas City Clerk
+      url: https://www.lasvegasnevada.gov/Government/City-Clerk
+
+  - id: US-MI-DETROIT
+    name: Detroit
+    level: city
+    state: MI
+    election:
+      name: Detroit City Clerk
+      url: https://detroitmi.gov/departments/city-clerk
+    campaign_finance:
+      name: Detroit City Clerk, Campaign Finance
+      url: https://detroitmi.gov/departments/city-clerk/campaign-finance
+
+  - id: US-TN-MEMPHIS
+    name: Memphis
+    level: city
+    state: TN
+    election:
+      name: Shelby County Election Commission
+      url: https://www.shelbyvote.com/
+      note: County administers city elections.
+    notes: No municipal campaign-finance portal identified; filings may be with the Shelby County Election Commission.
+
+  - id: US-KY-LOUISVILLE
+    name: Louisville
+    level: city
+    state: KY
+    election:
+      name: Jefferson County Clerk
+      url: https://www.jeffersoncountyclerk.org/
+    campaign_finance:
+      name: Kentucky Registry of Election Finance
+      url: https://kref.ky.gov/
+      note: State agency covers local filings.
+
+  - id: US-MD-BALTIMORE
+    name: Baltimore
+    level: city
+    state: MD
+    election:
+      name: Baltimore City Board of Elections
+      url: https://elections.baltimorecity.gov/
+    campaign_finance:
+      name: Baltimore City Ethics Board
+      url: https://ethics.baltimorecity.gov/
+
+  - id: US-WI-MILWAUKEE
+    name: Milwaukee
+    level: city
+    state: WI
+    election:
+      name: Milwaukee Election Commission
+      url: https://milwaukee.gov/election
+    campaign_finance:
+      name: Wisconsin Ethics Commission
+      url: https://ethics.wi.gov/
+      note: State agency covers local filings.
+
+  - id: US-NM-ALBUQUERQUE
+    name: Albuquerque
+    level: city
+    state: NM
+    election:
+      name: Bernalillo County Clerk
+      url: https://www.bernco.gov/clerk/
+      note: County administers city elections.
+    campaign_finance:
+      name: Albuquerque City Clerk
+      url: https://www.cabq.gov/clerk
+
+  - id: US-AZ-TUCSON
+    name: Tucson
+    level: city
+    state: AZ
+    election:
+      name: Pima County Recorder
+      url: https://www.recorder.pima.gov/
+      note: County administers city elections.
+    campaign_finance:
+      name: Tucson City Clerk
+      url: https://www.tucsonaz.gov/Departments/City-Clerk
+
+  - id: US-CA-FRESNO
+    name: Fresno
+    level: city
+    state: CA
+    election:
+      name: Fresno County Clerk/Registrar of Voters
+      url: https://www.fresnocountyca.gov/Departments/County-Clerk-Registrar-of-Voters
+      note: County administers city elections.
+    campaign_finance:
+      name: Fresno City Clerk
+      url: https://www.fresno.gov/cityclerk/
+
+  - id: US-CA-SACRAMENTO
+    name: Sacramento
+    level: city
+    state: CA
+    election:
+      name: Sacramento County Voter Registration and Elections
+      url: https://www.elections.saccounty.gov/
+      note: County administers city elections.
+    notes: Sacramento City Clerk holds municipal campaign filings; the department URL was not verified, so this stays a gap.
+
+  - id: US-MO-KANSAS-CITY
+    name: Kansas City
+    level: city
+    state: MO
+    election:
+      name: Kansas City Election Board
+      url: https://www.kceb.org/
+    campaign_finance:
+      name: Missouri Ethics Commission
+      url: https://www.mec.mo.gov/
+      note: State agency covers local filings.
+
+  - id: US-GA-ATLANTA
+    name: Atlanta
+    level: city
+    state: GA
+    election:
+      name: Fulton County Registration and Elections
+      url: https://www.fultoncountyga.gov/inside-fulton-county/fulton-county-departments/registration-and-elections
+      note: County administers city elections.
+    campaign_finance:
+      name: Atlanta City Clerk
+      url: https://www.atlantaga.gov/government/departments/city-clerk
+
+  - id: US-FL-MIAMI
+    name: Miami
+    level: city
+    state: FL
+    election:
+      name: Miami-Dade Elections Department
+      url: https://www.miamidade.gov/elections/
+      note: County administers city elections.
+    campaign_finance:
+      name: Miami City Clerk
+      url: https://www.miamigov.com/Government/City-Clerk
+
+  - id: US-NC-RALEIGH
+    name: Raleigh
+    level: city
+    state: NC
+    election:
+      name: Wake County Board of Elections
+      url: https://www.wake.gov/departments-government/board-elections
+      note: County administers city elections.
+    campaign_finance:
+      name: Raleigh City Clerk
+      url: https://raleighnc.gov/city-clerk
+
+  - id: US-NE-OMAHA
+    name: Omaha
+    level: city
+    state: NE
+    election:
+      name: Douglas County Election Commission
+      url: https://www.votedouglascounty.com/
+      note: County administers city elections.
+    campaign_finance:
+      name: Nebraska Accountability and Disclosure Commission
+      url: https://nadc.nebraska.gov/
+      note: State agency covers local filings.
+
+  - id: US-VA-VIRGINIA-BEACH
+    name: Virginia Beach
+    level: city
+    state: VA
+    election:
+      name: Virginia Beach Voter Registration and Elections
+      url: https://www.vbgov.com/government/departments/voter-registration
+    campaign_finance:
+      name: Virginia Department of Elections
+      url: https://www.elections.virginia.gov/
+      note: State agency covers local filings.

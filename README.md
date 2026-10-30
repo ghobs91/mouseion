@@ -333,6 +333,41 @@ Four rules hold this together:
 4. **`cursor.next` is the only pagination token** the model ever handles. Upstream offsets, page
    numbers and opaque page tokens all collapse into it.
 
+## Local elections: registry, then discovery
+
+Local-election coverage is not a provider list; it is a jurisdiction registry plus a
+probe. `jurisdictions.yaml` holds 96 entries: 50 states, DC, five territories, and 40
+major cities, each with its official election authority and, where one exists, its
+campaign-finance authority.
+
+```bash
+.venv/bin/mouseion civic list
+.venv/bin/mouseion civic discover --concurrency 16 --out eval/civic-coverage.json
+```
+
+`civic discover` fetches every authority page in parallel and records what it actually
+serves, not what the seed hoped it would serve:
+
+| Format | Meaning | Next wave |
+|---|---|---|
+| `json`, `csv` | a machine-readable surface | promote now |
+| `html_tables` | tables on a page, no export | scrape to CSV |
+| `html` | prose or a JS shell | browser probe or manual |
+| `blocked` | edge bot protection (HTTP 403) | browser-capable probe |
+| `tls_error` | incomplete certificate chain | upstream fix or pinned chain |
+| `error`, `unreachable` | stale seed or dead host | re-seed |
+
+The committed run in `eval/civic-coverage.json` covers 182 authority URLs: 123 `html`,
+33 `blocked`, 19 `html_tables`, 3 `tls_error`, 2 `unreachable`, 1 `csv`, 1 `error`.
+That is the honest starting point: most state portals are HTML or JS, and a third sit
+behind an edge WAF that a plain HTTP client cannot pass.
+
+A jurisdiction becomes a provider only after its surface passes the probe. Until then
+it is a registry row, and an unregistered or non-machine-readable jurisdiction should
+return `web_search_required` rather than an invented record. The `csv` adapter exists
+for the wave-1 and wave-2 promotions: point it at a bulk export, project the columns,
+and page the file locally.
+
 ## Adding a provider
 
 A provider is a YAML file in `providers/`. Only genuinely bespoke upstreams need Python.
@@ -379,14 +414,14 @@ optional):
 
 | Key | Meaning |
 |---|---|
-| `domain` | one of the seven routing domains: `financial_sovereign`, `academic_scientific`, `developer_infrastructure`, `geo_earth_observation`, `archives_web_state`, `transport_infrastructure`, `governance_legislative` |
+| `domain` | one of the nine routing domains: `financial_sovereign`, `academic_scientific`, `developer_infrastructure`, `geo_earth_observation`, `archives_web_state`, `transport_infrastructure`, `governance_legislative`, `civic_local`, `commerce` |
 | `sub_category` | finer topic within the domain, e.g. `economic_series` |
 | `source` | primary-source policy: `is_primary`, `originator`, `originator_domain`, `provenance`, `tier`, `auth_policy`, `rate_limit`, optional `exception_reason` |
 | `cluster` | failover group. Two capabilities may fail over only when they share a cluster |
 | `query_map` | optional; enables `mouseion lookup`; required when `cluster` is set. Canonical field → source param, e.g. `{text: query, limit: limit}` |
 | `local_filter` | post-parse filter for catalogs with no server-side search: `{field: cveID, param: cve_id}` |
 | `category` | compatibility tag; `domain` is what the router uses |
-| `adapter` | `rest_json` (default) or `socrata` |
+| `adapter` | `rest_json` (default), `socrata`, `atom`, `sdmx_json`, `cdx`, or `csv` |
 | `path` | path under `base`; `{name}` segments are substituted from params |
 | `params` | name → `{type, description, required, default, enum}`; a bare string is shorthand for the type |
 | `alias` | friendly param name → upstream name (`status` → `filter.overallStatus`). Pagination params are not aliasable |
@@ -602,7 +637,7 @@ never as an upstream 403.
 
 Five adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`, `cdx`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 304 offline tests and 84 live contract tests.
+eval, MCP server, CLI, GBNF export, 323 offline tests and 84 live contract tests.
 
 Eleven upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -638,7 +673,7 @@ Eleven upstream behaviours the adapter contract had to grow for, all now generic
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 304 offline: fixture replay
+pytest                    # 323 offline: fixture replay
 pytest -m live            # 84 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```

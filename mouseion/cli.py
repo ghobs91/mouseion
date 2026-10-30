@@ -58,6 +58,59 @@ async def _run(args: argparse.Namespace) -> int:
         _print({"count": len(written), "fixtures": written})
         return 0
 
+    if args.command == "civic":
+        from .civic import DEFAULT_PATH, discover, load_jurisdictions
+
+        jurisdictions = load_jurisdictions(args.jurisdictions or DEFAULT_PATH)
+        if args.level:
+            jurisdictions = [j for j in jurisdictions if j.level == args.level]
+        if args.state:
+            wanted = args.state.upper()
+            jurisdictions = [j for j in jurisdictions if j.state == wanted]
+        if args.limit:
+            jurisdictions = jurisdictions[: args.limit]
+
+        if args.action == "list":
+            by_level: dict[str, int] = {}
+            for jurisdiction in jurisdictions:
+                by_level[jurisdiction.level] = by_level.get(jurisdiction.level, 0) + 1
+            _print(
+                {
+                    "jurisdictions": len(jurisdictions),
+                    "by_level": by_level,
+                    "entries": [
+                        {
+                            "id": j.id,
+                            "name": j.name,
+                            "level": j.level,
+                            "election": j.election.url if j.election else None,
+                            "campaign_finance": (
+                                j.campaign_finance.url if j.campaign_finance else None
+                            ),
+                        }
+                        for j in jurisdictions
+                    ],
+                }
+            )
+            return 0
+
+        report = await discover(
+            jurisdictions,
+            concurrency=args.concurrency,
+            timeout=args.timeout,
+            links_to_probe=args.links,
+        )
+        if args.out:
+            out = Path(args.out)
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(
+                json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8"
+            )
+            report = {key: value for key, value in report.items() if key != "results"}
+            report["written"] = str(out)
+        _print(report)
+        return 0
+
     app = build()
     try:
         if args.command == "auth":
@@ -252,6 +305,23 @@ def main() -> None:
     p.add_argument("--catalog-limit", type=int, default=None)
     p.add_argument("--probe-limit", type=int, default=None)
     p.add_argument("--write", default=None, help="directory for generated manifests")
+
+    p = sub.add_parser(
+        "civic", help="local-election jurisdiction registry and coverage discovery"
+    )
+    p.add_argument("action", choices=["discover", "list"])
+    p.add_argument(
+        "--jurisdictions", default=None, help="path to jurisdictions.yaml"
+    )
+    p.add_argument("--level", choices=["state", "territory", "city"])
+    p.add_argument("--state", help="two-letter state code filter")
+    p.add_argument("--limit", type=int, default=None)
+    p.add_argument("--concurrency", type=int, default=12)
+    p.add_argument("--timeout", type=float, default=20.0)
+    p.add_argument(
+        "--links", type=int, default=2, help="machine-readable links to probe per page"
+    )
+    p.add_argument("--out", default=None, help="write the full coverage report to a JSON file")
 
     p = sub.add_parser("search", help="search the provider index")
     p.add_argument("query")

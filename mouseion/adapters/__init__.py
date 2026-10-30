@@ -3,6 +3,7 @@ from __future__ import annotations
 from .atom import AtomAdapter
 from .base import Adapter, AdapterResult, PreparedRequest, extract_records
 from .cdx import CdxAdapter
+from .csv_adapter import CsvAdapter
 from .rest_json import RestJsonAdapter
 from .sdmx_json import SdmxJsonAdapter
 from .socrata import SocrataAdapter
@@ -15,6 +16,7 @@ ADAPTERS: dict[str, Adapter] = {
         AtomAdapter(),
         SdmxJsonAdapter(),
         CdxAdapter(),
+        CsvAdapter(),
     )
 }
 

@@ -9,6 +9,9 @@ echo "== offline tests"
 echo "== source-policy audit"
 .venv/bin/mouseion audit
 
+echo "== jurisdiction registry"
+.venv/bin/mouseion civic list > /dev/null
+
 echo "== local readiness"
 .venv/bin/mouseion doctor
 
