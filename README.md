@@ -65,11 +65,19 @@ MCP server (stdio):
 .venv/bin/python -m mouseion.server
 ```
 
-Tests:
+Tests and readiness:
 
 ```bash
-.venv/bin/pytest -q
+.venv/bin/pytest -q          # offline
+.venv/bin/mouseion audit     # source policy
+.venv/bin/mouseion doctor    # registry, cache, embeddings
+.venv/bin/mouseion doctor --model-url http://127.0.0.1:8889  # Unsloth
+./scripts/smoke.sh           # all of the above + one keyless lookup
 ```
+
+`doctor` never calls an upstream provider. It checks the registry, the source-policy
+audit, the SQLite cache, the embedding backend, and (with `--model-url`) an
+OpenAI-compatible model server. `smoke.sh` adds one keyless npm lookup.
 
 ## The four tools
 
@@ -497,7 +505,7 @@ never as an upstream 403.
 
 Four adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 281 offline tests and 79 live contract tests.
+eval, MCP server, CLI, GBNF export, 282 offline tests and 79 live contract tests.
 
 Ten upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -531,7 +539,7 @@ Ten upstream behaviours the adapter contract had to grow for, all now generic:
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 281 offline: fixture replay
+pytest                    # 282 offline: fixture replay
 pytest -m live            # 79 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```

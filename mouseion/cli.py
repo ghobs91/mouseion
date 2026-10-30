@@ -60,6 +60,12 @@ async def _run(args: argparse.Namespace) -> int:
 
     app = build()
     try:
+        if args.command == "doctor":
+            from .doctor import doctor
+
+            report = await doctor(app, model_url=args.model_url)
+            _print(report)
+            return 0 if report["ok"] else 1
         if args.command == "lookup":
             params = json.loads(args.params) if args.params else None
             result = await app.engine.lookup(
@@ -169,6 +175,13 @@ def main() -> None:
     p.add_argument("--live", action="store_true", help="also check evidence URLs")
     p.add_argument("--provider", help="audit one provider")
     p.add_argument("--strict", action="store_true", help="treat warnings as failures")
+
+    p = sub.add_parser("doctor", help="check local readiness")
+    p.add_argument(
+        "--model-url",
+        default=None,
+        help="OpenAI-compatible model server base URL, e.g. http://127.0.0.1:8889",
+    )
 
     p = sub.add_parser("lookup", help="route, execute, and fail over within a capability cluster")
     p.add_argument("query")
