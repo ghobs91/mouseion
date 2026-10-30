@@ -470,6 +470,10 @@ mcp_servers:
     enabled: true
 ```
 
+If Hermes reports `missing executable .../.venv/bin/python`, the project venv was
+removed. Run `uv sync --extra dev`, then `/reload-mcp` or restart Hermes. Hermes parks
+a server after a permanent startup error and does not retry it automatically.
+
 Hermes can also add remote MCP servers directly. For CourtListener:
 
 ```bash
