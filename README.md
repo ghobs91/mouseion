@@ -1,10 +1,11 @@
 # mouseion
 
-One tool surface over many public-record APIs, for a model running on your own machine.
+One tool surface over primary-source APIs across general topics, for a model running on your own machine.
 
 The premise: most factual questions do not need a search engine. They need the register,
-the filing, the dataset, or the table that the search engine would have cited. If the model
-can call the source directly, it gets the primary record, a citable URL, and no SERP
+the filing, the dataset, the table, the catalog, or the official endpoint that the search
+engine would have cited. Public records are the largest domain, not the only one. If the
+model can call the source directly, it gets the primary record, a citable URL, and no SERP
 interpretation step.
 
 Firecrawl's Alexandria solves this with a hosted proxy: one API key, credits, their
