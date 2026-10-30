@@ -34,6 +34,9 @@ class SocrataAdapter(Adapter):
         cursor: str | None,
     ) -> PreparedRequest:
         merged = self.resolve_params(manifest, capability, params)
+        merged = self.resolve_dataset(capability, merged)
+        template_params = dict(merged)
+        path = self.substitute_path(capability.path, merged)
 
         # Pagination runs before SOQL renaming so `limit`/`offset` are still plain keys.
         state = self.apply_pagination(capability, merged, cursor)
@@ -43,10 +46,11 @@ class SocrataAdapter(Adapter):
         self.apply_auth(manifest, query, headers)
         return PreparedRequest(
             method="GET",
-            url=(capability.base or manifest.base).rstrip("/") + "/" + capability.path.lstrip("/"),
+            url=(capability.base or manifest.base).rstrip("/") + "/" + path.lstrip("/"),
             params=query,
             headers=headers,
             pagination_state=state,
+            template_params=template_params,
         )
 
     def parse(

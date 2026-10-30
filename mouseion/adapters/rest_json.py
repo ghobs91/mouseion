@@ -20,6 +20,7 @@ class RestJsonAdapter(Adapter):
         cursor: str | None,
     ) -> PreparedRequest:
         merged = self.resolve_params(manifest, capability, params)
+        merged = self.resolve_dataset(capability, merged)
         # Path params are popped by substitution, so snapshot them first: URL
         # templates still need them to build a citation link.
         template_params = dict(merged)

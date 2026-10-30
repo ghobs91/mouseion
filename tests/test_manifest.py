@@ -57,6 +57,7 @@ def test_all_manifests_load(registry):
         "sec_edgar",
         "sf_open_data",
         "hawaii_campaign_spending",
+        "king_county_election_results",
         "la_campaign_finance",
         "ny_campaign_finance",
         "nyc_campaign_finance",

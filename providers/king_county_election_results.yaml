@@ -1,0 +1,146 @@
+id: king_county_election_results
+title: King County Election Results
+category: government
+domain: civic_local
+sub_category: election_results
+transport: http
+adapter: socrata
+base: https://data.kingcounty.gov
+regions: [US]
+description: >-
+  Precinct-level election results for King County, Washington, from 2004 to 2026.
+  King County publishes one dataset per election, so this provider maps a stable
+  election key to the right dataset and projects the columns the datasets share.
+  Returns race, precinct, party, vote type and count.
+docs_url: https://data.kingcounty.gov/
+keywords:
+  - election results
+  - king county
+  - seattle
+  - washington
+  - precinct results
+  - vote counts
+  - ballot results
+attribution: "King County Elections"
+source:
+  is_primary: true
+  originator: "King County Elections"
+  originator_domain: data.kingcounty.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.kingcounty.gov/
+    verified_at: 2026-10-30
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 604800
+capabilities:
+  results:
+    description: >-
+      Read one King County election by precinct. Pass `election` as a key such as
+      `2024_general` or `2026_primary`; `provider_describe` lists every key.
+      Final results are included; election-night abstracts are not.
+    path: /resource/{dataset}.json
+    dataset_param: election
+    datasets:
+      2004_general: "y923-fti2"
+      2007_primary: "ia2i-5yms"
+      2008_general: "7x99-befe"
+      2008_primary: "9ycg-yemn"
+      2008_special_may: "8ih8-hp62"
+      2009_general: "c34s-iuef"
+      2009_primary: "v3s3-gxuf"
+      2009_special_february: "pg4p-fsqw"
+      2009_special_march: "pccn-qvps"
+      2010_general: "jet5-cigp"
+      2010_primary: "4h7u-3cfs"
+      2010_special_april: "78i8-98rd"
+      2010_special_february: "d4y4-sjx2"
+      2011_general: "hgu2-qaye"
+      2011_primary: "2ncr-4kkv"
+      2011_special_april: "xhwu-st2x"
+      2011_special_february: "dx5r-rh67"
+      2012_general: "u6ig-5qm8"
+      2012_primary: "puqn-qiix"
+      2012_primary_pco: "bugx-hcah"
+      2012_special_april: "kt8p-gznb"
+      2012_special_february: "6vxy-geiz"
+      2013_general: "vrn2-xcr7"
+      2013_primary: "e537-zsyr"
+      2013_special_april: "xqt5-mdmf"
+      2013_special_february: "96im-qsys"
+      2013_special_june: "nxbm-wwb2"
+      2014_general: "44iw-f49v"
+      2014_primary: "fps8-w6vc"
+      2014_special_april: "q52v-pcg7"
+      2014_special_february: "5k8z-4j5e"
+      2015_general: "kncv-f6kh"
+      2015_primary: "pyps-tcwb"
+      2015_special_april: "qg8b-ssmp"
+      2015_special_february: "vuav-jn4q"
+      2016_general: "b27z-cdmk"
+      2016_presidential_primary: "eutd-6iwc"
+      2016_primary: "d9qg-mtfe"
+      2016_special_april: "h7ha-u4dg"
+      2016_special_february: "fku3-m3bn"
+      2017_general: "xmvr-b3my"
+      2017_primary: "u623-b62i"
+      2018_general: "ghxg-x8xz"
+      2018_primary: "juuz-29xu"
+      2019_general: "xmnh-jvpd"
+      2019_primary: "5w78-yput"
+      2019_special_april: "a2zh-y5ws"
+      2019_special_february: "avau-3mp6"
+      2020_general: "2824-fjrn"
+      2020_presidential_primary: "b2eb-z7mt"
+      2020_primary: "nxks-avij"
+      2021_general: "4qrf-rjar"
+      2021_primary: "qcmx-yn3v"
+      2021_special_april: "tkus-q8jm"
+      2022_general: "u2qf-rdct"
+      2022_primary: "3x47-qger"
+      2022_special_april: "ctwv-37c3"
+      2022_special_february: "4sis-3bfv"
+      2023_general: "wbb4-8cse"
+      2023_primary: "d2fg-jfgn"
+      2023_special_april: "syi8-eymu"
+      2023_special_february: "d4v3-uzxc"
+      2024_general: "uuda-pmuy"
+      2024_presidential_primary: "fgy8-f74t"
+      2024_primary: "8hha-3qun"
+      2024_special_april: "hcer-d25g"
+      2024_special_february: "upu5-4n8j"
+      2025_general: "rkie-6y8x"
+      2025_primary: "gw6p-2tkd"
+      2025_special_april: "35gq-te9a"
+      2025_special_february: "kzmm-gq2e"
+      2026_primary: "2ydw-3iau"
+      2026_special_february: "vqgp-yqq9"
+    params:
+      election: {type: string, required: true, description: "election key, e.g. 2024_general"}
+      query: {type: string, description: "full-text search over race and precinct"}
+      race: {type: string, description: "race or contest name, exact match"}
+      precinct: {type: string, description: "precinct code, exact match"}
+      limit: {type: integer, default: 25}
+    alias: {query: q}
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 1000}
+    id_template: "{precinct}:{race}:{counter_group}:{counter_type}"
+    fields:
+      precinct: precinct
+      race: race
+      party: party
+      counter_group: countergroup
+      counter_type: [countertype, counttype]
+      votes: [sumofcount, count]
+      legislative_district: leg
+      county_council_district: cc
+      congressional_district: cong
+    source_url_template: "https://data.kingcounty.gov/d/{dataset}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - King County election results by precinct
+      - Seattle precinct vote counts
+      - how many votes did a candidate get in King County
+    example: {election: "2024_general", limit: 3}

@@ -574,7 +574,7 @@ itself. Mouseion's own remote-MCP proxy is for keeping one unified tool surface.
 
 ## What's here
 
-75 providers, 99 capabilities. The contract suite verifies every upstream live except the
+76 providers, 100 capabilities. The contract suite verifies every upstream live except the
 seven that need credentials this machine does not have (FRED, CourtListener, GitHub,
 Congress.gov, GovInfo, Shopify, and SEC's contact User-Agent is set but FRED's key is
 not). Their auth paths are verified.
@@ -645,6 +645,7 @@ not). Their auth paths are verified.
 | Austin Campaign Finance | none | `contributions` |
 | Dallas Campaign Finance | none | `transactions` |
 | Fulton County Election Results | none | `results` |
+| King County Election Results | none | `results` (73 elections, 2004–2026) |
 | Ramsey County Election Results | none | `results` |
 | UK National Archives | none | `search` |
 | UK Parliament | none | `bills` |
@@ -677,7 +678,7 @@ never as an upstream 403.
 
 Five adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`, `cdx`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 350 offline tests and 97 live contract tests.
+eval, MCP server, CLI, GBNF export, 355 offline tests and 98 live contract tests.
 
 Eleven upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -713,7 +714,7 @@ Eleven upstream behaviours the adapter contract had to grow for, all now generic
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 350 offline: fixture replay
+pytest                    # 355 offline: fixture replay
 pytest -m live            # 84 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
@@ -736,7 +737,7 @@ page token before a user does.
 
 ## What's deliberately not here
 
-- **Coverage.** 75 providers is a spine, not an index. The current gap matrix is in
+- **Coverage.** 76 providers is a spine, not an index. The current gap matrix is in
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
   molecular repositories, transit, and the Cat 1 stretch. Most are keyless or free-key;
   each needs a manifest, a fixture, a live contract, and an audit entry before it counts.

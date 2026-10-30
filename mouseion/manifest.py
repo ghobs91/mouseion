@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any, Literal, get_args
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationInfo, field_validator, model_validator
 
 ParamType = Literal["string", "integer", "number", "boolean", "array", "object"]
 
@@ -183,6 +183,11 @@ class Capability(BaseModel):
     record_path: str | None = None
     #: Dotted path (against the normalized record) holding the stable upstream id.
     id_field: str | None = None
+    #: Portals that publish one dataset per election: friendly key -> resource id.
+    #: `path` then uses `{dataset}`, which this map fills in.
+    datasets: dict[str, str] = Field(default_factory=dict)
+    #: Param that selects a key from `datasets`.
+    dataset_param: str = "dataset"
     #: Composite id built from normalized fields, e.g. "{report_date}:{market}".
     #: Takes precedence over id_field when both are set.
     id_template: str | None = None
@@ -268,6 +273,14 @@ class Capability(BaseModel):
             except re.error as exc:
                 raise ValueError(f"invalid pattern {pattern!r}: {exc}") from None
         return value
+
+    @model_validator(mode="after")
+    def _dataset_param_is_declared(self) -> "Capability":
+        if self.datasets and self.dataset_param not in self.params:
+            raise ValueError(
+                f"dataset_param '{self.dataset_param}' must be declared in params"
+            )
+        return self
 
     def required_params(self) -> list[str]:
         return [name for name, spec in self.params.items() if spec.required]
@@ -402,6 +415,7 @@ class Manifest(BaseModel):
                     for pname, pspec in cap.params.items()
                 },
                 "pagination": cap.pagination.mode if cap.pagination else None,
+                "datasets": sorted(cap.datasets) or None,
                 "example": cap.example,
             }
         return {

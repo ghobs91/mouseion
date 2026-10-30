@@ -235,6 +235,32 @@ class Adapter(ABC):
             return
         result.next_cursor = self.next_cursor(capability, body, request.pagination_state)
 
+    def resolve_dataset(
+        self, capability: Capability, params: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Fill `{dataset}` from a named per-election dataset map.
+
+        Some portals publish one dataset per election instead of one table with an
+        election column. The caller names the election; the manifest owns the id.
+        """
+        if not capability.datasets:
+            return params
+        key = params.get(capability.dataset_param)
+        if key in (None, ""):
+            raise ProviderError(
+                f"missing required param '{capability.dataset_param}'",
+                hint=f"available: {sorted(capability.datasets)}",
+            )
+        dataset = capability.datasets.get(str(key))
+        if dataset is None:
+            raise ProviderError(
+                f"unknown {capability.dataset_param} '{key}'",
+                hint=f"available: {sorted(capability.datasets)}",
+            )
+        # The selector is ours, not an upstream column: consume it.
+        rest = {k: v for k, v in params.items() if k != capability.dataset_param}
+        return {**rest, "dataset": dataset}
+
     def normalize(
         self, capability: Capability, raw: dict[str, Any]
     ) -> tuple[dict[str, Any], list[str]]:

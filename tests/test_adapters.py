@@ -410,3 +410,91 @@ def test_csv_adapter_rejects_a_non_csv_body():
     adapter = get_adapter(manifest.adapter)
     with pytest.raises(ProviderError):
         adapter.parse(manifest, cap, {"unexpected": True}, prepare(manifest, cap, {}))
+
+
+# -- named per-election datasets ------------------------------------------
+
+
+def _dataset_manifest():
+    from mouseion.manifest import Manifest
+
+    return Manifest.model_validate(
+        {
+            "id": "example_elections",
+            "title": "Example Election Results",
+            "domain": "civic_local",
+            "sub_category": "election_results",
+            "source": {
+                "originator": "Example County",
+                "originator_domain": "example.gov",
+                "auth_policy": {
+                    "evidence_url": "https://example.gov",
+                    "verified_at": "2026-10-30",
+                },
+            },
+            "base": "https://example.gov",
+            "adapter": "socrata",
+            "capabilities": {
+                "results": {
+                    "description": "One election by precinct",
+                    "path": "/resource/{dataset}.json",
+                    "dataset_param": "election",
+                    "datasets": {"2024_general": "abcd-1234", "2022_general": "efgh-5678"},
+                    "params": {
+                        "election": {"type": "string", "required": True},
+                        "limit": {"type": "integer", "default": 25},
+                    },
+                    "pagination": {"mode": "offset", "param": "offset", "limit_param": "limit"},
+                }
+            },
+        }
+    )
+
+
+def test_named_dataset_is_resolved_and_not_forwarded():
+    manifest = _dataset_manifest()
+    cap = manifest.capabilities["results"]
+    request = prepare(manifest, cap, {"election": "2024_general", "limit": 5})
+
+    assert request.url == "https://example.gov/resource/abcd-1234.json"
+    assert "election" not in request.params
+    assert request.params["$limit"] == 5
+    assert request.template_params["dataset"] == "abcd-1234"
+
+
+def test_unknown_dataset_names_the_available_keys():
+    from mouseion.envelope import ProviderError
+
+    manifest = _dataset_manifest()
+    cap = manifest.capabilities["results"]
+    with pytest.raises(ProviderError) as exc:
+        prepare(manifest, cap, {"election": "1999_general"})
+    assert "2024_general" in exc.value.to_dict()["hint"]
+
+
+def test_dataset_param_must_be_declared():
+    from mouseion.manifest import Manifest
+
+    with pytest.raises(Exception, match="dataset_param"):
+        Manifest.model_validate(
+            {
+                "id": "bad",
+                "title": "Bad",
+                "domain": "civic_local",
+                "sub_category": "election_results",
+                "source": {
+                    "originator": "X",
+                    "originator_domain": "x.gov",
+                    "auth_policy": {"evidence_url": "https://x.gov", "verified_at": "2026-10-30"},
+                },
+                "base": "https://x.gov",
+                "capabilities": {
+                    "results": {
+                        "description": "x",
+                        "path": "/resource/{dataset}.json",
+                        "datasets": {"a": "b"},
+                        "params": {},
+                    }
+                },
+            }
+        )

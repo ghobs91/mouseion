@@ -39,6 +39,7 @@ _GENERIC_NAME_TOKENS = {
     "new", "city", "state", "data", "open", "national", "federal", "public",
     "center", "office", "commission", "board", "bureau", "agency", "service",
     "services", "system", "project", "program", "index", "search", "api",
+    "results", "records", "list", "details",
 }
 
 
