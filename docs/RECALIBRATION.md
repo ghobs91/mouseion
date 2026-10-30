@@ -8,12 +8,12 @@ remain gated on the Phase 2 evaluation.
 fields, 36-manifest backfill, `mouseion audit`, audit tests, and CI. Phase 2 complete:
 canonical query, cluster-only failover, attempt tracing, rate limiting, circuit breaker,
 single-flight, and `mouseion lookup`. Phase 3 in progress: `financial_sovereign`,
-`academic_scientific`, `developer_infrastructure`, `geo_earth_observation`, and
-`governance_legislative` have met their targets; archives and transport remain. Remote
-MCP/OAuth support was added for CourtListener. IMF, BoJ, OECD, BIS, and on-chain nodes
-remain as Cat 1 stretch.
+`academic_scientific`, `developer_infrastructure`, `geo_earth_observation`,
+`governance_legislative`, and `archives_web_state` have met their targets; transport
+remains. Remote MCP/OAuth support was added for CourtListener. IMF, BoJ, OECD, BIS, and
+on-chain nodes remain as Cat 1 stretch.
 **Basis:** the 2026-10-29 specification plus the repository as it actually stands:
-57 providers, 80 capabilities, 290 passing offline tests, 79 live contract tests.
+61 providers, 85 capabilities, 301 passing offline tests, 84 live contract tests.
 
 ---
 
@@ -396,7 +396,7 @@ spec's own examples plus the obvious adjacent authorities.
 | `academic_scientific` | 14 | 14 | Complete: arXiv, PMC, PubChem, UniProt, Wikidata; existing Crossref, DataCite, OpenAlex, ROR, Zenodo, PubMed, ClinicalTrials, NIH RePORTER, GBIF | P1 |
 | `developer_infrastructure` | 8 | 8 | Complete: npm, PyPI, crates.io, Go proxy, Maven Central, CISA KEV, GitHub REST | P1 |
 | `geo_earth_observation` | 12 | 12 | Complete: Nominatim, Overpass, NASA EONET, NOAA Tides; existing Census, NHC, NWS, NYC Open Data, OpenFEMA, DataSF, USGS earthquakes, USGS water | P2 |
-| `archives_web_state` | 1 | 5 | Wayback CDX, NARA catalog, Library of Congress, one national archive | P2 |
+| `archives_web_state` | 5 | 5 | Complete: Internet Archive, Wayback, Library of Congress, UK National Archives; existing OpenLibrary | P2 |
 | `transport_infrastructure` | 1 | 8 | 5–8 transit agencies with GTFS/GTFS-RT; State Dept travel; ISBN via OpenLibrary (exception) | P3 |
 | `governance_legislative` | 11 | 10 | Target met: Congress.gov, GovInfo, UK Parliament, CourtListener MCP (OAuth); existing CMS, CourtListener REST, data.gov.au, Federal Register, GOV.UK, Grants.gov, openFDA | P2 |
 

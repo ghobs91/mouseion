@@ -1,0 +1,127 @@
+id: internet_archive
+title: Internet Archive items
+category: reference
+domain: archives_web_state
+sub_category: digital_library
+description: >-
+  The Internet Archive's item search and metadata APIs: books, audio, video,
+  software and web collections with identifiers, titles, creators, dates and
+  media types. Keyless. Use `search` to find items and `metadata` for one item.
+docs_url: https://archive.org/advancedsearch.php
+keywords:
+  - internet archive
+  - archive.org
+  - digital library
+  - books
+  - audio
+  - video
+  - software
+  - collection
+  - item metadata
+  - identifier
+base: https://archive.org
+adapter: rest_json
+auth:
+  type: none
+attribution: "Internet Archive"
+source:
+  is_primary: true
+  originator: "Internet Archive"
+  originator_domain: archive.org
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://archive.org/
+    verified_at: 2026-10-30
+  rate_limit:
+    per_min: 60
+    burst: 5
+    concurrency: 2
+cache_ttl: 86400
+limits:
+  rps: 1
+capabilities:
+  search:
+    description: >-
+      Search Internet Archive items. Returns identifier, title, year, creator,
+      media type, downloads and item size.
+    path: /advancedsearch.php
+    params:
+      q:
+        type: string
+        required: true
+        description: Solr query, e.g. 'title:(great gatsby)' or mediatype:texts.
+      limit:
+        type: integer
+        description: Items per page (1-100, default 10).
+        default: 10
+    defaults:
+      output: json
+      fl[]:
+        - identifier
+        - title
+        - year
+        - creator
+        - mediatype
+        - downloads
+        - item_size
+    pagination:
+      mode: page
+      param: page
+      limit_param: rows
+      default_limit: 10
+      max_limit: 100
+      start: 1
+    record_path: response.docs
+    id_field: identifier
+    query_map:
+      text: q
+      limit: limit
+    source_url_template: "https://archive.org/details/{identifier}"
+    fields:
+      identifier: identifier
+      title: title
+      year: year
+      creator: creator
+      media_type: mediatype
+      downloads: downloads
+      item_size: item_size
+    exemplars:
+      - Internet Archive books about the Great Gatsby
+      - archive.org audio recordings of a speech
+      - public domain films in the Internet Archive
+      - item metadata for an archive.org identifier
+    example:
+      q: "title:(great gatsby)"
+      limit: 5
+  metadata:
+    description: >-
+      Read metadata for one Internet Archive item by identifier. Returns title,
+      creator, date, media type, description, licence and storage location.
+    path: /metadata/{identifier}
+    params:
+      identifier:
+        type: string
+        required: true
+        description: Archive.org identifier, e.g. greatgatsby0000fitz.
+    record_path: null
+    id_field: identifier
+    source_url_template: "https://archive.org/details/{identifier}"
+    fields:
+      identifier: metadata.identifier
+      title: metadata.title
+      creator: metadata.creator
+      date: metadata.date
+      media_type: metadata.mediatype
+      description: metadata.description.0
+      license: metadata.licenseurl
+      server: d1
+      directory: dir
+    exemplars:
+      - metadata for archive.org item greatgatsby0000fitz
+      - creator and date of an Internet Archive item
+    example:
+      identifier: greatgatsby0000fitz

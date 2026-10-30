@@ -1,0 +1,93 @@
+id: library_of_congress
+title: Library of Congress
+category: reference
+domain: archives_web_state
+sub_category: national_library
+description: >-
+  The Library of Congress JSON search API: catalog records, digitized books,
+  newspapers, photographs, manuscripts and webcasts with title, date, creator,
+  description, format and item URL. Keyless.
+docs_url: https://www.loc.gov/apis/
+keywords:
+  - library of congress
+  - loc
+  - catalog
+  - book
+  - newspaper
+  - photograph
+  - manuscript
+  - archive
+  - american memory
+  - chronicling america
+base: https://www.loc.gov
+adapter: rest_json
+auth:
+  type: none
+attribution: "Library of Congress"
+source:
+  is_primary: true
+  originator: "Library of Congress"
+  originator_domain: loc.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.loc.gov/
+    verified_at: 2026-10-30
+  rate_limit:
+    per_min: 30
+    burst: 2
+    concurrency: 1
+cache_ttl: 86400
+limits:
+  rps: 0.5
+capabilities:
+  search:
+    description: >-
+      Search the Library of Congress catalog and digitized collections. Returns
+      title, date, creator, description, format, item id and item URL.
+    path: /search/
+    params:
+      q:
+        type: string
+        required: true
+        description: Search text, e.g. "great gatsby" or "civil war photographs".
+      limit:
+        type: integer
+        description: Records per page (1-100, default 25).
+        default: 25
+    defaults:
+      fo: json
+    pagination:
+      mode: page
+      param: sp
+      limit_param: c
+      default_limit: 25
+      max_limit: 100
+      start: 1
+    record_path: results
+    id_field: id
+    query_map:
+      text: q
+      limit: limit
+    source_url_template: "{url}"
+    fields:
+      id: id
+      title: title
+      date: date
+      creator: contributor
+      description: description.0
+      format: original_format
+      item_type: type
+      url: url
+      image_url: image_url.0
+    exemplars:
+      - Library of Congress books about the Great Gatsby
+      - historical photographs of the civil war
+      - LOC newspaper archive search
+      - manuscript collection at the Library of Congress
+    example:
+      q: great gatsby
+      limit: 5

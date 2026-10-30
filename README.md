@@ -492,7 +492,7 @@ itself. Mouseion's own remote-MCP proxy is for keeping one unified tool surface.
 
 ## What's here
 
-57 providers, 80 capabilities. The contract suite verifies every upstream live except the
+61 providers, 85 capabilities. The contract suite verifies every upstream live except the
 six that need credentials this machine does not have (FRED, CourtListener, GitHub,
 Congress.gov, GovInfo, and SEC's contact User-Agent is set but FRED's key is not). Their
 auth paths are verified.
@@ -519,6 +519,8 @@ auth paths are verified.
 | GBIF | none | `search_occurrences` |
 | GLEIF | none | `search_lei` |
 | GitHub | free token | `search_repositories`, `repository`, `releases`, `commits` |
+| Internet Archive | none | `search`, `metadata` |
+| Library of Congress | none | `search` |
 | Go module proxy | none | `latest` |
 | GOV.UK | none | `search_content` |
 | GovInfo | free key | `search`, `package` |
@@ -548,11 +550,13 @@ auth paths are verified.
 | SEC EDGAR | contact UA | `full_text_search`, `filings_by_cik` |
 | DataSF | none | `police_incidents` |
 | US Treasury Fiscal Data | none | `debt_to_penny`, `avg_interest_rates` |
+| UK National Archives | none | `search` |
 | UK Parliament | none | `bills` |
 | UniProt | none | `search`, `entry` |
 | USAspending | none | `spending_by_award` |
 | USGS earthquakes | none | `query` |
 | USGS water services | none | `instantaneous_values` |
+| Wayback | none | `snapshots` |
 | Wikidata | none | `search_entities`, `entity` |
 | World Bank | none | `indicator` |
 | Zenodo | none | `search_records` |
@@ -573,11 +577,11 @@ being unusable for more than a couple of calls; register a free key and pass it 
 `api_key`. Missing credentials surface as a structured error naming the exact variable,
 never as an upstream 403.
 
-Four adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`), SQLite cache with
+Five adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`, `cdx`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 290 offline tests and 79 live contract tests.
+eval, MCP server, CLI, GBNF export, 301 offline tests and 84 live contract tests.
 
-Ten upstream behaviours the adapter contract had to grow for, all now generic:
+Eleven upstream behaviours the adapter contract had to grow for, all now generic:
 
 - **POST + JSON body** (USAspending, NIH RePORTER, Grants.gov, BLS). `body_template`
   renders a nested body, keeps integer types intact, and drops optional fields instead of
@@ -603,14 +607,16 @@ Ten upstream behaviours the adapter contract had to grow for, all now generic:
   seconds without slowing every other provider.
 - **Full-URL next cursors** (GovInfo). `next_query_param` extracts the cursor from a
   `nextPage` URL instead of passing the whole URL as a token.
+- **Header-row arrays** (Wayback CDX). The `cdx` adapter zips the first row into field
+  names and turns the remaining rows into records.
 
 ## Contract tests
 
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 290 offline: fixture replay
-pytest -m live            # 79 live: every upstream, with the manifest example
+pytest                    # 301 offline: fixture replay
+pytest -m live            # 84 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
 
@@ -632,11 +638,10 @@ page token before a user does.
 
 ## What's deliberately not here
 
-- **Coverage.** 57 providers is a spine, not an index. The current gap matrix is in
+- **Coverage.** 61 providers is a spine, not an index. The current gap matrix is in
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
-  molecular repositories, archives, transit, and legislative registers. Most are
-  keyless or free-key; each needs a manifest, a fixture, a live contract, and an
-  audit entry before it counts.
+  molecular repositories, transit, and the Cat 1 stretch. Most are keyless or free-key;
+  each needs a manifest, a fixture, a live contract, and an audit entry before it counts.
 - **Write paths.** Everything here reads. No filings, no comments, no purchases.
 
 ## Honest ceiling

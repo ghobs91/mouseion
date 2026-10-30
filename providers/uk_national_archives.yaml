@@ -1,0 +1,84 @@
+id: uk_national_archives
+title: UK National Archives Discovery
+category: reference
+domain: archives_web_state
+sub_category: national_archive
+description: >-
+  The UK National Archives Discovery API: search catalog records held by The
+  National Archives and other UK archives, with reference, title, covering dates,
+  holding institution, department and catalogue level. Keyless.
+docs_url: https://discovery.nationalarchives.gov.uk/API/sandbox/index
+keywords:
+  - uk national archives
+  - discovery
+  - archive
+  - catalogue
+  - record
+  - reference
+  - british history
+  - manuscripts
+  - public records
+base: https://discovery.nationalarchives.gov.uk/API
+adapter: rest_json
+auth:
+  type: none
+attribution: "The National Archives (UK)"
+source:
+  is_primary: true
+  originator: "The National Archives (UK)"
+  originator_domain: nationalarchives.gov.uk
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.nationalarchives.gov.uk/
+    verified_at: 2026-10-30
+  rate_limit:
+    per_min: 60
+    burst: 2
+    concurrency: 1
+cache_ttl: 86400
+limits:
+  rps: 1
+capabilities:
+  search:
+    description: >-
+      Search UK archive catalog records. Returns record id, reference, title,
+      description, covering dates, holding institution and catalogue level.
+    path: /search/records
+    params:
+      sps.searchQuery:
+        type: string
+        required: true
+        description: Search text, e.g. "great gatsby" or "Titanic".
+      limit:
+        type: integer
+        description: Records per page (1-100, default 10).
+        default: 10
+    alias:
+      limit: sps.resultsPageSize
+    record_path: records
+    id_field: id
+    query_map:
+      text: sps.searchQuery
+      limit: limit
+    source_url_template: "https://discovery.nationalarchives.gov.uk/details/r/{id}"
+    fields:
+      id: id
+      reference: reference
+      title: title
+      description: description
+      covering_dates: coveringDates
+      held_by: heldBy
+      department: department
+      catalogue_level: catalogueLevel
+    exemplars:
+      - UK National Archives records about the Titanic
+      - British archive catalogue search
+      - records held by The National Archives
+      - historical manuscript reference
+    example:
+      sps.searchQuery: great gatsby
+      limit: 5

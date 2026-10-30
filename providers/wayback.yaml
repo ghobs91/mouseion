@@ -1,0 +1,96 @@
+id: wayback
+title: Internet Archive Wayback CDX
+category: reference
+domain: archives_web_state
+sub_category: web_archive
+description: >-
+  The Wayback Machine CDX index: historical captures of a URL with timestamp,
+  original URL, status code, MIME type, digest and size. Keyless. Use it to prove
+  what a page said at a point in time.
+docs_url: https://github.com/internetarchive/wayback/tree/master/wayback-cdx-server
+keywords:
+  - wayback
+  - internet archive
+  - web archive
+  - historical snapshot
+  - cdx
+  - archived page
+  - url history
+  - memento
+base: https://web.archive.org
+adapter: cdx
+auth:
+  type: none
+attribution: "Internet Archive Wayback Machine"
+source:
+  is_primary: true
+  originator: "Internet Archive"
+  originator_domain: archive.org
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://web.archive.org/
+    verified_at: 2026-10-30
+  rate_limit:
+    per_min: 30
+    burst: 2
+    concurrency: 1
+cache_ttl: 86400
+timeout_s: 90
+limits:
+  rps: 0.5
+  note: "CDX can be slow; use a bounded URL and limit."
+capabilities:
+  snapshots:
+    description: >-
+      List Wayback captures for a URL, optionally bounded by date and a CDX
+      filter. Returns timestamp, original URL, status code, MIME type, digest
+      and length.
+    path: /cdx/search/cdx
+    params:
+      url:
+        type: string
+        required: true
+        description: URL or domain, e.g. example.com.
+      from_date:
+        type: string
+        description: Start timestamp, e.g. 20200101.
+      to_date:
+        type: string
+        description: End timestamp, e.g. 20241231.
+      filter:
+        type: string
+        description: CDX filter, e.g. statuscode:200.
+      limit:
+        type: integer
+        description: Captures to return (1-100, default 10).
+        default: 10
+    defaults:
+      output: json
+      fl: timestamp,original,statuscode,mimetype,digest,length
+    alias:
+      from_date: from
+      to_date: to
+    id_template: "{timestamp}:{original}"
+    query_map:
+      text: url
+      limit: limit
+    source_url_template: "https://web.archive.org/web/{timestamp}/{original}"
+    fields:
+      timestamp: timestamp
+      original: original
+      status_code: statuscode
+      mime_type: mimetype
+      digest: digest
+      length: length
+    exemplars:
+      - historical snapshots of example.com
+      - what did a page look like in 2020
+      - Wayback captures for a URL
+      - archived version of a website
+    example:
+      url: example.com
+      limit: 5

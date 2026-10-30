@@ -125,6 +125,23 @@ def test_sdmx_json_flattens_series(registry):
     assert result.upstream_version == "2026-10-29T00:00:00Z"
 
 
+def test_cdx_adapter_maps_header_rows(registry):
+    manifest = registry.get("wayback")
+    cap = manifest.capabilities["snapshots"]
+    adapter = get_adapter(manifest.adapter)
+    req = prepare(manifest, cap, {"url": "example.com", "limit": 2})
+    body = [
+        ["timestamp", "original", "statuscode", "mimetype", "digest", "length"],
+        ["20200101000000", "http://example.com/", "200", "text/html", "abc", "10"],
+    ]
+
+    result = adapter.parse(manifest, cap, body, req)
+
+    assert len(result.records) == 1
+    assert result.records[0].data["timestamp"] == "20200101000000"
+    assert result.records[0].source_record_id == "20200101000000:http://example.com/"
+
+
 def test_path_substitution_quotes(registry):
     manifest = registry.get("clinicaltrials_gov")
     cap = manifest.capabilities["get"]
