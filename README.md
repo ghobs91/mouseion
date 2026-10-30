@@ -447,6 +447,38 @@ does not provide embeddings, so the router stays lexical. For the calibrated 47/
 router, use `MOUSEION_EMBED_BACKEND=fastembed` or point `MOUSEION_EMBED_URL` at a
 separate embedding server.
 
+### Hermes Agent
+
+Hermes speaks MCP natively, so register Mouseion as a stdio server:
+
+```bash
+hermes mcp add mouseion \
+  --command /Users/andrewg/Projects/mouseion/.venv/bin/python \
+  --args -m mouseion.server
+
+hermes mcp test mouseion
+```
+
+New Hermes sessions load the four tools automatically. Existing sessions need
+`/reload-mcp`. The saved entry is:
+
+```yaml
+mcp_servers:
+  mouseion:
+    command: /Users/andrewg/Projects/mouseion/.venv/bin/python
+    args: [-m, mouseion.server]
+    enabled: true
+```
+
+Hermes can also add remote MCP servers directly. For CourtListener:
+
+```bash
+hermes mcp add courtlistener --url https://mcp.courtlistener.com/ --auth oauth
+```
+
+That is the lower-friction path for CourtListener because Hermes runs the OAuth flow
+itself. Mouseion's own remote-MCP proxy is for keeping one unified tool surface.
+
 ## What's here
 
 57 providers, 80 capabilities. The contract suite verifies every upstream live except the
