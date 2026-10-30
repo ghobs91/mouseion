@@ -23,4 +23,5 @@ def test_doctor_reports_a_ready_registry(config):
     assert checks["audit"]["ok"] is True
     assert checks["cache"]["ok"] is True
     assert checks["embeddings"]["ok"] is True
+    assert checks["oauth"]["ok"] is True
     assert "model_server" not in checks

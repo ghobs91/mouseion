@@ -71,6 +71,19 @@ async def doctor(
         }
     )
 
+    oauth = app.cache.oauth_status()
+    checks.append(
+        {
+            "check": "oauth",
+            "ok": True,
+            "detail": (
+                f"{len(oauth)} provider(s) with stored OAuth state"
+                if oauth
+                else "none; run mouseion auth login <provider> for remote MCP"
+            ),
+        }
+    )
+
     if model_url:
         base = model_url.rstrip("/")
         try:

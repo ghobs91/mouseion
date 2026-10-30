@@ -14,6 +14,7 @@ def test_all_manifests_load(registry):
         "cms_provider",
         "congress_gov",
         "courtlistener",
+        "courtlistener_mcp",
         "crates_io",
         "crossref",
         "data_gov_au",

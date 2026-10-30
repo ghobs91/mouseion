@@ -35,6 +35,13 @@ CREATE TABLE IF NOT EXISTS vectors (
     vector     BLOB NOT NULL,
     created_at REAL NOT NULL
 );
+CREATE TABLE IF NOT EXISTS oauth (
+    provider    TEXT PRIMARY KEY,
+    client_info TEXT,
+    tokens      TEXT,
+    expires_at  REAL,
+    updated_at  REAL NOT NULL
+);
 """
 
 
@@ -161,6 +168,68 @@ class Cache:
                 "SELECT COUNT(*) FROM vectors WHERE model = ?", (model,)
             ).fetchone()
         return int(row[0]) if row else 0
+
+    # -- OAuth credentials ---------------------------------------------
+
+    def get_oauth(self, provider: str) -> dict[str, Any] | None:
+        row = self._conn.execute(
+            "SELECT client_info, tokens, expires_at FROM oauth WHERE provider = ?",
+            (provider,),
+        ).fetchone()
+        if row is None:
+            return None
+        client_info, tokens, expires_at = row
+        return {
+            "client_info": json.loads(client_info) if client_info else None,
+            "tokens": json.loads(tokens) if tokens else None,
+            "expires_at": expires_at,
+        }
+
+    def put_oauth(
+        self,
+        provider: str,
+        *,
+        client_info: dict[str, Any] | None = None,
+        tokens: dict[str, Any] | None = None,
+        expires_at: float | None = None,
+    ) -> None:
+        existing = self.get_oauth(provider) or {}
+        self._conn.execute(
+            "INSERT OR REPLACE INTO oauth"
+            " (provider, client_info, tokens, expires_at, updated_at)"
+            " VALUES (?, ?, ?, ?, ?)",
+            (
+                provider,
+                json.dumps(
+                    client_info if client_info is not None else existing.get("client_info"),
+                    default=str,
+                )
+                if (client_info is not None or existing.get("client_info") is not None)
+                else None,
+                json.dumps(
+                    tokens if tokens is not None else existing.get("tokens"),
+                    default=str,
+                )
+                if (tokens is not None or existing.get("tokens") is not None)
+                else None,
+                expires_at if expires_at is not None else existing.get("expires_at"),
+                time.time(),
+            ),
+        )
+        self._conn.commit()
+
+    def clear_oauth(self, provider: str) -> None:
+        self._conn.execute("DELETE FROM oauth WHERE provider = ?", (provider,))
+        self._conn.commit()
+
+    def oauth_status(self) -> dict[str, dict[str, bool]]:
+        rows = self._conn.execute(
+            "SELECT provider, client_info IS NOT NULL, tokens IS NOT NULL FROM oauth"
+        ).fetchall()
+        return {
+            provider: {"client": bool(has_client), "tokens": bool(has_tokens)}
+            for provider, has_client, has_tokens in rows
+        }
 
     def close(self) -> None:
         self._conn.close()

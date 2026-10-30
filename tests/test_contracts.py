@@ -35,6 +35,7 @@ def _capabilities() -> list[tuple[str, str]]:
     return [
         (manifest.id, name)
         for manifest in registry.manifests.values()
+        if manifest.transport == "http"
         for name in manifest.capabilities
     ]
 

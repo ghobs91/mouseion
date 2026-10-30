@@ -22,6 +22,7 @@ from .envelope import (
 )
 from .manifest import Capability, Manifest
 from .registry import Registry
+from .remote_mcp import RemoteMCPClient
 
 
 class ProviderClient:
@@ -36,6 +37,7 @@ class ProviderClient:
         self.registry = registry
         self.cache = cache
         self.config = config or default_settings
+        self.remote = RemoteMCPClient(cache, self.config)
         self._http = httpx.AsyncClient(
             timeout=self.config.timeout_s,
             follow_redirects=True,
@@ -56,6 +58,11 @@ class ProviderClient:
     ) -> Any:
         """Return the upstream body, unparsed. Used by the fixture recorder."""
         manifest = self._resolve(provider)
+        if manifest.transport == "mcp_remote":
+            raise ProviderError(
+                f"provider '{manifest.id}' is a remote MCP server",
+                hint="remote MCP providers cannot be recorded as fixtures",
+            )
         cap = self._resolve_capability(manifest, capability)
         adapter = get_adapter(cap.adapter or manifest.adapter)
         prepared = adapter.prepare(manifest, cap, dict(params or {}), cursor)
@@ -77,6 +84,9 @@ class ProviderClient:
         *,
         refresh: bool = False,
     ) -> Envelope:
+        manifest = self._resolve(provider)
+        if manifest.transport == "mcp_remote":
+            return await self.remote.call(manifest, capability, dict(params or {}))
         envelope, _ = await self.call_with_body(
             provider, capability, params, cursor, refresh=refresh
         )
@@ -93,6 +103,11 @@ class ProviderClient:
     ) -> tuple[Envelope, Any]:
         """Same as call(), but also returns the raw upstream body (fixture recording)."""
         manifest = self._resolve(provider)
+        if manifest.transport == "mcp_remote":
+            raise ProviderError(
+                f"provider '{manifest.id}' is a remote MCP server",
+                hint="remote MCP providers cannot be recorded as fixtures",
+            )
         cap = self._resolve_capability(manifest, capability)
         adapter = get_adapter(cap.adapter or manifest.adapter)
 

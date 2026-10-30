@@ -5,8 +5,8 @@ import pytest
 
 def test_summary_counts(registry):
     summary = registry.summary()
-    assert summary["providers"] == 56
-    assert summary["capabilities"] == 79
+    assert summary["providers"] == 57
+    assert summary["capabilities"] == 80
     assert summary["categories"] == {
         "government": 11,
         "places": 11,
@@ -16,7 +16,7 @@ def test_summary_counts(registry):
         "biomedical": 6,
         "health": 2,
         "company": 1,
-        "legal": 1,
+        "legal": 2,
         "life-sciences": 1,
         "reference": 2,
         "security": 1,
@@ -60,6 +60,7 @@ def test_compact_cards_are_small(registry):
     assert set(card) == {
         "id",
         "title",
+        "transport",
         "domain",
         "sub_category",
         "tier",

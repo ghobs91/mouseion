@@ -88,13 +88,17 @@ class Pagination(BaseModel):
 class Auth(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    type: Literal["none", "api_key", "user_agent"] = "none"
-    #: Environment variable holding the credential.
+    type: Literal["none", "api_key", "user_agent", "oauth"] = "none"
+    #: Environment variable holding the credential (api_key/user_agent).
     env: str | None = None
     #: Query param or header name receiving the credential.
     param: str | None = None
     location: Literal["query", "header"] = "header"
     prefix: str = ""
+    #: OAuth settings, used by remote MCP providers.
+    scopes: list[str] = Field(default_factory=list)
+    redirect_uri: str | None = None
+    client_name: str = "mouseion"
 
 
 class AuthPolicy(BaseModel):
@@ -300,6 +304,12 @@ class Manifest(BaseModel):
     id: str
     title: str
     category: str = "public-records"
+    #: HTTP REST is the default; mcp_remote proxies a remote MCP server.
+    transport: Literal["http", "mcp_remote"] = "http"
+    #: For remote MCP, expose only tools annotated readOnlyHint=true.
+    read_only_only: bool = True
+    #: Explicit remote tool allowlist; empty means use read_only_only.
+    allow_tools: list[str] = Field(default_factory=list)
     #: Required routing domain (one of the seven) and its finer sub-category.
     domain: Domain
     sub_category: str = Field(min_length=1)
@@ -336,6 +346,10 @@ class Manifest(BaseModel):
         return self.auth.type == "api_key"
 
     @property
+    def requires_oauth(self) -> bool:
+        return self.auth.type == "oauth"
+
+    @property
     def env_key_name(self) -> str | None:
         return self.auth.env if self.requires_key else None
 
@@ -344,6 +358,7 @@ class Manifest(BaseModel):
         return {
             "id": self.id,
             "title": self.title,
+            "transport": self.transport,
             "domain": self.domain,
             "sub_category": self.sub_category,
             "tier": self.source.tier,
@@ -384,6 +399,7 @@ class Manifest(BaseModel):
             "id": self.id,
             "title": self.title,
             "category": self.category,
+            "transport": self.transport,
             "domain": self.domain,
             "sub_category": self.sub_category,
             "description": self.description,

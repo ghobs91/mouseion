@@ -153,6 +153,8 @@ def audit_manifest(manifest: Manifest, *, today: date | None = None) -> list[Fin
     if manifest.source.tier == 1:
         if manifest.auth.type == "api_key":
             err("tier1_requires_key", "Tier 1 must be keyless; auth.type is api_key")
+        if manifest.auth.type == "oauth":
+            err("tier1_oauth", "Tier 1 must be keyless; auth.type is oauth")
         if manifest.auth.type == "user_agent" and not manifest.auth.env:
             err(
                 "user_agent_missing_env",
@@ -161,13 +163,23 @@ def audit_manifest(manifest: Manifest, *, today: date | None = None) -> list[Fin
         if manifest.auth.type == "none" and manifest.auth.env:
             warn("tier1_unused_env", "auth.env is set but auth.type is none")
     else:
-        if manifest.auth.type != "api_key":
+        if manifest.auth.type not in {"api_key", "oauth"}:
             err(
                 "tier2_not_api_key",
-                f"Tier 2 must use api_key auth; found '{manifest.auth.type}'",
+                f"Tier 2 must use api_key or oauth auth; found '{manifest.auth.type}'",
             )
-        if not manifest.auth.env:
-            err("tier2_missing_env", "Tier 2 must name auth.env")
+        if manifest.auth.type == "api_key" and not manifest.auth.env:
+            err("tier2_missing_env", "Tier 2 api_key auth must name auth.env")
+        if manifest.auth.type == "oauth":
+            if not manifest.auth.scopes:
+                err("oauth_missing_scopes", "OAuth auth must declare scopes")
+            if not manifest.auth.redirect_uri:
+                err("oauth_missing_redirect", "OAuth auth must declare redirect_uri")
+            if manifest.transport != "mcp_remote":
+                err(
+                    "oauth_requires_remote_mcp",
+                    "OAuth auth is only supported for transport=mcp_remote",
+                )
         policy = manifest.source.auth_policy
         if not policy.free:
             err("tier2_not_free", "Tier 2 must be permanently free")

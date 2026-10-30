@@ -94,8 +94,12 @@ def test_tier_two_sources_are_free_and_cardless():
     for manifest in registry.manifests.values():
         if manifest.source.tier != 2:
             continue
-        assert manifest.auth.type == "api_key"
-        assert manifest.auth.env
+        assert manifest.auth.type in {"api_key", "oauth"}
+        if manifest.auth.type == "api_key":
+            assert manifest.auth.env
+        else:
+            assert manifest.auth.scopes
+            assert manifest.auth.redirect_uri
         assert manifest.source.auth_policy.free
         assert not manifest.source.auth_policy.credit_card_required
         assert not manifest.source.auth_policy.trial
@@ -108,11 +112,19 @@ def test_tier_one_cannot_require_a_key():
     assert "tier1_requires_key" in codes(audit_manifest(manifest, today=TODAY))
 
 
-def test_tier_two_must_use_api_key_auth():
+def test_tier_two_must_use_api_key_or_oauth_auth():
     manifest = base_manifest()
     manifest.source.tier = 2
     found = codes(audit_manifest(manifest, today=TODAY))
     assert "tier2_not_api_key" in found
+
+
+def test_tier_two_api_key_must_name_an_env():
+    manifest = base_manifest()
+    manifest.source.tier = 2
+    manifest.auth.type = "api_key"
+    manifest.auth.env = None
+    found = codes(audit_manifest(manifest, today=TODAY))
     assert "tier2_missing_env" in found
 
 

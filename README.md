@@ -254,6 +254,32 @@ If every candidate fails, `web_search_required` is `true` and `reason` says why
 The engine is a library and CLI first. It is not a fifth MCP tool yet; the four-tool
 surface stays stable until the failover eval is in place.
 
+## Remote MCP providers (OAuth)
+
+Some services expose a remote MCP server instead of a REST API. CourtListener is the
+first: `https://mcp.courtlistener.com/` uses OAuth 2.1 with PKCE and dynamic client
+registration. mouseion can proxy it through the same four tools:
+
+```bash
+.venv/bin/mouseion auth login courtlistener_mcp
+.venv/bin/mouseion auth status
+.venv/bin/mouseion auth logout courtlistener_mcp
+```
+
+`auth login` opens the browser, listens on `127.0.0.1:8765/callback`, and stores the
+client registration and tokens in `.mouseion/cache.db` (gitignored). No CourtListener
+key goes in `.env`. `provider_describe` lists the remote tools and their input schemas
+at runtime; `provider_call` uses the tool name as the capability.
+
+Remote tools are filtered to `readOnlyHint=true` by default (`read_only_only: true` in
+the manifest). If the server does not annotate its read-only tools, set
+`read_only_only: false` or list `allow_tools` explicitly. The existing `courtlistener`
+REST provider still uses `COURTLISTENER_TOKEN`; the MCP provider is separate.
+
+If your host already speaks MCP, the simplest path is to add
+`https://mcp.courtlistener.com/` directly to OpenCode/Claude and let the host run the
+OAuth flow. The mouseion proxy is for one unified tool surface.
+
 ## The envelope
 
 Every provider returns this shape, which is what makes heterogeneous upstreams
@@ -423,7 +449,7 @@ separate embedding server.
 
 ## What's here
 
-56 providers, 79 capabilities. The contract suite verifies every upstream live except the
+57 providers, 80 capabilities. The contract suite verifies every upstream live except the
 six that need credentials this machine does not have (FRED, CourtListener, GitHub,
 Congress.gov, GovInfo, and SEC's contact User-Agent is set but FRED's key is not). Their
 auth paths are verified.
@@ -439,6 +465,7 @@ auth paths are verified.
 | CMS Care Compare | none | `hospitals` |
 | Congress.gov | free key | `bills`, `bill` |
 | CourtListener | free token | `search_opinions` |
+| CourtListener MCP | OAuth | `tools` (runtime) |
 | crates.io | none | `search`, `crate` |
 | Crossref | none | `search_works` |
 | data.gov.au | none | `search_datasets` |
@@ -505,7 +532,7 @@ never as an upstream 403.
 
 Four adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 282 offline tests and 79 live contract tests.
+eval, MCP server, CLI, GBNF export, 290 offline tests and 79 live contract tests.
 
 Ten upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -539,7 +566,7 @@ Ten upstream behaviours the adapter contract had to grow for, all now generic:
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 282 offline: fixture replay
+pytest                    # 290 offline: fixture replay
 pytest -m live            # 79 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
@@ -562,7 +589,7 @@ page token before a user does.
 
 ## What's deliberately not here
 
-- **Coverage.** 56 providers is a spine, not an index. The current gap matrix is in
+- **Coverage.** 57 providers is a spine, not an index. The current gap matrix is in
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
   molecular repositories, archives, transit, and legislative registers. Most are
   keyless or free-key; each needs a manifest, a fixture, a live contract, and an

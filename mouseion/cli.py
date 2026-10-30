@@ -60,6 +60,44 @@ async def _run(args: argparse.Namespace) -> int:
 
     app = build()
     try:
+        if args.command == "auth":
+            if args.action == "status":
+                status = app.cache.oauth_status()
+                for manifest in app.registry.manifests.values():
+                    if manifest.auth.type == "oauth":
+                        status.setdefault(
+                            manifest.id, {"client": False, "tokens": False}
+                        )
+                _print(status)
+                return 0
+            if args.action == "logout":
+                if not args.provider:
+                    _print({"error": "provider is required for logout"})
+                    return 1
+                app.cache.clear_oauth(args.provider)
+                _print({"provider": args.provider, "cleared": True})
+                return 0
+            if args.action == "login":
+                if not args.provider:
+                    _print({"error": "provider is required for login"})
+                    return 1
+                try:
+                    manifest = app.registry.get(args.provider)
+                except KeyError as exc:
+                    _print({"error": str(exc).strip("'\"")})
+                    return 1
+                if manifest.transport != "mcp_remote" or manifest.auth.type != "oauth":
+                    _print({"error": f"'{manifest.id}' is not an OAuth remote MCP provider"})
+                    return 1
+                tools = await app.client.remote.login(manifest)
+                _print(
+                    {
+                        "provider": manifest.id,
+                        "count": len(tools),
+                        "tools": [tool.name for tool in tools],
+                    }
+                )
+                return 0
         if args.command == "doctor":
             from .doctor import doctor
 
@@ -182,6 +220,10 @@ def main() -> None:
         default=None,
         help="OpenAI-compatible model server base URL, e.g. http://127.0.0.1:8889",
     )
+
+    p = sub.add_parser("auth", help="OAuth login for remote MCP providers")
+    p.add_argument("action", choices=["login", "status", "logout"])
+    p.add_argument("provider", nargs="?", default=None)
 
     p = sub.add_parser("lookup", help="route, execute, and fail over within a capability cluster")
     p.add_argument("query")

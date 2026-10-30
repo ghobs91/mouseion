@@ -1,0 +1,68 @@
+id: courtlistener_mcp
+title: CourtListener remote MCP
+category: legal
+domain: governance_legislative
+sub_category: case_law
+transport: mcp_remote
+read_only_only: true
+description: >-
+  CourtListener's remote MCP server: case law, PACER dockets, citation network,
+  judges, oral arguments and citation verification, discovered at runtime. Uses
+  OAuth instead of an API key. Run `mouseion auth login courtlistener_mcp` once;
+  the browser flow stores tokens in the local cache.
+docs_url: https://wiki.free.law/c/courtlistener/help/api/mcp/using-the-courtlistener-mcp-in-claude-chatgpt-and-other-ai-assistants
+keywords:
+  - courtlistener
+  - case law
+  - opinion
+  - court
+  - pacer
+  - docket
+  - judge
+  - citation
+  - legal research
+  - oral argument
+  - precedents
+base: https://mcp.courtlistener.com/
+adapter: rest_json
+auth:
+  type: oauth
+  scopes: [openid, api, wiki, email, profile]
+  redirect_uri: "http://127.0.0.1:8765/callback"
+  client_name: mouseion
+attribution: "CourtListener, Free Law Project"
+source:
+  is_primary: false
+  originator: "Free Law Project"
+  originator_domain: courtlistener.com
+  provenance: aggregator_exception
+  exception_reason: >-
+    Free Law Project aggregates opinions from courts and PACER; it is an open
+    secondary index, not a court. The remote MCP server is a convenience layer
+    over the same secondary data.
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://mcp.courtlistener.com/
+    verified_at: 2026-10-30
+  rate_limit:
+    per_min: 60
+    burst: 10
+    concurrency: 4
+cache_ttl: 3600
+limits:
+  note: "OAuth login; tool list discovered at runtime."
+capabilities:
+  tools:
+    description: >-
+      Remote MCP tools discovered at runtime. Call provider_describe to list the
+      available tools and their input schemas.
+    path: /
+    exemplars:
+      - courtlistener case law search
+      - federal court opinions about qualified immunity
+      - PACER docket for a case
+      - citation verification for a legal brief
+      - judges and financial disclosures

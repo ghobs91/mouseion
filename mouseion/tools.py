@@ -22,6 +22,7 @@ from .config import Settings
 from .config import settings as default_settings
 from .envelope import ProviderError, utcnow
 from .registry import Registry
+from .remote_mcp import describe_remote
 from .router import Router
 
 MAX_FETCH_CHARS = 20_000
@@ -166,9 +167,18 @@ class Toolkit:
 
     async def provider_describe(self, provider: str) -> dict[str, Any]:
         try:
-            return self.registry.describe(provider)
+            manifest = self.registry.get(provider)
         except KeyError as exc:
             return {"error": str(exc).strip("'\"")}
+        if manifest.transport == "mcp_remote":
+            try:
+                tools = await self.client.remote.list_tools(manifest)
+                return describe_remote(manifest, tools)
+            except ProviderError as exc:
+                return exc.to_dict()
+            except Exception as exc:  # noqa: BLE001
+                return {"error": f"{type(exc).__name__}: {exc}"}
+        return manifest.describe()
 
     # -- tool 3 ---------------------------------------------------------
 
