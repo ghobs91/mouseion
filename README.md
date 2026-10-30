@@ -642,7 +642,12 @@ page token before a user does.
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
   molecular repositories, transit, and the Cat 1 stretch. Most are keyless or free-key;
   each needs a manifest, a fixture, a live contract, and an audit entry before it counts.
-- **Write paths.** Everything here reads. No filings, no comments, no purchases.
+- **Local elections and commerce.** The two largest known gaps. Local elections need a
+  jurisdiction registry plus official state/county sources; commerce needs a separate
+  commercial-platform mode around Shopify/UCP. See `docs/COVERAGE-ROADMAP.md` and
+  `eval/coverage-gaps.jsonl`.
+- **Write paths.** Everything here reads. No filings, no comments, no purchases. Cart
+  and checkout are a separate product decision, not a provider manifest.
 
 ## Honest ceiling
 
