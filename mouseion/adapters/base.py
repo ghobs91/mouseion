@@ -189,6 +189,11 @@ class Adapter(ABC):
 
         if mode == "token":
             token = dig(body, pg.next_field) if pg.next_field else None
+            if token and pg.next_query_param:
+                from urllib.parse import parse_qs, urlparse
+
+                values = parse_qs(urlparse(str(token)).query).get(pg.next_query_param)
+                token = values[0] if values else None
             return str(token) if token else None
         if mode == "offset":
             if has_next is False:

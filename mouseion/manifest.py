@@ -71,6 +71,8 @@ class Pagination(BaseModel):
     limit_param: str | None = None
     #: Where the token mode reads the next token from in the response body.
     next_field: str | None = None
+    #: When next_field is a full URL, read the cursor from this query parameter.
+    next_query_param: str | None = None
     #: Where the page mode reads total pages from in the response body.
     total_pages_field: str | None = None
     #: Boolean field that says whether another page exists (USASpending).

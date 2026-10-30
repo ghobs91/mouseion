@@ -1,0 +1,142 @@
+id: congress_gov
+title: Congress.gov
+category: government
+domain: governance_legislative
+sub_category: legislation
+description: >-
+  The official Congress.gov API: bills by congress and type, bill details,
+  sponsors, policy area, latest action and public legislation URL. Requires a
+  free api.data.gov key; no credit card.
+docs_url: https://github.com/LibraryOfCongress/api.congress.gov
+keywords:
+  - congress
+  - congress.gov
+  - bill
+  - legislation
+  - house
+  - senate
+  - law
+  - sponsor
+  - cosponsor
+  - committee
+  - policy area
+  - hr
+base: https://api.congress.gov/v3
+adapter: rest_json
+auth:
+  type: api_key
+  env: CONGRESS_API_KEY
+  param: api_key
+  location: query
+attribution: "Congress.gov, Library of Congress"
+source:
+  is_primary: true
+  originator: "Library of Congress"
+  originator_domain: congress.gov
+  provenance: official
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.congress.gov/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 60
+    burst: 10
+    concurrency: 4
+cache_ttl: 3600
+limits:
+  rps: 1
+  note: "api.data.gov free key; 5,000 requests/hour."
+capabilities:
+  bills:
+    description: >-
+      List bills for one congress and bill type. Returns congress, type, number,
+      title, origin chamber, latest action and the API record URL.
+    path: /bill/{congress}/{bill_type}
+    params:
+      congress:
+        type: integer
+        required: true
+        description: Congress number, e.g. 118.
+      bill_type:
+        type: string
+        description: Bill type, e.g. hr, s, hjres, sjres.
+        default: hr
+      limit:
+        type: integer
+        description: Records per page (1-250, default 20).
+        default: 20
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 250
+    record_path: bills
+    id_template: "{congress}-{type}-{number}"
+    source_url_template: "{api_url}"
+    fields:
+      congress: congress
+      type: type
+      number: number
+      title: title
+      introduced: introducedDate
+      origin_chamber: originChamber
+      latest_action: latestAction.text
+      latest_action_date: latestAction.actionDate
+      api_url: url
+    exemplars:
+      - bills introduced in the 118th congress
+      - house bills about border security
+      - list senate bills in congress
+      - recent legislation in the house
+    example:
+      congress: 118
+      bill_type: hr
+      limit: 5
+  bill:
+    description: >-
+      Read one bill by congress, type and number. Returns title, sponsor,
+      policy area, latest action, cosponsor count and public legislation URL.
+    path: /bill/{congress}/{bill_type}/{bill_number}
+    params:
+      congress:
+        type: integer
+        required: true
+        description: Congress number, e.g. 118.
+      bill_type:
+        type: string
+        required: true
+        description: Bill type, e.g. hr or s.
+      bill_number:
+        type: string
+        required: true
+        description: Bill number, e.g. 27.
+    record_path: null
+    id_template: "{congress}-{type}-{number}"
+    source_url_template: "{legislation_url}"
+    fields:
+      congress: bill.congress
+      type: bill.type
+      number: bill.number
+      title: bill.title
+      introduced: bill.introducedDate
+      origin_chamber: bill.originChamber
+      latest_action: bill.latestAction.text
+      latest_action_date: bill.latestAction.actionDate
+      policy_area: bill.policyArea.name
+      legislation_url: bill.legislationUrl
+      sponsors: bill.sponsors
+      cosponsors: bill.cosponsors.count
+    pluck:
+      sponsors: fullName
+    exemplars:
+      - details of HR 27 in the 118th congress
+      - who sponsored a bill
+      - public law URL for a house bill
+    example:
+      congress: 118
+      bill_type: hr
+      bill_number: "27"

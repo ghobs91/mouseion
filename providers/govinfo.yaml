@@ -1,0 +1,139 @@
+id: govinfo
+title: GovInfo
+category: government
+domain: governance_legislative
+sub_category: government_publishing
+description: >-
+  The U.S. Government Publishing Office's GovInfo API: full-text search across
+  bills, laws, the Federal Register, congressional records and other official
+  publications, plus package metadata. Requires a free api.data.gov key; no
+  credit card.
+docs_url: https://api.govinfo.gov/docs/
+keywords:
+  - govinfo
+  - government publishing office
+  - gpo
+  - bill
+  - law
+  - statute
+  - federal register
+  - congressional record
+  - public document
+  - package
+  - full text
+base: https://api.govinfo.gov
+adapter: rest_json
+auth:
+  type: api_key
+  env: GOVINFO_API_KEY
+  param: api_key
+  location: query
+attribution: "GovInfo, U.S. Government Publishing Office"
+source:
+  is_primary: true
+  originator: "U.S. Government Publishing Office"
+  originator_domain: govinfo.gov
+  provenance: official
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.govinfo.gov/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 60
+    burst: 10
+    concurrency: 4
+cache_ttl: 3600
+limits:
+  rps: 1
+  note: "api.data.gov free key; 5,000 requests/hour."
+capabilities:
+  search:
+    description: >-
+      Full-text search across GovInfo collections. Returns package id, title,
+      collection, issue date, author, publisher and PDF/text links.
+    path: /search
+    method: POST
+    params:
+      query:
+        type: string
+        required: true
+        description: Search query, e.g. '"artificial intelligence" AND bill'.
+      offset_mark:
+        type: string
+        description: Cursor from a previous response; leave empty for the first page.
+      limit:
+        type: integer
+        description: Records per page (1-100, default 20).
+        default: 20
+    defaults:
+      offsetMark: "*"
+    alias:
+      offset_mark: offsetMark
+    body_template:
+      query: "{query}"
+      pageSize: "{pageSize}"
+      offsetMark: "{offsetMark}"
+    pagination:
+      mode: token
+      param: offsetMark
+      limit_param: pageSize
+      next_field: nextPage
+      next_query_param: offsetMark
+      default_limit: 20
+      max_limit: 100
+    record_path: results
+    id_field: package_id
+    query_map:
+      text: query
+      limit: limit
+    source_url_template: "{result_link}"
+    fields:
+      package_id: packageId
+      title: title
+      collection: collectionCode
+      date_issued: dateIssued
+      government_author: governmentAuthor1
+      publisher: publisher
+      result_link: resultLink
+      pdf_link: download.pdfLink
+      txt_link: download.txtLink
+    exemplars:
+      - GovInfo documents about artificial intelligence
+      - full text search across federal publications
+      - official bill text on GovInfo
+      - Federal Register package about a rule
+    example:
+      query: artificial intelligence
+      limit: 5
+  package:
+    description: >-
+      Read metadata for one GovInfo package by package id. Returns title,
+      collection, issue date, author, publisher, last update and download links.
+    path: /packages/{package_id}/summary
+    params:
+      package_id:
+        type: string
+        required: true
+        description: Package id, e.g. BILLS-119hr10803ih.
+    record_path: null
+    id_field: package_id
+    source_url_template: "https://www.govinfo.gov/app/details/{package_id}"
+    fields:
+      package_id: packageId
+      title: title
+      collection: collectionCode
+      date_issued: dateIssued
+      government_author: governmentAuthor1
+      publisher: publisher
+      last_modified: lastModified
+      category: category
+      pdf_link: download.pdfLink
+      txt_link: download.txtLink
+    exemplars:
+      - GovInfo package BILLS-119hr10803ih metadata
+      - details for a government publication package
+    example:
+      package_id: BILLS-119hr10803ih

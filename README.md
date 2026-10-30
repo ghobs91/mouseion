@@ -415,9 +415,10 @@ separate embedding server.
 
 ## What's here
 
-53 providers, 74 capabilities. The contract suite verifies every upstream live except the
-four that need credentials this machine does not have (FRED, CourtListener, GitHub, and
-SEC's contact User-Agent is set but FRED's key is not). Their auth paths are verified.
+56 providers, 79 capabilities. The contract suite verifies every upstream live except the
+six that need credentials this machine does not have (FRED, CourtListener, GitHub,
+Congress.gov, GovInfo, and SEC's contact User-Agent is set but FRED's key is not). Their
+auth paths are verified.
 
 | Provider | Auth | Capabilities |
 |---|---|---|
@@ -428,6 +429,7 @@ SEC's contact User-Agent is set but FRED's key is not). Their auth paths are ver
 | CISA KEV | none | `catalog` |
 | ClinicalTrials.gov | none | `search`, `get` |
 | CMS Care Compare | none | `hospitals` |
+| Congress.gov | free key | `bills`, `bill` |
 | CourtListener | free token | `search_opinions` |
 | crates.io | none | `search`, `crate` |
 | Crossref | none | `search_works` |
@@ -441,6 +443,7 @@ SEC's contact User-Agent is set but FRED's key is not). Their auth paths are ver
 | GitHub | free token | `search_repositories`, `repository`, `releases`, `commits` |
 | Go module proxy | none | `latest` |
 | GOV.UK | none | `search_content` |
+| GovInfo | free key | `search`, `package` |
 | Grants.gov | none | `search_opportunities` |
 | Maven Central | none | `search` |
 | NASA EONET | none | `events` |
@@ -467,6 +470,7 @@ SEC's contact User-Agent is set but FRED's key is not). Their auth paths are ver
 | SEC EDGAR | contact UA | `full_text_search`, `filings_by_cik` |
 | DataSF | none | `police_incidents` |
 | US Treasury Fiscal Data | none | `debt_to_penny`, `avg_interest_rates` |
+| UK Parliament | none | `bills` |
 | UniProt | none | `search`, `entry` |
 | USAspending | none | `spending_by_award` |
 | USGS earthquakes | none | `query` |
@@ -482,6 +486,8 @@ export SEC_USER_AGENT="mouseion/0.1 (Your Name you@example.com)"  # SEC refuses 
 export FRED_API_KEY="..."                                        # free at fred.stlouisfed.org
 export COURTLISTENER_TOKEN="..."                                 # free; anonymous search now 401s
 export GITHUB_TOKEN="..."                                        # free; GitHub REST needs 5,000/hour
+export CONGRESS_API_KEY="..."                                    # free at api.data.gov/signup
+export GOVINFO_API_KEY="..."                                     # free at api.data.gov/signup
 ```
 
 openFEC ships with the shared `DEMO_KEY`, which works but is rate-limited to the point of
@@ -491,9 +497,9 @@ never as an upstream 403.
 
 Four adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 271 offline tests and 74 live contract tests.
+eval, MCP server, CLI, GBNF export, 281 offline tests and 79 live contract tests.
 
-Nine upstream behaviours the adapter contract had to grow for, all now generic:
+Ten upstream behaviours the adapter contract had to grow for, all now generic:
 
 - **POST + JSON body** (USAspending, NIH RePORTER, Grants.gov, BLS). `body_template`
   renders a nested body, keeps integer types intact, and drops optional fields instead of
@@ -517,14 +523,16 @@ Nine upstream behaviours the adapter contract had to grow for, all now generic:
   series and observations into one row per time period.
 - **Slow queries** (Overpass). A per-provider `timeout_s` lets one upstream use 90
   seconds without slowing every other provider.
+- **Full-URL next cursors** (GovInfo). `next_query_param` extracts the cursor from a
+  `nextPage` URL instead of passing the whole URL as a token.
 
 ## Contract tests
 
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 271 offline: fixture replay
-pytest -m live            # 74 live: every upstream, with the manifest example
+pytest                    # 281 offline: fixture replay
+pytest -m live            # 79 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
 
@@ -546,7 +554,7 @@ page token before a user does.
 
 ## What's deliberately not here
 
-- **Coverage.** 53 providers is a spine, not an index. The current gap matrix is in
+- **Coverage.** 56 providers is a spine, not an index. The current gap matrix is in
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
   molecular repositories, archives, transit, and legislative registers. Most are
   keyless or free-key; each needs a manifest, a fixture, a live contract, and an

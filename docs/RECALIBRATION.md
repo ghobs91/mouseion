@@ -8,9 +8,9 @@ remain gated on the Phase 2 evaluation.
 fields, 36-manifest backfill, `mouseion audit`, audit tests, and CI. Phase 2 complete:
 canonical query, cluster-only failover, attempt tracing, rate limiting, circuit breaker,
 single-flight, and `mouseion lookup`. Phase 3 in progress: `financial_sovereign`,
-`academic_scientific`, `developer_infrastructure`, and `geo_earth_observation` have met
-their targets; archives, transport, and governance remain. IMF, BoJ, OECD, BIS, and
-on-chain nodes remain as Cat 1 stretch.
+`academic_scientific`, `developer_infrastructure`, `geo_earth_observation`, and
+`governance_legislative` have met their targets; archives and transport remain. IMF, BoJ,
+OECD, BIS, and on-chain nodes remain as Cat 1 stretch.
 **Basis:** the 2026-10-29 specification plus the repository as it actually stands:
 36 providers, 44 capabilities, 163 passing offline tests, 44 live contract tests.
 
@@ -397,7 +397,7 @@ spec's own examples plus the obvious adjacent authorities.
 | `geo_earth_observation` | 12 | 12 | Complete: Nominatim, Overpass, NASA EONET, NOAA Tides; existing Census, NHC, NWS, NYC Open Data, OpenFEMA, DataSF, USGS earthquakes, USGS water | P2 |
 | `archives_web_state` | 1 | 5 | Wayback CDX, NARA catalog, Library of Congress, one national archive | P2 |
 | `transport_infrastructure` | 1 | 8 | 5–8 transit agencies with GTFS/GTFS-RT; State Dept travel; ISBN via OpenLibrary (exception) | P3 |
-| `governance_legislative` | 7 | 10 | Congress.gov, GovInfo, EUR-Lex, UK Parliament | P2 |
+| `governance_legislative` | 10 | 10 | Complete: Congress.gov, GovInfo, UK Parliament; existing CMS, CourtListener, data.gov.au, Federal Register, GOV.UK, Grants.gov, openFDA | P2 |
 
 Notes on specific targets:
 

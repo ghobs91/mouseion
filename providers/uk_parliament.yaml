@@ -1,0 +1,94 @@
+id: uk_parliament
+title: UK Parliament bills
+category: government
+domain: governance_legislative
+sub_category: legislation
+description: >-
+  The UK Parliament Bills API: search current and past bills by title, house,
+  and whether they became Acts. Returns bill id, short title, houses, stage and
+  last update. Keyless.
+docs_url: https://developer.parliament.uk/
+keywords:
+  - uk parliament
+  - westminster
+  - bill
+  - legislation
+  - act
+  - commons
+  - lords
+  - member of parliament
+  - statute
+  - law
+base: https://bills-api.parliament.uk/api/v1
+adapter: rest_json
+auth:
+  type: none
+attribution: "UK Parliament"
+source:
+  is_primary: true
+  originator: "UK Parliament"
+  originator_domain: parliament.uk
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.parliament.uk/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
+cache_ttl: 3600
+limits:
+  rps: 5
+capabilities:
+  bills:
+    description: >-
+      Search UK Parliament bills by title, current house and Act status. Returns
+      bill id, short title, houses, Act flag, current stage and last update.
+    path: /Bills
+    params:
+      SearchTerm:
+        type: string
+        description: Words in the bill title, e.g. climate.
+      CurrentHouse:
+        type: string
+        description: Commons or Lords.
+      IsAct:
+        type: boolean
+        description: Restrict to bills that became Acts.
+      limit:
+        type: integer
+        description: Records per page (1-100, default 10).
+        default: 10
+    pagination:
+      mode: offset
+      param: Skip
+      limit_param: Take
+      default_limit: 10
+      max_limit: 100
+    record_path: items
+    id_field: bill_id
+    query_map:
+      text: SearchTerm
+      limit: limit
+    source_url_template: "https://bills.parliament.uk/bills/{bill_id}"
+    fields:
+      bill_id: billId
+      title: shortTitle
+      current_house: currentHouse
+      originating_house: originatingHouse
+      is_act: isAct
+      last_update: lastUpdate
+      stage: currentStage.description
+      stage_house: currentStage.house
+    exemplars:
+      - UK Parliament bills about climate
+      - current Commons bills
+      - bills that became Acts in Parliament
+      - Lords bills on a topic
+    example:
+      SearchTerm: climate
+      limit: 5
