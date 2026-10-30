@@ -11,9 +11,11 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import queue
 import threading
 import time
+import traceback
 import webbrowser
 from contextlib import asynccontextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -37,6 +39,19 @@ from .config import Settings
 from .config import settings as default_settings
 from .envelope import Envelope, ProviderError, Record, SourceStatus, utcnow
 from .manifest import Manifest
+
+
+class _OAuthNoiseFilter(logging.Filter):
+    """Drop the SDK's traceback for the expected 'run auth login' path."""
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        if record.getMessage() != "OAuth flow error" or not record.exc_info:
+            return True
+        text = "".join(traceback.format_exception(*record.exc_info))
+        return "OAuth login required" not in text
+
+
+logging.getLogger("mcp.client.auth.oauth2").addFilter(_OAuthNoiseFilter())
 
 
 class OAuthStore:
