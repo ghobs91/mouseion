@@ -471,8 +471,13 @@ mcp_servers:
 ```
 
 If Hermes reports `missing executable .../.venv/bin/python`, the project venv was
-removed. Run `uv sync --extra dev`, then `/reload-mcp` or restart Hermes. Hermes parks
+removed. Run `uv sync --extra dev`, then reload MCP or restart Hermes. Hermes parks
 a server after a permanent startup error and does not retry it automatically.
+
+`/reload-mcp` (alias `/reload_mcp`) is a slash command **inside the Hermes chat/TUI**,
+not a shell command. Type it as a chat message and approve the reload. From a shell,
+use `hermes gateway restart` to restart all sessions, or simply start a new chat; the
+parked connection is session-scoped.
 
 Hermes can also add remote MCP servers directly. For CourtListener:
 
