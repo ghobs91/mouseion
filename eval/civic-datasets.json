@@ -1,0 +1,917 @@
+{
+  "queries": [
+    "campaign finance",
+    "campaign contributions",
+    "election results"
+  ],
+  "candidates": 120,
+  "kept": 89,
+  "min_rows": 1000,
+  "by_domain": {
+    "data.kingcounty.gov": 34,
+    "data.colorado.gov": 13,
+    "data.oaklandca.gov": 12,
+    "hicscdata.hawaii.gov": 12,
+    "data.wa.gov": 7,
+    "datahub.austintexas.gov": 3,
+    "data.ny.gov": 2,
+    "data.cambridgema.gov": 1,
+    "data.fultoncountyga.gov": 1,
+    "data.ramseycountymn.gov": 1,
+    "datacatalog.cookcountyil.gov": 1,
+    "opendata.maryland.gov": 1,
+    "www.dallasopendata.com": 1
+  },
+  "results": [
+    {
+      "domain": "data.ny.gov",
+      "id": "e9ss-239a",
+      "name": "Campaign Finance Disclosure Reports Data: Beginning 1999",
+      "query": "campaign finance",
+      "updated": "2026-10-30T14:51:00.000Z",
+      "rows": 18705128,
+      "endpoint": "https://data.ny.gov/resource/e9ss-239a.json",
+      "page": "https://data.ny.gov/d/e9ss-239a"
+    },
+    {
+      "domain": "data.wa.gov",
+      "id": "kv7h-kjye",
+      "name": "Contributions to Candidates and Political Committees",
+      "query": "campaign contributions",
+      "updated": "2026-10-30T23:24:42.000Z",
+      "rows": 6410770,
+      "endpoint": "https://data.wa.gov/resource/kv7h-kjye.json",
+      "page": "https://data.wa.gov/d/kv7h-kjye"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "y923-fti2",
+      "name": "2004 General - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:45:40.000Z",
+      "rows": 2066219,
+      "endpoint": "https://data.kingcounty.gov/resource/y923-fti2.json",
+      "page": "https://data.kingcounty.gov/d/y923-fti2"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "9ycg-yemn",
+      "name": "2008 Primary - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2018-04-30T17:08:30.000Z",
+      "rows": 1787257,
+      "endpoint": "https://data.kingcounty.gov/resource/9ycg-yemn.json",
+      "page": "https://data.kingcounty.gov/d/9ycg-yemn"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "5jc7-9665",
+      "name": "2008 Primary - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2018-04-30T17:08:28.000Z",
+      "rows": 1787256,
+      "endpoint": "https://data.kingcounty.gov/resource/5jc7-9665.json",
+      "page": "https://data.kingcounty.gov/d/5jc7-9665"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "7x99-befe",
+      "name": "2008 General - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2018-04-30T17:08:24.000Z",
+      "rows": 1570184,
+      "endpoint": "https://data.kingcounty.gov/resource/7x99-befe.json",
+      "page": "https://data.kingcounty.gov/d/7x99-befe"
+    },
+    {
+      "domain": "data.wa.gov",
+      "id": "tijg-9zyp",
+      "name": "Expenditures by Candidates and Political Committees",
+      "query": "campaign contributions",
+      "updated": "2026-10-30T22:31:02.000Z",
+      "rows": 1109727,
+      "endpoint": "https://data.wa.gov/resource/tijg-9zyp.json",
+      "page": "https://data.wa.gov/d/tijg-9zyp"
+    },
+    {
+      "domain": "data.wa.gov",
+      "id": "7qr9-q2c9",
+      "name": "Campaign Finance Reporting History",
+      "query": "campaign finance",
+      "updated": "2026-10-30T23:24:42.000Z",
+      "rows": 982532,
+      "endpoint": "https://data.wa.gov/resource/7qr9-q2c9.json",
+      "page": "https://data.wa.gov/d/7qr9-q2c9"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "b27z-cdmk",
+      "name": "2016 General - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:46:43.000Z",
+      "rows": 643163,
+      "endpoint": "https://data.kingcounty.gov/resource/b27z-cdmk.json",
+      "page": "https://data.kingcounty.gov/d/b27z-cdmk"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "puqn-qiix",
+      "name": "2012 Primary - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:45:36.000Z",
+      "rows": 533813,
+      "endpoint": "https://data.kingcounty.gov/resource/puqn-qiix.json",
+      "page": "https://data.kingcounty.gov/d/puqn-qiix"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "u6ig-5qm8",
+      "name": "2012 General - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:45:33.000Z",
+      "rows": 527576,
+      "endpoint": "https://data.kingcounty.gov/resource/u6ig-5qm8.json",
+      "page": "https://data.kingcounty.gov/d/u6ig-5qm8"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "jet5-cigp",
+      "name": "2010 General - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2018-04-30T17:08:21.000Z",
+      "rows": 515631,
+      "endpoint": "https://data.kingcounty.gov/resource/jet5-cigp.json",
+      "page": "https://data.kingcounty.gov/d/jet5-cigp"
+    },
+    {
+      "domain": "hicscdata.hawaii.gov",
+      "id": "bjzn-cicp",
+      "name": "Campaign Spending OE Ledger Dataset",
+      "query": "campaign finance",
+      "updated": "2025-11-17T23:43:32.000Z",
+      "rows": 501290,
+      "endpoint": "https://hicscdata.hawaii.gov/resource/bjzn-cicp.json",
+      "page": "https://hicscdata.hawaii.gov/d/bjzn-cicp"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "r4pa-sjau",
+      "name": "2008 General - Absentee Election Results",
+      "query": "election results",
+      "updated": "2018-04-30T17:08:27.000Z",
+      "rows": 493799,
+      "endpoint": "https://data.kingcounty.gov/resource/r4pa-sjau.json",
+      "page": "https://data.kingcounty.gov/d/r4pa-sjau"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "d9qg-mtfe",
+      "name": "2016 Primary - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:46:50.000Z",
+      "rows": 437014,
+      "endpoint": "https://data.kingcounty.gov/resource/d9qg-mtfe.json",
+      "page": "https://data.kingcounty.gov/d/d9qg-mtfe"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "vrn2-xcr7",
+      "name": "2013 General - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:49:04.000Z",
+      "rows": 426735,
+      "endpoint": "https://data.kingcounty.gov/resource/vrn2-xcr7.json",
+      "page": "https://data.kingcounty.gov/d/vrn2-xcr7"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "44iw-f49v",
+      "name": "2014 General - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:46:35.000Z",
+      "rows": 419400,
+      "endpoint": "https://data.kingcounty.gov/resource/44iw-f49v.json",
+      "page": "https://data.kingcounty.gov/d/44iw-f49v"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "c34s-iuef",
+      "name": "2009 General - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2018-04-30T17:08:25.000Z",
+      "rows": 386605,
+      "endpoint": "https://data.kingcounty.gov/resource/c34s-iuef.json",
+      "page": "https://data.kingcounty.gov/d/c34s-iuef"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "kncv-f6kh",
+      "name": "2015 General - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:48:35.000Z",
+      "rows": 378277,
+      "endpoint": "https://data.kingcounty.gov/resource/kncv-f6kh.json",
+      "page": "https://data.kingcounty.gov/d/kncv-f6kh"
+    },
+    {
+      "domain": "data.wa.gov",
+      "id": "9nnw-c693",
+      "name": "Lobbyist Compensation and Expenses by Source",
+      "query": "campaign contributions",
+      "updated": "2026-10-30T22:03:01.000Z",
+      "rows": 338748,
+      "endpoint": "https://data.wa.gov/resource/9nnw-c693.json",
+      "page": "https://data.wa.gov/d/9nnw-c693"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "hgu2-qaye",
+      "name": "2011 General - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2018-04-30T17:08:28.000Z",
+      "rows": 333273,
+      "endpoint": "https://data.kingcounty.gov/resource/hgu2-qaye.json",
+      "page": "https://data.kingcounty.gov/d/hgu2-qaye"
+    },
+    {
+      "domain": "data.colorado.gov",
+      "id": "37wu-kn3g",
+      "name": "Registration of Charities, Paid Solicitors, Professional Fundraising Consultants, and for-profit Public Benefit Corporations in Colorado",
+      "query": "campaign contributions",
+      "updated": "2026-10-30T12:07:24.000Z",
+      "rows": 273873,
+      "endpoint": "https://data.colorado.gov/resource/37wu-kn3g.json",
+      "page": "https://data.colorado.gov/d/37wu-kn3g"
+    },
+    {
+      "domain": "data.fultoncountyga.gov",
+      "id": "y7fy-g8wd",
+      "name": "Election Results",
+      "query": "election results",
+      "updated": "2020-07-02T14:05:24.000Z",
+      "rows": 248155,
+      "endpoint": "https://data.fultoncountyga.gov/resource/y7fy-g8wd.json",
+      "page": "https://data.fultoncountyga.gov/d/y7fy-g8wd"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "4h7u-3cfs",
+      "name": "2010 Primary - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2018-04-30T17:08:18.000Z",
+      "rows": 240892,
+      "endpoint": "https://data.kingcounty.gov/resource/4h7u-3cfs.json",
+      "page": "https://data.kingcounty.gov/d/4h7u-3cfs"
+    },
+    {
+      "domain": "hicscdata.hawaii.gov",
+      "id": "3maa-4fgr",
+      "name": "Expenditures Made By Hawaii State and County Candidates From January 1, 2015 Through September 26, 2026",
+      "query": "campaign finance",
+      "updated": "2026-10-09T19:03:02.000Z",
+      "rows": 167154,
+      "endpoint": "https://hicscdata.hawaii.gov/resource/3maa-4fgr.json",
+      "page": "https://hicscdata.hawaii.gov/d/3maa-4fgr"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "v3s3-gxuf",
+      "name": "2009 Primary - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:45:38.000Z",
+      "rows": 155194,
+      "endpoint": "https://data.kingcounty.gov/resource/v3s3-gxuf.json",
+      "page": "https://data.kingcounty.gov/d/v3s3-gxuf"
+    },
+    {
+      "domain": "datahub.austintexas.gov",
+      "id": "g4yx-aw9r",
+      "name": "Campaign Finance - Transaction Detail",
+      "query": "campaign finance",
+      "updated": "2026-10-30T12:07:27.000Z",
+      "rows": 144893,
+      "endpoint": "https://datahub.austintexas.gov/resource/g4yx-aw9r.json",
+      "page": "https://datahub.austintexas.gov/d/g4yx-aw9r"
+    },
+    {
+      "domain": "hicscdata.hawaii.gov",
+      "id": "jexd-xbcg",
+      "name": "Campaign Contributions Received By Hawaii State and County Candidates From January 1, 2015 Through September 26, 2026",
+      "query": "campaign finance",
+      "updated": "2026-10-09T19:21:00.000Z",
+      "rows": 138403,
+      "endpoint": "https://hicscdata.hawaii.gov/resource/jexd-xbcg.json",
+      "page": "https://hicscdata.hawaii.gov/d/jexd-xbcg"
+    },
+    {
+      "domain": "datahub.austintexas.gov",
+      "id": "3kfv-biw6",
+      "name": "Campaign Finance - Contributions",
+      "query": "campaign finance",
+      "updated": "2026-10-30T12:04:46.000Z",
+      "rows": 131936,
+      "endpoint": "https://datahub.austintexas.gov/resource/3kfv-biw6.json",
+      "page": "https://datahub.austintexas.gov/d/3kfv-biw6"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "pyps-tcwb",
+      "name": "2015 Primary - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:48:47.000Z",
+      "rows": 127296,
+      "endpoint": "https://data.kingcounty.gov/resource/pyps-tcwb.json",
+      "page": "https://data.kingcounty.gov/d/pyps-tcwb"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "e537-zsyr",
+      "name": "2013 Primary - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:46:52.000Z",
+      "rows": 109517,
+      "endpoint": "https://data.kingcounty.gov/resource/e537-zsyr.json",
+      "page": "https://data.kingcounty.gov/d/e537-zsyr"
+    },
+    {
+      "domain": "hicscdata.hawaii.gov",
+      "id": "rajm-32md",
+      "name": "Contributions Received By Hawaii Noncandidate Committees From January 1, 2015 Through September 26, 2026",
+      "query": "campaign finance",
+      "updated": "2026-10-09T18:48:31.000Z",
+      "rows": 107754,
+      "endpoint": "https://hicscdata.hawaii.gov/resource/rajm-32md.json",
+      "page": "https://hicscdata.hawaii.gov/d/rajm-32md"
+    },
+    {
+      "domain": "data.colorado.gov",
+      "id": "icqv-mi3c",
+      "name": "Charity Extension Requests",
+      "query": "campaign contributions",
+      "updated": "2026-10-30T12:05:54.000Z",
+      "rows": 103243,
+      "endpoint": "https://data.colorado.gov/resource/icqv-mi3c.json",
+      "page": "https://data.colorado.gov/d/icqv-mi3c"
+    },
+    {
+      "domain": "data.oaklandca.gov",
+      "id": "rsxe-vvuw",
+      "name": "Campaign Finance - FPPC Form 460 - Summary Totals",
+      "query": "campaign finance",
+      "updated": "2026-10-30T13:37:05.000Z",
+      "rows": 100032,
+      "endpoint": "https://data.oaklandca.gov/resource/rsxe-vvuw.json",
+      "page": "https://data.oaklandca.gov/d/rsxe-vvuw"
+    },
+    {
+      "domain": "hicscdata.hawaii.gov",
+      "id": "6huc-dcuw",
+      "name": "Campaign Contributions Made To Candidates By Hawaii Noncandidate Committees From January 1, 2015 Through September 26, 2026",
+      "query": "campaign finance",
+      "updated": "2026-10-09T18:40:39.000Z",
+      "rows": 83858,
+      "endpoint": "https://hicscdata.hawaii.gov/resource/6huc-dcuw.json",
+      "page": "https://hicscdata.hawaii.gov/d/6huc-dcuw"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "2ncr-4kkv",
+      "name": "2011 Primary - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2018-04-30T17:08:29.000Z",
+      "rows": 77012,
+      "endpoint": "https://data.kingcounty.gov/resource/2ncr-4kkv.json",
+      "page": "https://data.kingcounty.gov/d/2ncr-4kkv"
+    },
+    {
+      "domain": "data.oaklandca.gov",
+      "id": "3xq4-ermg",
+      "name": "Campaign Finance - FPPC Form 460 - Schedule A - Monetary Contributions",
+      "query": "campaign finance",
+      "updated": "2026-10-30T13:34:55.000Z",
+      "rows": 73043,
+      "endpoint": "https://data.oaklandca.gov/resource/3xq4-ermg.json",
+      "page": "https://data.oaklandca.gov/d/3xq4-ermg"
+    },
+    {
+      "domain": "data.ny.gov",
+      "id": "7x2g-h32p",
+      "name": "Campaign Finance Filer Data: Beginning 1974",
+      "query": "campaign finance",
+      "updated": "2026-10-30T09:21:07.000Z",
+      "rows": 64771,
+      "endpoint": "https://data.ny.gov/resource/7x2g-h32p.json",
+      "page": "https://data.ny.gov/d/7x2g-h32p"
+    },
+    {
+      "domain": "data.wa.gov",
+      "id": "3h9x-7bvm",
+      "name": "Campaign Finance Summary",
+      "query": "campaign finance",
+      "updated": "2026-10-30T23:31:02.000Z",
+      "rows": 57829,
+      "endpoint": "https://data.wa.gov/resource/3h9x-7bvm.json",
+      "page": "https://data.wa.gov/d/3h9x-7bvm"
+    },
+    {
+      "domain": "data.ramseycountymn.gov",
+      "id": "84zd-yzqv",
+      "name": "General Election Results Data",
+      "query": "election results",
+      "updated": "2024-10-02T20:43:26.000Z",
+      "rows": 46432,
+      "endpoint": "https://data.ramseycountymn.gov/resource/84zd-yzqv.json",
+      "page": "https://data.ramseycountymn.gov/d/84zd-yzqv"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "eutd-6iwc",
+      "name": "2016 Presidential Primary - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:46:54.000Z",
+      "rows": 40272,
+      "endpoint": "https://data.kingcounty.gov/resource/eutd-6iwc.json",
+      "page": "https://data.kingcounty.gov/d/eutd-6iwc"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "d4y4-sjx2",
+      "name": "2010 Special February - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2018-04-30T17:08:27.000Z",
+      "rows": 40200,
+      "endpoint": "https://data.kingcounty.gov/resource/d4y4-sjx2.json",
+      "page": "https://data.kingcounty.gov/d/d4y4-sjx2"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "pg4p-fsqw",
+      "name": "2009 Special February - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2018-04-30T17:08:30.000Z",
+      "rows": 28355,
+      "endpoint": "https://data.kingcounty.gov/resource/pg4p-fsqw.json",
+      "page": "https://data.kingcounty.gov/d/pg4p-fsqw"
+    },
+    {
+      "domain": "data.oaklandca.gov",
+      "id": "bvfu-nq99",
+      "name": "Campaign Finance - FPPC Form 460 - Schedule E - Payments Made",
+      "query": "campaign finance",
+      "updated": "2026-10-30T13:38:21.000Z",
+      "rows": 28292,
+      "endpoint": "https://data.oaklandca.gov/resource/bvfu-nq99.json",
+      "page": "https://data.oaklandca.gov/d/bvfu-nq99"
+    },
+    {
+      "domain": "hicscdata.hawaii.gov",
+      "id": "riiu-7d4b",
+      "name": "Expenditures Made By Hawaii Noncandidate Committees From January 1, 2015 Through September 26, 2026",
+      "query": "campaign finance",
+      "updated": "2026-10-09T02:39:35.000Z",
+      "rows": 27534,
+      "endpoint": "https://hicscdata.hawaii.gov/resource/riiu-7d4b.json",
+      "page": "https://hicscdata.hawaii.gov/d/riiu-7d4b"
+    },
+    {
+      "domain": "data.wa.gov",
+      "id": "d2ig-r3q4",
+      "name": "Loans to Candidates and Political Committees",
+      "query": "campaign contributions",
+      "updated": "2026-10-30T17:16:52.000Z",
+      "rows": 25354,
+      "endpoint": "https://data.wa.gov/resource/d2ig-r3q4.json",
+      "page": "https://data.wa.gov/d/d2ig-r3q4"
+    },
+    {
+      "domain": "data.oaklandca.gov",
+      "id": "iwe7-af4m",
+      "name": "Candidate Contributions (Show Me the Money)",
+      "query": "campaign finance",
+      "updated": "2024-10-29T01:38:59.000Z",
+      "rows": 23655,
+      "endpoint": "https://data.oaklandca.gov/resource/iwe7-af4m.json",
+      "page": "https://data.oaklandca.gov/d/iwe7-af4m"
+    },
+    {
+      "domain": "opendata.maryland.gov",
+      "id": "g76a-nfxj",
+      "name": "Lobbying Reporting System: Maryland Campaign Contributions - November 1 2005 to April 30, 2019",
+      "query": "campaign finance",
+      "updated": "2020-01-25T00:27:11.000Z",
+      "rows": 20387,
+      "endpoint": "https://opendata.maryland.gov/resource/g76a-nfxj.json",
+      "page": "https://opendata.maryland.gov/d/g76a-nfxj"
+    },
+    {
+      "domain": "data.colorado.gov",
+      "id": "wwhd-vg25",
+      "name": "Charitable Solicitation Call Center Locations in Colorado",
+      "query": "campaign contributions",
+      "updated": "2026-10-30T12:05:20.000Z",
+      "rows": 19281,
+      "endpoint": "https://data.colorado.gov/resource/wwhd-vg25.json",
+      "page": "https://data.colorado.gov/d/wwhd-vg25"
+    },
+    {
+      "domain": "data.wa.gov",
+      "id": "8bva-rkeb",
+      "name": "Pledges Reporting History",
+      "query": "campaign contributions",
+      "updated": "2026-10-29T17:27:05.000Z",
+      "rows": 17516,
+      "endpoint": "https://data.wa.gov/resource/8bva-rkeb.json",
+      "page": "https://data.wa.gov/d/8bva-rkeb"
+    },
+    {
+      "domain": "data.colorado.gov",
+      "id": "hyr8-d3v9",
+      "name": "Solicitation Campaign Supervisors Listed on Solicitation Notices in Colorado",
+      "query": "campaign contributions",
+      "updated": "2026-10-30T12:05:42.000Z",
+      "rows": 17066,
+      "endpoint": "https://data.colorado.gov/resource/hyr8-d3v9.json",
+      "page": "https://data.colorado.gov/d/hyr8-d3v9"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "q52v-pcg7",
+      "name": "2014 Special April - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:48:49.000Z",
+      "rows": 16422,
+      "endpoint": "https://data.kingcounty.gov/resource/q52v-pcg7.json",
+      "page": "https://data.kingcounty.gov/d/q52v-pcg7"
+    },
+    {
+      "domain": "datahub.austintexas.gov",
+      "id": "gd3e-xut2",
+      "name": "Campaign Finance - Expenditures",
+      "query": "campaign finance",
+      "updated": "2026-10-30T12:40:47.000Z",
+      "rows": 12692,
+      "endpoint": "https://datahub.austintexas.gov/resource/gd3e-xut2.json",
+      "page": "https://datahub.austintexas.gov/d/gd3e-xut2"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "96im-qsys",
+      "name": "2013 Special February - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:45:42.000Z",
+      "rows": 11364,
+      "endpoint": "https://data.kingcounty.gov/resource/96im-qsys.json",
+      "page": "https://data.kingcounty.gov/d/96im-qsys"
+    },
+    {
+      "domain": "www.dallasopendata.com",
+      "id": "ndxz-gccx",
+      "name": "Campaign Finance",
+      "query": "campaign finance",
+      "updated": "2026-10-30T16:06:17.000Z",
+      "rows": 10588,
+      "endpoint": "https://www.dallasopendata.com/resource/ndxz-gccx.json",
+      "page": "https://www.dallasopendata.com/d/ndxz-gccx"
+    },
+    {
+      "domain": "data.oaklandca.gov",
+      "id": "yjtu-3cj6",
+      "name": "Candidate Expenditures (Show Me the Money)",
+      "query": "campaign finance",
+      "updated": "2024-10-29T01:39:41.000Z",
+      "rows": 10087,
+      "endpoint": "https://data.oaklandca.gov/resource/yjtu-3cj6.json",
+      "page": "https://data.oaklandca.gov/d/yjtu-3cj6"
+    },
+    {
+      "domain": "hicscdata.hawaii.gov",
+      "id": "m822-j8iy",
+      "name": "Other Receipts For Hawaii Noncandidate Committees From January 1, 2015 Through September 26, 2026",
+      "query": "campaign finance",
+      "updated": "2026-10-09T02:38:02.000Z",
+      "rows": 9305,
+      "endpoint": "https://hicscdata.hawaii.gov/resource/m822-j8iy.json",
+      "page": "https://hicscdata.hawaii.gov/d/m822-j8iy"
+    },
+    {
+      "domain": "data.colorado.gov",
+      "id": "ew9y-6tv9",
+      "name": "Paid Solicitor Solicitation Notices in Colorado",
+      "query": "campaign contributions",
+      "updated": "2026-10-30T12:05:28.000Z",
+      "rows": 8727,
+      "endpoint": "https://data.colorado.gov/resource/ew9y-6tv9.json",
+      "page": "https://data.colorado.gov/d/ew9y-6tv9"
+    },
+    {
+      "domain": "data.oaklandca.gov",
+      "id": "eted-3m9d",
+      "name": "Campaign Finance - FPPC Form 496 - Late Independent Expenditure Report - Part 3 - Contributions of $100 or More Received",
+      "query": "campaign finance",
+      "updated": "2026-10-30T13:35:09.000Z",
+      "rows": 8635,
+      "endpoint": "https://data.oaklandca.gov/resource/eted-3m9d.json",
+      "page": "https://data.oaklandca.gov/d/eted-3m9d"
+    },
+    {
+      "domain": "data.colorado.gov",
+      "id": "fdcw-ei67",
+      "name": "Campaign Reports for Solicitation Notices to Charities in Colorado",
+      "query": "campaign contributions",
+      "updated": "2026-10-30T12:05:25.000Z",
+      "rows": 7851,
+      "endpoint": "https://data.colorado.gov/resource/fdcw-ei67.json",
+      "page": "https://data.colorado.gov/d/fdcw-ei67"
+    },
+    {
+      "domain": "hicscdata.hawaii.gov",
+      "id": "ue3d-efjr",
+      "name": "Other Receipts For Hawaii State and County Candidates From January 1, 2015 Through September 26, 2026",
+      "query": "campaign finance",
+      "updated": "2026-10-09T18:59:04.000Z",
+      "rows": 6872,
+      "endpoint": "https://hicscdata.hawaii.gov/resource/ue3d-efjr.json",
+      "page": "https://hicscdata.hawaii.gov/d/ue3d-efjr"
+    },
+    {
+      "domain": "data.oaklandca.gov",
+      "id": "9gcg-vghr",
+      "name": "Campaign Finance - FPPC Form 460 - Schedule F - Accrued Expenses (Unpaid Bills)",
+      "query": "campaign finance",
+      "updated": "2026-10-30T13:34:53.000Z",
+      "rows": 6655,
+      "endpoint": "https://data.oaklandca.gov/resource/9gcg-vghr.json",
+      "page": "https://data.oaklandca.gov/d/9gcg-vghr"
+    },
+    {
+      "domain": "hicscdata.hawaii.gov",
+      "id": "yf4f-x3r4",
+      "name": "Loans Received By Hawaii State and County Candidates From January 1, 2015 Through September 26, 2026",
+      "query": "campaign finance",
+      "updated": "2026-10-09T18:54:16.000Z",
+      "rows": 6618,
+      "endpoint": "https://hicscdata.hawaii.gov/resource/yf4f-x3r4.json",
+      "page": "https://hicscdata.hawaii.gov/d/yf4f-x3r4"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "6vxy-geiz",
+      "name": "2012 Special February - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:45:44.000Z",
+      "rows": 6090,
+      "endpoint": "https://data.kingcounty.gov/resource/6vxy-geiz.json",
+      "page": "https://data.kingcounty.gov/d/6vxy-geiz"
+    },
+    {
+      "domain": "hicscdata.hawaii.gov",
+      "id": "rrkr-p5kv",
+      "name": "Unpaid Expenditures For Hawaii State and County Candidates From January 1, 2015 Through September 26, 2026",
+      "query": "campaign finance",
+      "updated": "2026-10-09T18:52:42.000Z",
+      "rows": 4468,
+      "endpoint": "https://hicscdata.hawaii.gov/resource/rrkr-p5kv.json",
+      "page": "https://hicscdata.hawaii.gov/d/rrkr-p5kv"
+    },
+    {
+      "domain": "datacatalog.cookcountyil.gov",
+      "id": "reqf-x8fs",
+      "name": "Campaign Contributions - Restricted Contractors",
+      "query": "campaign contributions",
+      "updated": "2026-10-12T13:00:56.000Z",
+      "rows": 4382,
+      "endpoint": "https://datacatalog.cookcountyil.gov/resource/reqf-x8fs.json",
+      "page": "https://datacatalog.cookcountyil.gov/d/reqf-x8fs"
+    },
+    {
+      "domain": "data.oaklandca.gov",
+      "id": "xuui-k2nt",
+      "name": "Campaign Finance - FPPC Form 460 - Schedule G - Payments Made by an Agent or Independent Contractor",
+      "query": "campaign finance",
+      "updated": "2026-10-30T13:37:01.000Z",
+      "rows": 4013,
+      "endpoint": "https://data.oaklandca.gov/resource/xuui-k2nt.json",
+      "page": "https://data.oaklandca.gov/d/xuui-k2nt"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "kt8p-gznb",
+      "name": "2012 Special April - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:45:45.000Z",
+      "rows": 3342,
+      "endpoint": "https://data.kingcounty.gov/resource/kt8p-gznb.json",
+      "page": "https://data.kingcounty.gov/d/kt8p-gznb"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "mpzz-svxb",
+      "name": "Election Results - February 8, 2011 - Cumulative",
+      "query": "election results",
+      "updated": "2018-04-30T17:08:37.000Z",
+      "rows": 2887,
+      "endpoint": "https://data.kingcounty.gov/resource/mpzz-svxb.json",
+      "page": "https://data.kingcounty.gov/d/mpzz-svxb"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "dx5r-rh67",
+      "name": "2011 Special February - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2018-04-30T17:08:37.000Z",
+      "rows": 2887,
+      "endpoint": "https://data.kingcounty.gov/resource/dx5r-rh67.json",
+      "page": "https://data.kingcounty.gov/d/dx5r-rh67"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "ycry-3r2f",
+      "name": "2011 Special February - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2018-04-30T17:08:35.000Z",
+      "rows": 2886,
+      "endpoint": "https://data.kingcounty.gov/resource/ycry-3r2f.json",
+      "page": "https://data.kingcounty.gov/d/ycry-3r2f"
+    },
+    {
+      "domain": "data.oaklandca.gov",
+      "id": "x5eg-xkea",
+      "name": "Campaign Finance - FPPC Form 460 - Schedule D - Summary of Expenditures Supporting/Opposing Other Candidates, Measures and Committees",
+      "query": "campaign finance",
+      "updated": "2026-10-30T13:40:01.000Z",
+      "rows": 2723,
+      "endpoint": "https://data.oaklandca.gov/resource/x5eg-xkea.json",
+      "page": "https://data.oaklandca.gov/d/x5eg-xkea"
+    },
+    {
+      "domain": "data.colorado.gov",
+      "id": "6adw-n7e7",
+      "name": "2004 Primary Election Results",
+      "query": "election results",
+      "updated": "2026-02-19T01:10:18.000Z",
+      "rows": 2647,
+      "endpoint": "https://data.colorado.gov/resource/6adw-n7e7.json",
+      "page": "https://data.colorado.gov/d/6adw-n7e7"
+    },
+    {
+      "domain": "data.colorado.gov",
+      "id": "w6kb-3vsj",
+      "name": "Communication Methods Used in Solicitation Campaigns in Colorado",
+      "query": "campaign contributions",
+      "updated": "2026-10-30T12:05:19.000Z",
+      "rows": 2448,
+      "endpoint": "https://data.colorado.gov/resource/w6kb-3vsj.json",
+      "page": "https://data.colorado.gov/d/w6kb-3vsj"
+    },
+    {
+      "domain": "hicscdata.hawaii.gov",
+      "id": "dq35-6ks5",
+      "name": "Unpaid Expenditures For Hawaii Noncandidate Committees From January 1, 2015 Through September 26, 2026",
+      "query": "campaign finance",
+      "updated": "2026-10-09T02:35:56.000Z",
+      "rows": 2105,
+      "endpoint": "https://hicscdata.hawaii.gov/resource/dq35-6ks5.json",
+      "page": "https://hicscdata.hawaii.gov/d/dq35-6ks5"
+    },
+    {
+      "domain": "data.oaklandca.gov",
+      "id": "qact-u8hq",
+      "name": "Campaign Finance - FPPC Form 497 - Late Contribution Report - Late Contributions Made",
+      "query": "campaign finance",
+      "updated": "2026-10-30T13:10:42.000Z",
+      "rows": 2006,
+      "endpoint": "https://data.oaklandca.gov/resource/qact-u8hq.json",
+      "page": "https://data.oaklandca.gov/d/qact-u8hq"
+    },
+    {
+      "domain": "data.cambridgema.gov",
+      "id": "5d8j-6wzj",
+      "name": "2016 Presidential and State Election Results",
+      "query": "election results",
+      "updated": "2024-05-06T21:30:24.000Z",
+      "rows": 2006,
+      "endpoint": "https://data.cambridgema.gov/resource/5d8j-6wzj.json",
+      "page": "https://data.cambridgema.gov/d/5d8j-6wzj"
+    },
+    {
+      "domain": "data.colorado.gov",
+      "id": "5yu7-vc3z",
+      "name": "2010 Primary Election Results",
+      "query": "election results",
+      "updated": "2026-02-19T00:39:27.000Z",
+      "rows": 1957,
+      "endpoint": "https://data.colorado.gov/resource/5yu7-vc3z.json",
+      "page": "https://data.colorado.gov/d/5yu7-vc3z"
+    },
+    {
+      "domain": "data.colorado.gov",
+      "id": "mudm-4swt",
+      "name": "2014 Primary Election Results",
+      "query": "election results",
+      "updated": "2026-02-19T00:56:50.000Z",
+      "rows": 1591,
+      "endpoint": "https://data.colorado.gov/resource/mudm-4swt.json",
+      "page": "https://data.colorado.gov/d/mudm-4swt"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "pccn-qvps",
+      "name": "2009 Special March - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2018-04-30T17:08:41.000Z",
+      "rows": 1482,
+      "endpoint": "https://data.kingcounty.gov/resource/pccn-qvps.json",
+      "page": "https://data.kingcounty.gov/d/pccn-qvps"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "bugx-hcah",
+      "name": "2012 Primary - Election Results - PCO",
+      "query": "election results",
+      "updated": "2019-11-22T21:45:47.000Z",
+      "rows": 1461,
+      "endpoint": "https://data.kingcounty.gov/resource/bugx-hcah.json",
+      "page": "https://data.kingcounty.gov/d/bugx-hcah"
+    },
+    {
+      "domain": "data.oaklandca.gov",
+      "id": "jkj3-8yq3",
+      "name": "Campaign Finance - FPPC Form 496 - Late Independent Expenditure Report - Independent Expenditures Made",
+      "query": "campaign finance",
+      "updated": "2026-10-30T17:01:46.000Z",
+      "rows": 1435,
+      "endpoint": "https://data.oaklandca.gov/resource/jkj3-8yq3.json",
+      "page": "https://data.oaklandca.gov/d/jkj3-8yq3"
+    },
+    {
+      "domain": "data.colorado.gov",
+      "id": "nmtb-f94m",
+      "name": "2006 Primary Election Results",
+      "query": "election results",
+      "updated": "2026-02-19T01:08:59.000Z",
+      "rows": 1375,
+      "endpoint": "https://data.colorado.gov/resource/nmtb-f94m.json",
+      "page": "https://data.colorado.gov/d/nmtb-f94m"
+    },
+    {
+      "domain": "data.colorado.gov",
+      "id": "jpfa-x8gh",
+      "name": "2016 Primary Election Results",
+      "query": "election results",
+      "updated": "2026-02-19T01:14:07.000Z",
+      "rows": 1367,
+      "endpoint": "https://data.colorado.gov/resource/jpfa-x8gh.json",
+      "page": "https://data.colorado.gov/d/jpfa-x8gh"
+    },
+    {
+      "domain": "data.oaklandca.gov",
+      "id": "qaa7-q29f",
+      "name": "Campaign Finance - FPPC Form 460 - Schedule B1 - Loans Received",
+      "query": "campaign finance",
+      "updated": "2026-10-30T13:40:52.000Z",
+      "rows": 1335,
+      "endpoint": "https://data.oaklandca.gov/resource/qaa7-q29f.json",
+      "page": "https://data.oaklandca.gov/d/qaa7-q29f"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "xqt5-mdmf",
+      "name": "2013 Special April - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2019-11-22T21:45:49.000Z",
+      "rows": 1308,
+      "endpoint": "https://data.kingcounty.gov/resource/xqt5-mdmf.json",
+      "page": "https://data.kingcounty.gov/d/xqt5-mdmf"
+    },
+    {
+      "domain": "data.kingcounty.gov",
+      "id": "8ih8-hp62",
+      "name": "2008 Special May - Election Results by precinct (complete eCanvass dataset)",
+      "query": "election results",
+      "updated": "2018-04-30T17:08:44.000Z",
+      "rows": 1107,
+      "endpoint": "https://data.kingcounty.gov/resource/8ih8-hp62.json",
+      "page": "https://data.kingcounty.gov/d/8ih8-hp62"
+    },
+    {
+      "domain": "data.colorado.gov",
+      "id": "agxw-vbzr",
+      "name": "2012 Primary Election Results",
+      "query": "election results",
+      "updated": "2026-02-19T00:52:56.000Z",
+      "rows": 1049,
+      "endpoint": "https://data.colorado.gov/resource/agxw-vbzr.json",
+      "page": "https://data.colorado.gov/d/agxw-vbzr"
+    },
+    {
+      "domain": "hicscdata.hawaii.gov",
+      "id": "3fbc-bviy",
+      "name": "Affidavits Filed By Hawaii State and County Candidates",
+      "query": "campaign finance",
+      "updated": "2026-09-01T03:06:53.000Z",
+      "rows": 1041,
+      "endpoint": "https://hicscdata.hawaii.gov/resource/3fbc-bviy.json",
+      "page": "https://hicscdata.hawaii.gov/d/3fbc-bviy"
+    }
+  ]
+}

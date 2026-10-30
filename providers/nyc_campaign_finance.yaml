@@ -1,0 +1,77 @@
+id: nyc_campaign_finance
+title: New York City Campaign Contributions
+category: government
+domain: civic_local
+sub_category: campaign_finance
+transport: http
+adapter: socrata
+base: https://data.cityofnewyork.us
+regions: [US]
+description: >-
+  Contributions reported to the New York City Campaign Finance Board, including
+  the matching-funds program. One row per contribution, with recipient,
+  contributor, occupation, employer, amount and match amount.
+docs_url: https://data.cityofnewyork.us/d/rjkp-yttg
+keywords:
+  - campaign finance
+  - campaign contributions
+  - new york city
+  - city council
+  - mayor
+  - matching funds
+  - donors
+  - who funded
+attribution: "New York City Campaign Finance Board"
+source:
+  is_primary: true
+  originator: "New York City Campaign Finance Board"
+  originator_domain: data.cityofnewyork.us
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.cityofnewyork.us/d/rjkp-yttg
+    verified_at: 2026-10-30
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 86400
+capabilities:
+  contributions:
+    description: >-
+      Search NYC campaign contributions by recipient, election, contributor or
+      free text. Returns amount, match amount, occupation and employer.
+    path: /resource/rjkp-yttg.json
+    params:
+      query: {type: string, description: "full-text search over recipient, contributor and committee"}
+      recipient: {type: string, description: "recipient name, exact match"}
+      election: {type: string, description: "election cycle, e.g. '2025'"}
+      limit: {type: integer, default: 25}
+    alias: {query: q, recipient: recipname}
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 1000}
+    id_field: refno
+    fields:
+      refno: refno
+      election: election
+      office: officecd
+      recipient: recipname
+      committee: committee
+      filing: filing
+      schedule: schedule
+      date: date
+      contributor: name
+      city: city
+      state: state
+      zip: zip
+      occupation: occupation
+      employer: empname
+      amount: amnt
+      match_amount: matchamnt
+      pay_method: pay_method
+    source_url_template: "https://data.cityofnewyork.us/d/rjkp-yttg"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - who contributed to a New York City Council campaign
+      - NYC mayoral campaign donors
+      - New York City matching funds contributions
+    example: {limit: 3}

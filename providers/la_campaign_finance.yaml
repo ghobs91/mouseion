@@ -1,0 +1,77 @@
+id: la_campaign_finance
+title: Los Angeles City Campaign Contributions
+category: government
+domain: civic_local
+sub_category: campaign_finance
+transport: http
+adapter: socrata
+base: https://data.lacity.org
+regions: [US]
+description: >-
+  Campaign contributions and miscellaneous increases to cash reported to the
+  Los Angeles City Ethics Commission. One row per contribution, with candidate,
+  committee, seat, contributor, employer, occupation and amount.
+docs_url: https://data.lacity.org/d/m6g2-gc6c
+keywords:
+  - campaign finance
+  - campaign contributions
+  - los angeles
+  - city council
+  - mayor
+  - ethics commission
+  - donors
+  - who funded
+attribution: "Los Angeles City Ethics Commission"
+source:
+  is_primary: true
+  originator: "Los Angeles City Ethics Commission"
+  originator_domain: data.lacity.org
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.lacity.org/d/m6g2-gc6c
+    verified_at: 2026-10-30
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 86400
+capabilities:
+  contributions:
+    description: >-
+      Search Los Angeles campaign contributions by candidate, committee or free
+      text. Returns contributor, occupation, employer, amount and election.
+    path: /resource/m6g2-gc6c.json
+    params:
+      query: {type: string, description: "full-text search over candidate, committee and contributor"}
+      candidate: {type: string, description: "candidate name, exact match"}
+      committee: {type: string, description: "committee name, exact match"}
+      limit: {type: integer, default: 25}
+    alias: {query: q, candidate: cand_name, committee: cmt_nm}
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 1000}
+    fields:
+      date: con_date
+      contributor: con_name
+      city: con_city_nm
+      state: con_state_nm
+      zip: con_zip_cd
+      occupation: con_occp
+      employer: con_empr
+      committee: cmt_nm
+      committee_id: cmt_id
+      committee_type: cmt_type
+      candidate: cand_name
+      seat: seat_desc
+      district: dist_num
+      amount: con_amount
+      contribution_type: con_type
+      description: con_desc
+      election: election_desc
+      election_date: election_date
+    source_url_template: "https://data.lacity.org/d/m6g2-gc6c"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - who contributed to a Los Angeles mayoral campaign
+      - LA City Council campaign donors
+      - Los Angeles Ethics Commission contributions
+    example: {limit: 3}

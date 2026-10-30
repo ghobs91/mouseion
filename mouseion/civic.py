@@ -408,3 +408,134 @@ def summarize(jurisdictions: list[Jurisdiction], surfaces: list[Surface]) -> dic
         "expected": expected,
         "results": [surface.as_dict() for surface in surfaces],
     }
+
+
+# -- machine-readable dataset catalog -----------------------------------
+
+#: Socrata's national discovery index. One query reaches every Socrata-hosted
+#: government portal, which is what makes wave 1 bulk work instead of a crawl.
+SOCRATA_CATALOG = "https://api.us.socrata.com/api/catalog/v1"
+OFFICIAL_HOST_HINTS = (".gov", "opendata.com", "datahub.", "open-data.")
+DEFAULT_QUERIES = ("campaign finance", "campaign contributions", "election results")
+
+
+@dataclass(slots=True)
+class Dataset:
+    domain: str
+    id: str
+    name: str
+    query: str
+    updated: str | None = None
+    rows: int = -1
+
+    @property
+    def endpoint(self) -> str:
+        return f"https://{self.domain}/resource/{self.id}.json"
+
+    @property
+    def page(self) -> str:
+        return f"https://{self.domain}/d/{self.id}"
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "domain": self.domain,
+            "id": self.id,
+            "name": self.name,
+            "query": self.query,
+            "updated": self.updated,
+            "rows": self.rows,
+            "endpoint": self.endpoint,
+            "page": self.page,
+        }
+
+
+def _official(domain: str) -> bool:
+    return any(hint in domain.lower() for hint in OFFICIAL_HOST_HINTS)
+
+
+async def datasets(
+    queries: tuple[str, ...] = DEFAULT_QUERIES,
+    *,
+    min_rows: int = 100,
+    per_query: int = 60,
+    concurrency: int = 8,
+    transport: httpx.AsyncBaseTransport | None = None,
+) -> dict[str, Any]:
+    """Find machine-readable civic datasets, ranked by size.
+
+    The catalog tells us which portals publish structured campaign-finance and
+    election data. Row counts then separate a real table from a stub, so a
+    promotion starts from a measured candidate rather than a landing-page guess.
+    """
+    found: dict[tuple[str, str], Dataset] = {}
+    async with httpx.AsyncClient(
+        headers={"User-Agent": USER_AGENT}, timeout=30, transport=transport
+    ) as client:
+        for query in queries:
+            try:
+                response = await client.get(
+                    SOCRATA_CATALOG,
+                    params={"q": query, "only": "dataset", "limit": per_query},
+                )
+            except httpx.HTTPError as exc:
+                found.setdefault(
+                    ("", f"error:{query}"), Dataset("", "", f"{type(exc).__name__}", query)
+                )
+                continue
+            if response.status_code >= 400:
+                found.setdefault(
+                    ("", f"error:{query}"),
+                    Dataset("", "", f"HTTP {response.status_code}", query),
+                )
+                continue
+            for result in response.json().get("results", []):
+                resource = result.get("resource") or {}
+                domain = (result.get("metadata") or {}).get("domain", "")
+                if not domain or not _official(domain):
+                    continue
+                key = (domain, resource.get("id", ""))
+                if key in found:
+                    continue
+                found[key] = Dataset(
+                    domain=domain,
+                    id=resource.get("id", ""),
+                    name=resource.get("name", ""),
+                    query=query,
+                    updated=resource.get("updatedAt"),
+                )
+
+        candidates = [item for key, item in found.items() if key[0]]
+
+        async def count(item: Dataset) -> Dataset:
+            try:
+                response = await client.get(
+                    item.endpoint, params={"$select": "count(*)"}
+                )
+                if response.status_code == 200 and response.json():
+                    item.rows = int(list(response.json()[0].values())[0])
+            except (httpx.HTTPError, ValueError, IndexError, TypeError):
+                item.rows = -1
+            return item
+
+        semaphore = asyncio.Semaphore(max(1, concurrency))
+
+        async def bounded(item: Dataset) -> Dataset:
+            async with semaphore:
+                return await count(item)
+
+        counted = await asyncio.gather(*(bounded(item) for item in candidates))
+
+    kept = sorted(
+        (item for item in counted if item.rows >= min_rows), key=lambda item: -item.rows
+    )
+    by_domain: dict[str, int] = {}
+    for item in kept:
+        by_domain[item.domain] = by_domain.get(item.domain, 0) + 1
+    return {
+        "queries": list(queries),
+        "candidates": len(candidates),
+        "kept": len(kept),
+        "min_rows": min_rows,
+        "by_domain": dict(sorted(by_domain.items(), key=lambda kv: (-kv[1], kv[0]))),
+        "results": [item.as_dict() for item in kept],
+    }

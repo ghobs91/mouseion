@@ -11,6 +11,7 @@ identifiers such as `NCT04631731` or `CFTC`.
 
 from __future__ import annotations
 
+import math
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -25,6 +26,15 @@ _STOP = {
     "is", "it", "of", "on", "or", "that", "the", "to", "was", "what", "when",
     "where", "which", "who", "with", "about", "me", "my", "i", "do", "does",
     "this", "these", "those", "there", "any", "all", "can", "you", "tell",
+}
+
+#: Tokens that appear in provider names but say nothing about the topic. "new" is
+#: in "New York" and in "new participants"; without this, the name bonus sends an
+#: unrelated query to a civic dataset. They still count as ordinary tokens.
+_GENERIC_NAME_TOKENS = {
+    "new", "city", "state", "data", "open", "national", "federal", "public",
+    "center", "office", "commission", "board", "bureau", "agency", "service",
+    "services", "system", "project", "program", "index", "search", "api",
 }
 
 
@@ -111,22 +121,31 @@ class Registry:
     # -- lexical --------------------------------------------------------
 
     def lexical_scores(self, query: str) -> dict[tuple[str, str], float]:
-        """0..1 per capability: fraction of query tokens present, plus a name bonus."""
+        """0..1 per capability: fraction of query tokens present, plus a name bonus.
+
+        The rarity term is a tie-break, not a weight: adding five providers to a
+        domain can make two documents score identically, and the winner should be
+        the one matching the rarer token, not the alphabetically earlier title.
+        """
         query_tokens = set(_tokens(query))
         if not query_tokens:
             return {}
         out: dict[tuple[str, str], float] = {}
         for doc in self._docs:
-            hits = len(query_tokens & doc.tokens)
+            hits = query_tokens & doc.tokens
             if not hits:
                 continue
-            score = hits / len(query_tokens)
-            name_hits = query_tokens & doc.id_tokens
+            score = len(hits) / len(query_tokens)
+            score += 1e-6 * sum(self._idf(token) for token in hits)
+            name_hits = (query_tokens & doc.id_tokens) - _GENERIC_NAME_TOKENS
             if name_hits:
                 # Rare name tokens carry the signal; common ones barely move it.
                 score += min(0.5, sum(1.0 / max(1, self._df.get(t, 1)) for t in name_hits))
             out[(doc.provider, doc.capability)] = min(1.0, score)
         return out
+
+    def _idf(self, token: str) -> float:
+        return math.log((1 + len(self._docs)) / (1 + self._df.get(token, 0))) + 1.0
 
     def search(self, query: str = "", category: str | None = None, limit: int = 8) -> list[dict[str, Any]]:
         """Lexical-only search. Used as the fallback and by the CLI."""

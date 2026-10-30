@@ -64,3 +64,8 @@
 
 
 
+{"query": "who contributed to a New York state senate campaign", "expect": "ny_campaign_finance"}
+{"query": "Washington state campaign donors and their employers", "expect": "wa_campaign_finance"}
+{"query": "New York City Council campaign contributions", "expect": "nyc_campaign_finance"}
+{"query": "who funded the Los Angeles mayor race", "expect": "la_campaign_finance"}
+{"query": "Hawaii candidate campaign expenditures", "expect": "hawaii_campaign_spending"}

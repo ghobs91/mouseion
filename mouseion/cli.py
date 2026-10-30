@@ -59,7 +59,25 @@ async def _run(args: argparse.Namespace) -> int:
         return 0
 
     if args.command == "civic":
-        from .civic import DEFAULT_PATH, discover, load_jurisdictions
+        from .civic import DEFAULT_PATH, DEFAULT_QUERIES, datasets, discover, load_jurisdictions
+
+        if args.action == "datasets":
+            report = await datasets(
+                tuple(args.query or DEFAULT_QUERIES),
+                min_rows=args.min_rows,
+                per_query=args.per_query,
+                concurrency=args.concurrency,
+            )
+            if args.out:
+                out = Path(args.out)
+                out.parent.mkdir(parents=True, exist_ok=True)
+                out.write_text(
+                    json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8"
+                )
+                report = {key: value for key, value in report.items() if key != "results"}
+                report["written"] = str(out)
+            _print(report)
+            return 0
 
         jurisdictions = load_jurisdictions(args.jurisdictions or DEFAULT_PATH)
         if args.level:
@@ -309,10 +327,18 @@ def main() -> None:
     p = sub.add_parser(
         "civic", help="local-election jurisdiction registry and coverage discovery"
     )
-    p.add_argument("action", choices=["discover", "list"])
+    p.add_argument("action", choices=["discover", "list", "datasets"])
     p.add_argument(
         "--jurisdictions", default=None, help="path to jurisdictions.yaml"
     )
+    p.add_argument(
+        "--query",
+        action="append",
+        default=None,
+        help="catalog query for `datasets`; repeatable",
+    )
+    p.add_argument("--min-rows", type=int, default=100)
+    p.add_argument("--per-query", type=int, default=60)
     p.add_argument("--level", choices=["state", "territory", "city"])
     p.add_argument("--state", help="two-letter state code filter")
     p.add_argument("--limit", type=int, default=None)

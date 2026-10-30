@@ -1,0 +1,77 @@
+id: hawaii_campaign_spending
+title: Hawaii Campaign Spending
+category: government
+domain: civic_local
+sub_category: campaign_finance
+transport: http
+adapter: socrata
+base: https://hicscdata.hawaii.gov
+regions: [US]
+description: >-
+  Campaign spending reported to the Hawaii Campaign Spending Commission: one row
+  per expenditure or receipt, with candidate, payee, amount, category, office,
+  district and reporting period.
+docs_url: https://hicscdata.hawaii.gov/d/bjzn-cicp
+keywords:
+  - campaign finance
+  - campaign spending
+  - hawaii
+  - expenditures
+  - campaign spending commission
+  - donors
+  - who funded
+attribution: "Hawaii Campaign Spending Commission"
+source:
+  is_primary: true
+  originator: "Hawaii Campaign Spending Commission"
+  originator_domain: hicscdata.hawaii.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://hicscdata.hawaii.gov/d/bjzn-cicp
+    verified_at: 2026-10-30
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 86400
+capabilities:
+  ledger:
+    description: >-
+      Search the Hawaii campaign ledger, both receipts and expenditures, by
+      candidate, office, year or free text. Returns payee, amount, schedule,
+      category, purpose and reporting period.
+    path: /resource/bjzn-cicp.json
+    params:
+      query: {type: string, description: "full-text search over candidate, payee and purpose"}
+      candidate: {type: string, description: "candidate name, exact match"}
+      office: {type: string, description: "office sought, exact match"}
+      year: {type: integer, description: "e.g. 2024"}
+      limit: {type: integer, default: 25}
+    alias: {query: q, candidate: candidate_name}
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 1000}
+    fields:
+      schedule: schedule
+      candidate: candidate_name
+      type: type
+      payee: name
+      date: date
+      amount: amount
+      aggregated_amount: aggregated_amount
+      category: category
+      purpose: purpose
+      office: office
+      district: district
+      county: county
+      party: party
+      election_period: election_period
+      reporting_period: reporting_period
+      non_monetary: non_monetary
+      year: year
+    source_url_template: "https://hicscdata.hawaii.gov/d/bjzn-cicp"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - who did a Hawaii candidate pay for campaign mailers
+      - Hawaii campaign spending by candidate
+      - Hawaii Campaign Spending Commission expenditures
+    example: {limit: 3}

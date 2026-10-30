@@ -12,11 +12,11 @@ single-flight, and `mouseion lookup`. Phase 3 in progress: `financial_sovereign`
 `governance_legislative`, and `archives_web_state` have met their targets; transport
 remains. Remote MCP/OAuth support was added for CourtListener; the read-only Shopify
 Global Catalog is live. The local-election track now has a jurisdiction registry
-(96 jurisdictions) and a parallel discovery pass over 182 authority URLs; promoting
-the machine-readable surfaces is next. IMF, BoJ, OECD, BIS, and on-chain nodes remain
+(96 jurisdictions), a parallel discovery pass over 182 authority URLs, and a Socrata
+catalog search that promoted five campaign-finance providers in wave 1. IMF, BoJ, OECD, BIS, and on-chain nodes remain
 as Cat 1 stretch.
 **Basis:** the 2026-10-29 specification plus the repository as it actually stands:
-62 providers, 86 capabilities, 323 passing offline tests, 84 live contract tests.
+67 providers, 91 capabilities, 334 passing offline tests, 89 live contract tests.
 
 ---
 
@@ -403,7 +403,7 @@ spec's own examples plus the obvious adjacent authorities.
 | `transport_infrastructure` | 1 | 8 | 5–8 transit agencies with GTFS/GTFS-RT; State Dept travel; ISBN via OpenLibrary (exception) | P3 |
 | `governance_legislative` | 11 | 10 | Target met: Congress.gov, GovInfo, UK Parliament, CourtListener MCP (OAuth); existing CMS, CourtListener REST, data.gov.au, Federal Register, GOV.UK, Grants.gov, openFDA | P2 |
 | `commerce` | 1 | 1 | Shopify Global Catalog (read-only UCP MCP) | P2 |
-| `civic_local` | 0 | 50 states + DC + major cities | Registry + discovery built: 96 jurisdictions, 182 authority URLs probed. Promotion of machine-readable surfaces pending | P2 |
+| `civic_local` | 5 | 50 states + DC + major cities | Registry + discovery built: 96 jurisdictions, 182 authority URLs probed. Wave 1 promoted five Socrata campaign-finance providers (NY, WA, NYC, LA, HI); 89 candidate datasets catalogued | P2 |
 
 Notes on specific targets:
 

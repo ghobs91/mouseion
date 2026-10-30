@@ -8,6 +8,7 @@ import pytest
 from mouseion.civic import (
     Authority,
     Jurisdiction,
+    datasets,
     discover,
     load_jurisdictions,
     probe_authority,
@@ -223,3 +224,45 @@ def test_discover_runs_every_authority_through_the_transport():
     assert report["authorities"] == 2
     assert len(seen) == 2
     assert all(result["format"] == "json" for result in report["results"])
+
+
+# -- machine-readable dataset catalog -----------------------------------
+
+
+def test_datasets_ranks_official_catalogs_by_row_count():
+    def handler(request: httpx.Request) -> httpx.Response:
+        if "catalog/v1" in str(request.url):
+            return httpx.Response(
+                200,
+                json={
+                    "results": [
+                        {
+                            "resource": {"id": "aaaa-1111", "name": "Campaign Finance"},
+                            "metadata": {"domain": "data.ny.gov"},
+                        },
+                        {
+                            "resource": {"id": "bbbb-2222", "name": "Stub"},
+                            "metadata": {"domain": "data.ny.gov"},
+                        },
+                        {
+                            "resource": {"id": "cccc-3333", "name": "Blog post"},
+                            "metadata": {"domain": "medium.com"},
+                        },
+                    ]
+                },
+            )
+        if "aaaa-1111" in str(request.url):
+            return httpx.Response(200, json=[{"count": "500"}])
+        return httpx.Response(200, json=[{"count": "3"}])
+
+    report = run(
+        datasets(("campaign finance",), min_rows=100, transport=httpx.MockTransport(handler))
+    )
+
+    assert report["candidates"] == 2  # medium.com is not an official portal
+    assert report["kept"] == 1
+    assert report["results"][0]["id"] == "aaaa-1111"
+    assert report["results"][0]["endpoint"] == (
+        "https://data.ny.gov/resource/aaaa-1111.json"
+    )
+    assert report["by_domain"] == {"data.ny.gov": 1}

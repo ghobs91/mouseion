@@ -343,6 +343,7 @@ campaign-finance authority.
 ```bash
 .venv/bin/mouseion civic list
 .venv/bin/mouseion civic discover --concurrency 16 --out eval/civic-coverage.json
+.venv/bin/mouseion civic datasets --min-rows 1000 --out eval/civic-datasets.json
 ```
 
 `civic discover` fetches every authority page in parallel and records what it actually
@@ -361,6 +362,24 @@ The committed run in `eval/civic-coverage.json` covers 182 authority URLs: 123 `
 33 `blocked`, 19 `html_tables`, 3 `tls_error`, 2 `unreachable`, 1 `csv`, 1 `error`.
 That is the honest starting point: most state portals are HTML or JS, and a third sit
 behind an edge WAF that a plain HTTP client cannot pass.
+
+Because landing pages hide the good data, wave 1 does not rely on them. `civic
+datasets` queries Socrata's national catalog for structured campaign-finance and
+election tables on official portals and ranks them by row count. The committed run
+(`eval/civic-datasets.json`) finds 89 datasets with at least 1,000 rows across 13
+government portals. Five are promoted to providers:
+
+| Provider | Jurisdiction | Rows | Capability |
+|---|---|---|---|
+| `ny_campaign_finance` | New York (state) | 18.7M | `disclosures` |
+| `wa_campaign_finance` | Washington (state) | 6.4M | `contributions` |
+| `nyc_campaign_finance` | New York City | 1.7M | `contributions` |
+| `hawaii_campaign_spending` | Hawaii | 500K | `ledger` |
+| `la_campaign_finance` | Los Angeles | 428K | `contributions` |
+
+Each is a Socrata resource with a column projection, a recorded fixture, a live
+contract test, and a routing eval case. They share no failover cluster: a New York
+query must never fail over to a Los Angeles dataset.
 
 A jurisdiction becomes a provider only after its surface passes the probe. Until then
 it is a registry row, and an unregistered or non-machine-readable jurisdiction should
@@ -547,7 +566,7 @@ itself. Mouseion's own remote-MCP proxy is for keeping one unified tool surface.
 
 ## What's here
 
-62 providers, 86 capabilities. The contract suite verifies every upstream live except the
+67 providers, 91 capabilities. The contract suite verifies every upstream live except the
 seven that need credentials this machine does not have (FRED, CourtListener, GitHub,
 Congress.gov, GovInfo, Shopify, and SEC's contact User-Agent is set but FRED's key is
 not). Their auth paths are verified.
@@ -576,11 +595,15 @@ not). Their auth paths are verified.
 | GitHub | free token | `search_repositories`, `repository`, `releases`, `commits` |
 | Internet Archive | none | `search`, `metadata` |
 | Library of Congress | none | `search` |
+| Los Angeles Campaign Finance | none | `contributions` |
 | Go module proxy | none | `latest` |
 | GOV.UK | none | `search_content` |
 | GovInfo | free key | `search`, `package` |
 | Grants.gov | none | `search_opportunities` |
+| Hawaii Campaign Spending | none | `ledger` |
 | Maven Central | none | `search` |
+| New York Campaign Finance | none | `disclosures` |
+| New York City Campaign Finance | none | `contributions` |
 | NASA EONET | none | `events` |
 | NHC | none | `active_storms` |
 | NHTSA | none | `models_for_make` |
@@ -606,6 +629,7 @@ not). Their auth paths are verified.
 | Shopify Global Catalog | free client credentials | `tools` (runtime, read-only) |
 | DataSF | none | `police_incidents` |
 | US Treasury Fiscal Data | none | `debt_to_penny`, `avg_interest_rates` |
+| Washington Campaign Finance | none | `contributions` |
 | UK National Archives | none | `search` |
 | UK Parliament | none | `bills` |
 | UniProt | none | `search`, `entry` |
@@ -637,7 +661,7 @@ never as an upstream 403.
 
 Five adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`, `cdx`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 323 offline tests and 84 live contract tests.
+eval, MCP server, CLI, GBNF export, 334 offline tests and 89 live contract tests.
 
 Eleven upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -673,7 +697,7 @@ Eleven upstream behaviours the adapter contract had to grow for, all now generic
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 323 offline: fixture replay
+pytest                    # 334 offline: fixture replay
 pytest -m live            # 84 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
@@ -696,7 +720,7 @@ page token before a user does.
 
 ## What's deliberately not here
 
-- **Coverage.** 62 providers is a spine, not an index. The current gap matrix is in
+- **Coverage.** 67 providers is a spine, not an index. The current gap matrix is in
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
   molecular repositories, transit, and the Cat 1 stretch. Most are keyless or free-key;
   each needs a manifest, a fixture, a live contract, and an audit entry before it counts.

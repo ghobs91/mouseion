@@ -1,0 +1,77 @@
+id: ny_campaign_finance
+title: New York Campaign Finance Disclosure Reports
+category: government
+domain: civic_local
+sub_category: campaign_finance
+transport: http
+adapter: socrata
+base: https://data.ny.gov
+regions: [US]
+description: >-
+  Itemized receipts and disbursements filed by New York state and local campaign
+  committees with the State Board of Elections, beginning 1999. One row per
+  reported transaction, with filer, election year, schedule, date and amount.
+  Searchable by committee name, office or full text.
+docs_url: https://data.ny.gov/d/e9ss-239a
+keywords:
+  - campaign finance
+  - campaign contributions
+  - donors
+  - political committees
+  - new york
+  - disclosure
+  - election spending
+  - who funded
+attribution: "New York State Board of Elections"
+source:
+  is_primary: true
+  originator: "New York State Board of Elections"
+  originator_domain: data.ny.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.ny.gov/d/e9ss-239a
+    verified_at: 2026-10-30
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 86400
+capabilities:
+  disclosures:
+    description: >-
+      Search reported campaign transactions by committee, election year, office
+      or free text. Returns receipts and disbursements with dates and amounts.
+    path: /resource/e9ss-239a.json
+    params:
+      query: {type: string, description: "full-text search over committee, payee and purpose"}
+      filer: {type: string, description: "committee name (exact match; use query for partial)"}
+      election_year: {type: integer, description: "e.g. 2024"}
+      office: {type: string, description: "office sought, exact match"}
+      limit: {type: integer, default: 25}
+    alias: {query: q, filer: cand_comm_name, office: office_desc}
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 1000}
+    id_field: transaction_id
+    fields:
+      transaction_id: trans_number
+      filer: cand_comm_name
+      filer_id: filer_id
+      election_year: election_year
+      election_type: election_type
+      filing: filing_desc
+      schedule: filing_sched_desc
+      date: sched_date
+      amount: org_amt
+      owed: owed_amt
+      office: office_desc
+      district: district
+      county: county_desc
+      payee: flng_ent_name
+      purpose: trans_explntn
+    source_url_template: "https://data.ny.gov/d/e9ss-239a"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - who funded a New York assembly campaign
+      - New York campaign contributions by committee
+      - New York election spending disclosures
+    example: {limit: 3}
