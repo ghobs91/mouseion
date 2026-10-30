@@ -25,6 +25,8 @@ Domain = Literal[
     "archives_web_state",
     "transport_infrastructure",
     "governance_legislative",
+    "civic_local",
+    "commerce",
 ]
 DOMAINS: tuple[str, ...] = get_args(Domain)
 
@@ -33,6 +35,7 @@ Provenance = Literal[
     "intergovernmental",
     "registry",
     "self_hosted_node",
+    "commercial_platform",
     "aggregator_exception",
 ]
 
@@ -88,7 +91,7 @@ class Pagination(BaseModel):
 class Auth(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    type: Literal["none", "api_key", "user_agent", "oauth"] = "none"
+    type: Literal["none", "api_key", "user_agent", "oauth", "client_credentials"] = "none"
     #: Environment variable holding the credential (api_key/user_agent).
     env: str | None = None
     #: Query param or header name receiving the credential.
@@ -99,6 +102,10 @@ class Auth(BaseModel):
     scopes: list[str] = Field(default_factory=list)
     redirect_uri: str | None = None
     client_name: str = "mouseion"
+    #: Client-credentials settings, used by machine-to-machine remote MCP providers.
+    token_url: str | None = None
+    client_id_env: str | None = None
+    client_secret_env: str | None = None
 
 
 class AuthPolicy(BaseModel):
@@ -310,6 +317,8 @@ class Manifest(BaseModel):
     read_only_only: bool = True
     #: Explicit remote tool allowlist; empty means use read_only_only.
     allow_tools: list[str] = Field(default_factory=list)
+    #: UCP agent profile URL injected as meta.ucp-agent.profile for commerce MCP.
+    ucp_profile: str | None = None
     #: Required routing domain (one of the seven) and its finer sub-category.
     domain: Domain
     sub_category: str = Field(min_length=1)

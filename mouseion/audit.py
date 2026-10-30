@@ -64,6 +64,8 @@ TTL_BOUNDS: dict[str, tuple[float, float]] = {
     "archives_web_state": (3_600, 604_800),
     "transport_infrastructure": (60, 604_800),
     "governance_legislative": (60, 604_800),
+    "civic_local": (60, 604_800),
+    "commerce": (30, 86_400),
 }
 
 Severity = Literal["error", "warning"]
@@ -148,6 +150,11 @@ def audit_manifest(manifest: Manifest, *, today: date | None = None) -> list[Fin
             "non_primary_without_exception",
             "is_primary=false requires provenance=aggregator_exception and a reason",
         )
+    elif manifest.source.provenance == "commercial_platform":
+        warn(
+            "commercial_platform",
+            "commercial platform: primary for its own catalog, not a public-record originator",
+        )
 
     # -- tier vs auth ---------------------------------------------------
     if manifest.source.tier == 1:
@@ -155,6 +162,11 @@ def audit_manifest(manifest: Manifest, *, today: date | None = None) -> list[Fin
             err("tier1_requires_key", "Tier 1 must be keyless; auth.type is api_key")
         if manifest.auth.type == "oauth":
             err("tier1_oauth", "Tier 1 must be keyless; auth.type is oauth")
+        if manifest.auth.type == "client_credentials":
+            err(
+                "tier1_client_credentials",
+                "Tier 1 must be keyless; auth.type is client_credentials",
+            )
         if manifest.auth.type == "user_agent" and not manifest.auth.env:
             err(
                 "user_agent_missing_env",
@@ -163,10 +175,11 @@ def audit_manifest(manifest: Manifest, *, today: date | None = None) -> list[Fin
         if manifest.auth.type == "none" and manifest.auth.env:
             warn("tier1_unused_env", "auth.env is set but auth.type is none")
     else:
-        if manifest.auth.type not in {"api_key", "oauth"}:
+        if manifest.auth.type not in {"api_key", "oauth", "client_credentials"}:
             err(
                 "tier2_not_api_key",
-                f"Tier 2 must use api_key or oauth auth; found '{manifest.auth.type}'",
+                f"Tier 2 must use api_key, oauth, or client_credentials; "
+                f"found '{manifest.auth.type}'",
             )
         if manifest.auth.type == "api_key" and not manifest.auth.env:
             err("tier2_missing_env", "Tier 2 api_key auth must name auth.env")
@@ -179,6 +192,21 @@ def audit_manifest(manifest: Manifest, *, today: date | None = None) -> list[Fin
                 err(
                     "oauth_requires_remote_mcp",
                     "OAuth auth is only supported for transport=mcp_remote",
+                )
+        if manifest.auth.type == "client_credentials":
+            if not manifest.auth.token_url:
+                err("client_credentials_missing_token_url", "client_credentials needs token_url")
+            if not manifest.auth.client_id_env:
+                err("client_credentials_missing_id", "client_credentials needs client_id_env")
+            if not manifest.auth.client_secret_env:
+                err(
+                    "client_credentials_missing_secret",
+                    "client_credentials needs client_secret_env",
+                )
+            if manifest.transport != "mcp_remote":
+                err(
+                    "client_credentials_requires_remote_mcp",
+                    "client_credentials is only supported for transport=mcp_remote",
                 )
         policy = manifest.source.auth_policy
         if not policy.free:

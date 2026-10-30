@@ -1,9 +1,18 @@
 # Coverage Roadmap: Local Elections and Commerce
 
-**Status:** Proposal. Two policy decisions and one scope decision are unresolved.
-**Basis:** 61 providers / 85 capabilities. This document covers the two gaps that
-motivated it: local election candidates and their funding, and product search /
-shopping. It also lists the next high-demand topics.
+**Status:** Proposal updated 2026-10-30. The product is a general primary-source
+router, not a public-records-only tool. Commerce is in scope. Local elections are
+bulk-first: all states, DC, and major cities, not a single pilot.
+**Basis:** 62 providers / 86 capabilities.
+
+**Implemented since the first draft:**
+- Shopify Global Catalog is live as `shopify_catalog`, read-only (`search_catalog`,
+  `lookup_catalog`, `get_product`), with client-credentials auth and automatic UCP
+  profile injection.
+- Shopify Dev Dashboard credentials are confirmed permanently free, no card, no paid
+  approval.
+- `commerce` and `civic_local` are now domain values; `commercial_platform` is a
+  provenance value.
 
 ---
 
@@ -141,15 +150,27 @@ evidence URL, rate limit, fixture, live contract, audit entry, and eval cases.
 - **PDF** — defer. PDF extraction is a different reliability class; use only for
   voter guides after the CSV/JSON path is exhausted.
 
-### 3.5 First milestone
+### 3.5 Bulk-first milestone
 
-Pick **one city and one state** with machine-readable data:
+The unit is the **jurisdiction registry**, not a hand-picked pilot:
 
-- a city campaign-finance board (candidate + donor data)
-- a state election authority (candidate filings + voter guide)
+1. Seed all 50 states, DC, and the major cities in `jurisdictions.yaml`.
+2. For each entry, record the official election authority, campaign-finance
+   authority, official URLs, known formats, and a status:
+   `api`, `csv`, `html`, `pdf`, `manual`, or `unavailable`.
+3. Run a parallel `mouseion civic discover` pass over the seeds:
+   fetch the official pages, detect JSON/CSV/HTML links, probe them, and write a
+   coverage matrix.
+4. Promote sources in waves, format-first:
+   - wave 1: JSON/Socrata
+   - wave 2: CSV/bulk downloads
+   - wave 3: HTML tables where no machine-readable surface exists
+5. Every promoted source still gets a manifest, fixture, live contract, audit
+   entry, and eval cases.
 
-Ship 2–4 providers, a jurisdiction entry, fixtures, live contracts, and eval
-cases. Then expand jurisdiction by jurisdiction. Do not claim national coverage.
+This is how “all states and major cities” is approached without pretending every
+jurisdiction has an API. A jurisdiction with no machine-readable source is marked
+`manual`/`unavailable` and returns `web_search_required`, not a guess.
 
 ### 3.6 What not to do
 
@@ -228,18 +249,19 @@ meet Tier 1 or Tier 2 as written. Shopify uses its own product and variant IDs
 (and UCP identifiers), not a universal UPC registry. Document this exclusion
 rather than smuggling in a paid identifier service.
 
-### 4.5 First milestone
+### 4.5 First milestone — implemented
 
-Ship a **read-only Shopify Global Catalog** provider:
+The read-only Shopify Global Catalog is live as `shopify_catalog`:
 
-1. `search_catalog` with a text query
-2. `get_product` for one product/variant
-3. a normalized envelope with merchant, price, currency, availability, URL
-4. no cart, no checkout
-5. audit entry with `provenance: commercial_platform`
-6. eval cases for product discovery and price comparison
+- `search_catalog`, `lookup_catalog`, `get_product`
+- client-credentials auth at `https://api.shopify.com/auth/access_token`
+- UCP profile injected automatically
+- no cart, no checkout
+- `provenance: commercial_platform`
+- audit entry and unit tests
 
-Then add a second UCP-compliant merchant to prove the transport is generic.
+Next commerce steps: a second UCP-compliant merchant to prove the transport is
+generic, then the cart write-mode decision.
 
 ---
 
@@ -281,16 +303,18 @@ backlog.
 **Gate:** the roadmap has named owners, jurisdictions, and a read-only/write
 boundary.
 
-### Phase B — Local elections pilot (1–2 weeks)
+### Phase B — Local elections bulk build (multi-week, parallelizable)
 
-- Build the jurisdiction registry and resolution path.
-- Add `csv` (and `html_table` only if unavoidable).
-- Ship 2–4 official sources for one city and one state.
-- Add fixtures, live contracts, audit entries, and eval cases.
+- Seed `jurisdictions.yaml` for all 50 states, DC, and major cities.
+- Build `mouseion civic discover` to probe official election and campaign-finance
+  pages and write a coverage matrix.
+- Add `csv` and, only where unavoidable, `html_table`.
+- Promote sources in waves: JSON/Socrata, then CSV, then HTML.
+- Add fixtures, live contracts, audit entries, and eval cases per source.
 
-**Gate:** “who is running in <pilot city>” and “who funded <pilot candidate>”
-return structured records with source URLs; an unregistered jurisdiction returns
-`web_search_required`, not a guess.
+**Gate:** every state and major city has a registry entry and a status; every
+machine-readable source in the registry has a manifest and a live contract; an
+unregistered or `manual` jurisdiction returns `web_search_required`, not a guess.
 
 ### Phase C — Commerce read-only catalog (3–5 days)
 
@@ -314,13 +338,18 @@ availability, and URL; cart/checkout tools are absent from `provider_describe`.
 
 ## 7. Decisions needed
 
-1. **Is commerce in scope?** The project currently promises public records, not
-   shopping. Adding commerce changes the product and the primary-source claim.
-2. **Which local jurisdictions first?** Pick one city and one state with
-   machine-readable data; national coverage is a multi-month data-engineering
-   effort, not a provider count.
-3. **Cart/checkout?** Read-only catalog only, or an explicit write mode? Checkout
+Resolved on 2026-10-30:
+
+- **Product scope:** general primary-source router, not public-records-only.
+- **Commerce:** in scope; read-only catalog first.
+- **Shopify auth:** permanently free, no card, no paid approval.
+- **Local elections:** all states, DC, and major cities; bulk-first.
+
+Still open:
+
+1. **Cart/checkout:** read-only catalog only, or an explicit write mode? Checkout
    and payment should remain out of scope.
-4. **Shopify auth tier.** Confirm the Dev Dashboard credentials are permanently
-   free and do not require a card or paid approval. If they do, Shopify is a
-   commercial exception, not Tier 2.
+2. **Jurisdiction seed authority:** which source list seeds the state and major-city
+   registry, and who signs off on each entry?
+3. **HTML/PDF tolerance:** are HTML-table and PDF sources acceptable when a
+   jurisdiction has no API/CSV, or should those stay `manual`?

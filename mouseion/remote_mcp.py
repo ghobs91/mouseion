@@ -12,6 +12,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 import queue
 import threading
 import time
@@ -22,6 +23,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 from urllib.parse import parse_qs, urlparse
 
+import httpx2
 from mcp import types
 from mcp.client.auth import OAuthClientProvider
 from mcp.client.session import ClientSession
@@ -163,6 +165,74 @@ class _CallbackServer:
             self._httpd = None
 
 
+class ClientCredentialsAuth(httpx2.Auth):
+    """Machine-to-machine bearer auth for UCP/Shopify catalog servers."""
+
+    def __init__(
+        self,
+        token_url: str,
+        client_id: str,
+        client_secret: str,
+        *,
+        timeout: float = 30.0,
+        transport: httpx2.AsyncBaseTransport | None = None,
+    ):
+        self.token_url = token_url
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.timeout = timeout
+        self.transport = transport
+        self._token: str | None = None
+        self._expires_at = 0.0
+        self._lock = asyncio.Lock()
+
+    async def _get_token(self) -> str:
+        async with self._lock:
+            if self._token and time.time() < self._expires_at:
+                return self._token
+            try:
+                async with httpx2.AsyncClient(
+                    timeout=self.timeout, transport=self.transport
+                ) as client:
+                    response = await client.post(
+                        self.token_url,
+                        json={
+                            "client_id": self.client_id,
+                            "client_secret": self.client_secret,
+                            "grant_type": "client_credentials",
+                        },
+                    )
+            except httpx2.HTTPError as exc:
+                raise ProviderError(
+                    f"client-credentials token request failed: {exc}"
+                ) from None
+            if response.status_code >= 400:
+                raise ProviderError(
+                    f"client-credentials token endpoint returned {response.status_code}: "
+                    f"{response.text[:200]}"
+                )
+            try:
+                token = response.json()["access_token"]
+            except (KeyError, TypeError, ValueError) as exc:
+                raise ProviderError(
+                    f"unexpected client-credentials response: {exc}"
+                ) from None
+            self._token = str(token)
+            # Shopify tokens are valid for 60 minutes; refresh early.
+            self._expires_at = time.time() + 3_000
+            return self._token
+
+    async def async_auth_flow(self, request: httpx2.Request):
+        token = await self._get_token()
+        request.headers["Authorization"] = f"Bearer {token}"
+        response = yield request
+        if response.status_code == 401:
+            self._token = None
+            token = await self._get_token()
+            request.headers["Authorization"] = f"Bearer {token}"
+            yield request
+
+
 class RemoteMCPClient:
     """Connect to a remote MCP server, with OAuth when the manifest asks for it."""
 
@@ -192,8 +262,27 @@ class RemoteMCPClient:
         *,
         interactive: bool,
         callback: _CallbackServer | None,
-    ) -> OAuthClientProvider | None:
-        if manifest.auth.type != "oauth":
+    ) -> httpx2.Auth | None:
+        auth = manifest.auth
+        if auth.type == "client_credentials":
+            if not auth.token_url or not auth.client_id_env or not auth.client_secret_env:
+                raise ProviderError(
+                    f"provider '{manifest.id}' has incomplete client credentials",
+                    hint="set auth.token_url, auth.client_id_env, auth.client_secret_env",
+                )
+            client_id = os.getenv(auth.client_id_env)
+            client_secret = os.getenv(auth.client_secret_env)
+            if not client_id or not client_secret:
+                raise ProviderError(
+                    f"missing credentials for '{manifest.id}'",
+                    hint=f"set {auth.client_id_env} and {auth.client_secret_env}",
+                )
+            return ClientCredentialsAuth(
+                auth.token_url,
+                client_id,
+                client_secret,
+            )
+        if auth.type != "oauth":
             return None
         store = OAuthStore(self.cache, manifest.id)
 
@@ -288,6 +377,8 @@ class RemoteMCPClient:
     async def call(
         self, manifest: Manifest, tool: str, arguments: dict[str, Any]
     ) -> Envelope:
+        if manifest.ucp_profile:
+            arguments = _with_ucp_profile(arguments, manifest.ucp_profile)
         async with self._session(manifest) as session:
             result = await session.call_tool(tool, arguments)
         return envelope_from_result(manifest, tool, result)
@@ -318,6 +409,7 @@ def describe_remote(manifest: Manifest, tools: list[types.Tool]) -> dict[str, An
         "transport": "mcp_remote",
         "server": manifest.base,
         "auth": manifest.auth.type,
+        "ucp_profile": manifest.ucp_profile,
         "attribution": manifest.attribution,
         "tools": [
             {
@@ -384,6 +476,15 @@ def envelope_from_result(
         missing=[],
         truncated=False,
     )
+
+
+def _with_ucp_profile(arguments: dict[str, Any], profile: str) -> dict[str, Any]:
+    """Inject the UCP agent profile into tool arguments without overwriting it."""
+    meta = dict(arguments.get("meta") or {})
+    agent = dict(meta.get("ucp-agent") or {})
+    agent.setdefault("profile", profile)
+    meta["ucp-agent"] = agent
+    return {**arguments, "meta": meta}
 
 
 def _records(data: Any) -> list[dict[str, Any]]:

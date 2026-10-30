@@ -2,13 +2,12 @@
 # These are not part of the default routing eval. `expect: null` means the router
 # should currently abstain; when a provider lands, move the case to routing.jsonl
 # with the expected provider id.
+#
+# Commerce catalog queries are no longer gaps: shopify_catalog serves read-only
+# product search, lookup, and product details.
 
 {"query": "who is running for city council in my district", "expect": null}
 {"query": "local election candidates and their campaign donors", "expect": null}
 {"query": "where did my mayoral candidate get most of their funding", "expect": null}
 {"query": "what is on my ballot next election day", "expect": null}
 {"query": "which local candidates support housing reform", "expect": null}
-{"query": "buy a replacement water filter for my espresso machine", "expect": null}
-{"query": "shop for running shoes under $100", "expect": null}
-{"query": "compare prices for a specific product across stores", "expect": null}
-{"query": "add the cheapest option to my cart", "expect": null}

@@ -7,14 +7,18 @@ from pathlib import Path
 from mcp import types
 from mcp.shared.auth import OAuthToken
 
+import httpx2
+
 from mouseion.audit import audit_manifest
 from mouseion.bootstrap import build
 from mouseion.cache import Cache
 from mouseion.manifest import Manifest
 from mouseion.registry import Registry
 from mouseion.remote_mcp import (
+    ClientCredentialsAuth,
     OAuthStore,
     RemoteMCPClient,
+    _with_ucp_profile,
     describe_remote,
     envelope_from_result,
 )
@@ -126,6 +130,47 @@ def test_remote_manifest_passes_audit():
     findings = audit_manifest(manifest, today=date(2026, 10, 30))
     errors = [finding for finding in findings if finding.severity == "error"]
     assert errors == []
+
+
+def test_shopify_manifest_passes_audit():
+    manifest = Registry.load(ROOT / "providers").get("shopify_catalog")
+    findings = audit_manifest(manifest, today=date(2026, 10, 30))
+    errors = [finding for finding in findings if finding.severity == "error"]
+    assert errors == []
+
+
+def test_client_credentials_auth_fetches_bearer_token():
+    def handler(request: httpx2.Request) -> httpx2.Response:
+        assert str(request.url) == "https://example.test/token"
+        return httpx2.Response(200, json={"access_token": "test-token"})
+
+    auth = ClientCredentialsAuth(
+        "https://example.test/token",
+        "client-id",
+        "client-secret",
+        transport=httpx2.MockTransport(handler),
+    )
+
+    async def scenario():
+        request = httpx2.Request("GET", "https://example.test/mcp")
+        flow = auth.async_auth_flow(request)
+        outgoing = await flow.__anext__()
+        assert outgoing.headers["Authorization"] == "Bearer test-token"
+        await flow.aclose()
+
+    run(scenario())
+
+
+def test_ucp_profile_is_injected_without_clobbering_arguments():
+    arguments = _with_ucp_profile(
+        {"catalog": {"query": "running shoes"}},
+        "https://example.test/.well-known/ucp",
+    )
+    assert arguments["catalog"]["query"] == "running shoes"
+    assert (
+        arguments["meta"]["ucp-agent"]["profile"]
+        == "https://example.test/.well-known/ucp"
+    )
 
 
 def test_provider_describe_and_call_use_the_remote_client(config):

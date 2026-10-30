@@ -94,12 +94,16 @@ def test_tier_two_sources_are_free_and_cardless():
     for manifest in registry.manifests.values():
         if manifest.source.tier != 2:
             continue
-        assert manifest.auth.type in {"api_key", "oauth"}
+        assert manifest.auth.type in {"api_key", "oauth", "client_credentials"}
         if manifest.auth.type == "api_key":
             assert manifest.auth.env
-        else:
+        elif manifest.auth.type == "oauth":
             assert manifest.auth.scopes
             assert manifest.auth.redirect_uri
+        else:
+            assert manifest.auth.token_url
+            assert manifest.auth.client_id_env
+            assert manifest.auth.client_secret_env
         assert manifest.source.auth_policy.free
         assert not manifest.source.auth_policy.credit_card_required
         assert not manifest.source.auth_policy.trial

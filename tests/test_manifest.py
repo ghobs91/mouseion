@@ -56,6 +56,7 @@ def test_all_manifests_load(registry):
         "ror",
         "sec_edgar",
         "sf_open_data",
+        "shopify_catalog",
         "treasury_fiscal",
         "uk_national_archives",
         "uk_parliament",

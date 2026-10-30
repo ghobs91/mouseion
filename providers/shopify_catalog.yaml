@@ -1,0 +1,69 @@
+id: shopify_catalog
+title: Shopify Global Catalog
+category: commerce
+domain: commerce
+sub_category: product_catalog
+transport: mcp_remote
+read_only_only: false
+allow_tools: [search_catalog, lookup_catalog, get_product]
+ucp_profile: https://shopify.dev/ucp/agent-profiles/examples/2026-08-25/valid-with-capabilities.json
+description: >-
+  Shopify's UCP Global Catalog MCP: search products across Shopify merchants,
+  look up products or variants by identifier, and read full product details with
+  variants, prices, availability and merchant checkout links. Read-only; no cart
+  or checkout tools are exposed. Requires free Shopify Dev Dashboard client
+  credentials in SHOPIFY_CLIENT_ID and SHOPIFY_CLIENT_SECRET.
+docs_url: https://shopify.dev/docs/agents/catalog/global-catalog
+keywords:
+  - shop
+  - shopping
+  - product
+  - buy
+  - price
+  - compare prices
+  - store
+  - merchant
+  - catalog
+  - variant
+  - availability
+  - shopify
+  - ucp
+base: https://catalog.shopify.com/api/ucp/mcp
+adapter: rest_json
+auth:
+  type: client_credentials
+  token_url: https://api.shopify.com/auth/access_token
+  client_id_env: SHOPIFY_CLIENT_ID
+  client_secret_env: SHOPIFY_CLIENT_SECRET
+attribution: "Shopify Global Catalog"
+source:
+  is_primary: true
+  originator: "Shopify"
+  originator_domain: shopify.com
+  provenance: commercial_platform
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.shopify.com/ucp
+    verified_at: 2026-10-30
+  rate_limit:
+    per_min: 60
+    burst: 10
+    concurrency: 4
+cache_ttl: 300
+limits:
+  note: "Read-only catalog; cart and checkout are intentionally not exposed."
+capabilities:
+  tools:
+    description: >-
+      UCP catalog tools discovered at runtime: search_catalog, lookup_catalog,
+      get_product. Call provider_describe for the live schemas.
+    path: /
+    exemplars:
+      - shop for running shoes under $100
+      - compare prices for a specific product
+      - find wireless headphones across stores
+      - product details for a Shopify variant
+      - buy a replacement water filter for an espresso machine

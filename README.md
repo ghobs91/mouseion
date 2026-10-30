@@ -254,7 +254,7 @@ If every candidate fails, `web_search_required` is `true` and `reason` says why
 The engine is a library and CLI first. It is not a fifth MCP tool yet; the four-tool
 surface stays stable until the failover eval is in place.
 
-## Remote MCP providers (OAuth)
+## Remote MCP providers (OAuth and client credentials)
 
 Some services expose a remote MCP server instead of a REST API. CourtListener is the
 first: `https://mcp.courtlistener.com/` uses OAuth 2.1 with PKCE and dynamic client
@@ -275,6 +275,25 @@ Remote tools are filtered to `readOnlyHint=true` by default (`read_only_only: tr
 the manifest). If the server does not annotate its read-only tools, set
 `read_only_only: false` or list `allow_tools` explicitly. The existing `courtlistener`
 REST provider still uses `COURTLISTENER_TOKEN`; the MCP provider is separate.
+
+### Shopify Global Catalog (read-only)
+
+Shopify's UCP Global Catalog uses machine-to-machine client credentials, not an
+interactive OAuth login. The credentials are free from the Shopify Dev Dashboard:
+
+```bash
+export SHOPIFY_CLIENT_ID="..."
+export SHOPIFY_CLIENT_SECRET="..."
+
+.venv/bin/mouseion describe shopify_catalog
+.venv/bin/mouseion call shopify_catalog search_catalog \
+  '{"catalog": {"query": "running shoes", "filters": {"price": {"max": 10000}}}}'
+```
+
+The manifest exposes only `search_catalog`, `lookup_catalog`, and `get_product`; cart
+and checkout tools are deliberately excluded. `meta.ucp-agent.profile` is injected
+automatically. Shopify is labeled `commercial_platform`, not a public-record
+originator.
 
 If your host already speaks MCP, the simplest path is to add
 `https://mcp.courtlistener.com/` directly to OpenCode/Claude and let the host run the
@@ -492,10 +511,10 @@ itself. Mouseion's own remote-MCP proxy is for keeping one unified tool surface.
 
 ## What's here
 
-61 providers, 85 capabilities. The contract suite verifies every upstream live except the
-six that need credentials this machine does not have (FRED, CourtListener, GitHub,
-Congress.gov, GovInfo, and SEC's contact User-Agent is set but FRED's key is not). Their
-auth paths are verified.
+62 providers, 86 capabilities. The contract suite verifies every upstream live except the
+seven that need credentials this machine does not have (FRED, CourtListener, GitHub,
+Congress.gov, GovInfo, Shopify, and SEC's contact User-Agent is set but FRED's key is
+not). Their auth paths are verified.
 
 | Provider | Auth | Capabilities |
 |---|---|---|
@@ -548,6 +567,7 @@ auth paths are verified.
 | PyPI | none | `package`, `release` |
 | ROR | none | `search_organizations` |
 | SEC EDGAR | contact UA | `full_text_search`, `filings_by_cik` |
+| Shopify Global Catalog | free client credentials | `tools` (runtime, read-only) |
 | DataSF | none | `police_incidents` |
 | US Treasury Fiscal Data | none | `debt_to_penny`, `avg_interest_rates` |
 | UK National Archives | none | `search` |
@@ -570,6 +590,8 @@ export COURTLISTENER_TOKEN="..."                                 # free; anonymo
 export GITHUB_TOKEN="..."                                        # free; GitHub REST needs 5,000/hour
 export CONGRESS_API_KEY="..."                                    # free at api.data.gov/signup
 export GOVINFO_API_KEY="..."                                     # free at api.data.gov/signup
+export SHOPIFY_CLIENT_ID="..."                                   # free at dev.shopify.com/dashboard
+export SHOPIFY_CLIENT_SECRET="..."                               # free; no card
 ```
 
 openFEC ships with the shared `DEMO_KEY`, which works but is rate-limited to the point of
@@ -579,7 +601,7 @@ never as an upstream 403.
 
 Five adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`, `cdx`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 301 offline tests and 84 live contract tests.
+eval, MCP server, CLI, GBNF export, 304 offline tests and 84 live contract tests.
 
 Eleven upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -615,7 +637,7 @@ Eleven upstream behaviours the adapter contract had to grow for, all now generic
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 301 offline: fixture replay
+pytest                    # 304 offline: fixture replay
 pytest -m live            # 84 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
@@ -638,14 +660,14 @@ page token before a user does.
 
 ## What's deliberately not here
 
-- **Coverage.** 61 providers is a spine, not an index. The current gap matrix is in
+- **Coverage.** 62 providers is a spine, not an index. The current gap matrix is in
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
   molecular repositories, transit, and the Cat 1 stretch. Most are keyless or free-key;
   each needs a manifest, a fixture, a live contract, and an audit entry before it counts.
-- **Local elections and commerce.** The two largest known gaps. Local elections need a
-  jurisdiction registry plus official state/county sources; commerce needs a separate
-  commercial-platform mode around Shopify/UCP. See `docs/COVERAGE-ROADMAP.md` and
-  `eval/coverage-gaps.jsonl`.
+- **Local elections and commerce write paths.** Local elections need a bulk
+  jurisdiction registry plus official state/county sources; commerce catalog is
+  read-only (Shopify), while cart and checkout are a separate write-mode decision.
+  See `docs/COVERAGE-ROADMAP.md` and `eval/coverage-gaps.jsonl`.
 - **Write paths.** Everything here reads. No filings, no comments, no purchases. Cart
   and checkout are a separate product decision, not a provider manifest.
 
