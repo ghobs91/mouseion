@@ -315,6 +315,8 @@ class Manifest(BaseModel):
     attribution: str | None = None
     terms: str | None = None
     cache_ttl: float | None = None
+    #: Per-provider request timeout; falls back to MOUSEION_TIMEOUT.
+    timeout_s: float | None = None
     headers: dict[str, str] = Field(default_factory=dict)
     limits: dict[str, Any] = Field(default_factory=dict)
     capabilities: dict[str, Capability]

@@ -245,6 +245,9 @@ def audit_manifest(manifest: Manifest, *, today: date | None = None) -> list[Fin
                 f"{manifest.domain}",
             )
 
+    if manifest.timeout_s is not None and manifest.timeout_s <= 0:
+        err("timeout_invalid", "timeout_s must be positive")
+
     # -- failover clusters ---------------------------------------------
     for name, cap in manifest.capabilities.items():
         if cap.cluster:

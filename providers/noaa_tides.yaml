@@ -1,0 +1,113 @@
+id: noaa_tides
+title: NOAA Tides and Currents
+category: places
+domain: geo_earth_observation
+sub_category: hydrography
+description: >-
+  NOAA's Tides and Currents observations: water level, predictions, wind, air
+  pressure and other products for a station and date range. Keyless. Returns
+  timestamped values with quality flags.
+docs_url: https://api.tidesandcurrents.noaa.gov/api/prod/
+keywords:
+  - noaa
+  - tides
+  - tide
+  - water level
+  - currents
+  - coastal
+  - ocean
+  - station
+  - storm surge
+  - flood
+  - hydrography
+base: https://api.tidesandcurrents.noaa.gov/api/prod
+adapter: rest_json
+auth:
+  type: none
+attribution: "NOAA National Ocean Service"
+source:
+  is_primary: true
+  originator: "NOAA National Ocean Service"
+  originator_domain: noaa.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://tidesandcurrents.noaa.gov/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
+cache_ttl: 300
+limits:
+  rps: 5
+capabilities:
+  water_level:
+    description: >-
+      Read a NOAA station product for a date range. Returns timestamped values
+      with sigma and quality flags. Use product=water_level or predictions.
+    path: /datagetter
+    params:
+      station:
+        type: string
+        required: true
+        description: NOAA station id, e.g. 8443970 for Boston.
+      product:
+        type: string
+        description: Product, e.g. water_level, predictions, wind or air_pressure.
+        default: water_level
+      begin_date:
+        type: string
+        description: Start date as YYYYMMDD, e.g. 20260101.
+      end_date:
+        type: string
+        description: End date as YYYYMMDD, e.g. 20260102.
+      datum:
+        type: string
+        description: Vertical datum, e.g. MLLW, MSL or NAVD.
+        default: MLLW
+      units:
+        type: string
+        description: english or metric (default english).
+        default: english
+      time_zone:
+        type: string
+        description: lst, gmt or GMT (default lst).
+        default: lst
+      limit:
+        type: integer
+        description: Records per page (1-1000, default 100).
+        default: 100
+    defaults:
+      application: mouseion
+      format: json
+    pagination:
+      mode: offset
+      default_limit: 100
+      max_limit: 1000
+    local_window: true
+    record_path: data
+    id_field: time
+    source_url_template: "https://tidesandcurrents.noaa.gov/stationhome.html?id={station}"
+    fields:
+      time: t
+      value: v
+      sigma: s
+      quality: q
+    exemplars:
+      - water level at Boston NOAA station
+      - tide predictions for a station
+      - current coastal water height
+      - NOAA storm surge observations
+    example:
+      station: "8443970"
+      product: water_level
+      begin_date: "20260101"
+      end_date: "20260102"
+      datum: MLLW
+      units: english
+      time_zone: lst
+      limit: 10

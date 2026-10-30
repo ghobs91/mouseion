@@ -1,0 +1,100 @@
+id: nasa_eonet
+title: NASA EONET natural events
+category: places
+domain: geo_earth_observation
+sub_category: natural_events
+description: >-
+  NASA's Earth Observatory Natural Event Tracker: open and closed natural events
+  such as wildfires, volcanoes, storms and floods, with category, source links,
+  coordinates, dates and magnitude. Keyless.
+docs_url: https://eonet.gsfc.nasa.gov/docs/v3
+keywords:
+  - nasa
+  - eonet
+  - natural event
+  - wildfire
+  - volcano
+  - storm
+  - flood
+  - earthquake
+  - disaster
+  - earth observation
+  - satellite
+base: https://eonet.gsfc.nasa.gov/api/v3
+adapter: rest_json
+auth:
+  type: none
+attribution: "NASA Earth Observatory Natural Event Tracker"
+source:
+  is_primary: true
+  originator: "NASA Earth Observatory"
+  originator_domain: nasa.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://eonet.gsfc.nasa.gov/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 300
+    burst: 10
+    concurrency: 4
+cache_ttl: 300
+limits:
+  rps: 5
+capabilities:
+  events:
+    description: >-
+      List natural events, optionally filtered by status, category, days or
+      bounding box. Returns title, category, source links, coordinates, event
+      date and magnitude.
+    path: /events
+    params:
+      status:
+        type: string
+        description: open or closed (default open).
+        default: open
+      category:
+        type: string
+        description: >-
+          Category id, e.g. wildfires, volcanoes, severeStorms, floods.
+      days:
+        type: integer
+        description: Only events updated in the last N days.
+      bbox:
+        type: string
+        description: Bounding box as west,south,east,north.
+      limit:
+        type: integer
+        description: Records per page (1-100, default 10).
+        default: 10
+    record_path: events
+    id_field: id
+    source_url_template: "{link}"
+    fields:
+      id: id
+      title: title
+      description: description
+      link: link
+      closed: closed
+      categories: categories
+      sources: sources
+      event_date: geometry.0.date
+      event_type: geometry.0.type
+      latitude: geometry.0.coordinates.1
+      longitude: geometry.0.coordinates.0
+      magnitude: geometry.0.magnitudeValue
+      magnitude_unit: geometry.0.magnitudeUnit
+    pluck:
+      categories: title
+      sources: url
+    exemplars:
+      - open wildfires tracked by NASA
+      - current volcanic eruptions from EONET
+      - natural disasters in the last week
+      - storms near a bounding box
+    example:
+      status: open
+      limit: 5

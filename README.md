@@ -415,7 +415,7 @@ separate embedding server.
 
 ## What's here
 
-49 providers, 69 capabilities. The contract suite verifies every upstream live except the
+53 providers, 74 capabilities. The contract suite verifies every upstream live except the
 four that need credentials this machine does not have (FRED, CourtListener, GitHub, and
 SEC's contact User-Agent is set but FRED's key is not). Their auth paths are verified.
 
@@ -443,10 +443,13 @@ SEC's contact User-Agent is set but FRED's key is not). Their auth paths are ver
 | GOV.UK | none | `search_content` |
 | Grants.gov | none | `search_opportunities` |
 | Maven Central | none | `search` |
+| NASA EONET | none | `events` |
 | NHC | none | `active_storms` |
 | NHTSA | none | `models_for_make` |
 | NIH RePORTER | none | `search_projects` |
 | NIST NVD | none | `search_cves` |
+| NOAA Tides and Currents | none | `water_level` |
+| Nominatim | none | `search`, `reverse` |
 | npm | none | `search`, `package` |
 | NWS alerting | none | `active_alerts` |
 | NYC Open Data | none | `parcels` |
@@ -455,6 +458,7 @@ SEC's contact User-Agent is set but FRED's key is not). Their auth paths are ver
 | FEC (openFEC) | shared DEMO_KEY | `committees` |
 | OpenFEMA | none | `disaster_declarations` |
 | OpenLibrary | none | `search_books` |
+| Overpass | none | `query` |
 | PMC | none | `search`, `summaries` |
 | PubChem | none | `search_compounds`, `compound` |
 | PubMed | none | `search`, `summaries` |
@@ -487,9 +491,9 @@ never as an upstream 403.
 
 Four adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 261 offline tests and 69 live contract tests.
+eval, MCP server, CLI, GBNF export, 271 offline tests and 74 live contract tests.
 
-Eight upstream behaviours the adapter contract had to grow for, all now generic:
+Nine upstream behaviours the adapter contract had to grow for, all now generic:
 
 - **POST + JSON body** (USAspending, NIH RePORTER, Grants.gov, BLS). `body_template`
   renders a nested body, keeps integer types intact, and drops optional fields instead of
@@ -511,14 +515,16 @@ Eight upstream behaviours the adapter contract had to grow for, all now generic:
   OpenSearch total, while the rest of the pipeline stays unchanged.
 - **SDMX-JSON series** (ECB). The `sdmx_json` adapter flattens dimension-indexed
   series and observations into one row per time period.
+- **Slow queries** (Overpass). A per-provider `timeout_s` lets one upstream use 90
+  seconds without slowing every other provider.
 
 ## Contract tests
 
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 261 offline: fixture replay
-pytest -m live            # 69 live: every upstream, with the manifest example
+pytest                    # 271 offline: fixture replay
+pytest -m live            # 74 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
 
@@ -540,7 +546,7 @@ page token before a user does.
 
 ## What's deliberately not here
 
-- **Coverage.** 49 providers is a spine, not an index. The current gap matrix is in
+- **Coverage.** 53 providers is a spine, not an index. The current gap matrix is in
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
   molecular repositories, archives, transit, and legislative registers. Most are
   keyless or free-key; each needs a manifest, a fixture, a live contract, and an

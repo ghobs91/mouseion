@@ -1,0 +1,132 @@
+id: nominatim
+title: OpenStreetMap Nominatim
+category: places
+domain: geo_earth_observation
+sub_category: geocoding
+description: >-
+  OpenStreetMap's Nominatim geocoder: forward search for a place name or address,
+  and reverse geocoding from coordinates. Returns coordinates, display name,
+  OSM object id, address components and bounding box. Keyless, but Nominatim asks
+  for at most one request per second and a valid User-Agent.
+docs_url: https://nominatim.org/release-docs/latest/api/Overview/
+keywords:
+  - nominatim
+  - openstreetmap
+  - osm
+  - geocode
+  - geocoding
+  - address
+  - coordinates
+  - latitude
+  - longitude
+  - reverse geocode
+  - place
+base: https://nominatim.openstreetmap.org
+adapter: rest_json
+auth:
+  type: none
+attribution: "OpenStreetMap contributors (ODbL)"
+source:
+  is_primary: true
+  originator: "OpenStreetMap Foundation"
+  originator_domain: openstreetmap.org
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.openstreetmap.org/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 60
+    burst: 2
+    concurrency: 1
+cache_ttl: 86400
+limits:
+  rps: 1
+  note: "Nominatim asks for at most 1 request/second and a valid User-Agent."
+capabilities:
+  search:
+    description: >-
+      Forward-geocode a place name or address. Returns coordinates, display
+      name, OSM type and id, category, address components and bounding box.
+    path: /search
+    params:
+      q:
+        type: string
+        required: true
+        description: Place or address, e.g. "Eiffel Tower" or "10 Downing Street".
+      countrycodes:
+        type: string
+        description: Comma-separated ISO country codes to restrict results.
+      limit:
+        type: integer
+        description: Records per page (1-40, default 5).
+        default: 5
+    defaults:
+      format: jsonv2
+      addressdetails: 1
+    record_path: null
+    id_field: place_id
+    query_map:
+      text: q
+      limit: limit
+    source_url_template: "https://www.openstreetmap.org/{osm_type}/{osm_id}"
+    fields:
+      place_id: place_id
+      display_name: display_name
+      latitude: lat
+      longitude: lon
+      category: category
+      type: type
+      osm_type: osm_type
+      osm_id: osm_id
+      address: address
+      bounding_box: boundingbox
+    exemplars:
+      - coordinates of the Eiffel Tower
+      - geocode 10 Downing Street
+      - latitude and longitude of a city
+      - find an address on OpenStreetMap
+    example:
+      q: Eiffel Tower
+      limit: 3
+  reverse:
+    description: >-
+      Reverse-geocode coordinates to the nearest OSM object. Returns display
+      name, address components, OSM type and id, and bounding box.
+    path: /reverse
+    params:
+      lat:
+        type: number
+        required: true
+        description: Latitude in decimal degrees.
+      lon:
+        type: number
+        required: true
+        description: Longitude in decimal degrees.
+    defaults:
+      format: jsonv2
+      addressdetails: 1
+    record_path: null
+    id_field: place_id
+    source_url_template: "https://www.openstreetmap.org/{osm_type}/{osm_id}"
+    fields:
+      place_id: place_id
+      display_name: display_name
+      latitude: lat
+      longitude: lon
+      category: category
+      type: type
+      osm_type: osm_type
+      osm_id: osm_id
+      address: address
+      bounding_box: boundingbox
+    exemplars:
+      - what is at these coordinates
+      - reverse geocode 48.8584, 2.2945
+      - address for a latitude and longitude
+    example:
+      lat: 48.8584
+      lon: 2.2945

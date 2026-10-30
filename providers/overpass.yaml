@@ -1,0 +1,78 @@
+id: overpass
+title: OpenStreetMap Overpass API
+category: places
+domain: geo_earth_observation
+sub_category: geospatial_features
+description: >-
+  The Overpass API for OpenStreetMap: run an Overpass QL query against raw OSM
+  features and return nodes, ways and relations with tags and coordinates.
+  Keyless. Queries must include [out:json] and should be bounded by a bbox or
+  area; heavy queries can time out.
+docs_url: https://wiki.openstreetmap.org/wiki/Overpass_API
+keywords:
+  - overpass
+  - openstreetmap
+  - osm
+  - geospatial
+  - features
+  - pois
+  - amenities
+  - bbox
+  - map query
+  - tags
+base: https://overpass-api.de/api
+adapter: rest_json
+auth:
+  type: none
+attribution: "OpenStreetMap contributors (ODbL); Overpass API by FOSSGIS e.V."
+source:
+  is_primary: true
+  originator: "Overpass API (FOSSGIS e.V.)"
+  originator_domain: overpass-api.de
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://overpass-api.de/
+    verified_at: 2026-10-29
+  rate_limit:
+    per_min: 60
+    burst: 2
+    concurrency: 1
+cache_ttl: 3600
+timeout_s: 90
+limits:
+  rps: 1
+  note: "Bounded queries only; heavy Overpass queries can time out."
+capabilities:
+  query:
+    description: >-
+      Run an Overpass QL query. The query must include [out:json] and should be
+      bounded by a bbox or area. Returns OSM type, id, coordinates and tags.
+    path: /interpreter
+    params:
+      data:
+        type: string
+        required: true
+        description: >-
+          Overpass QL, e.g. '[out:json];node[amenity=cafe](48.85,2.29,48.86,2.30);out 5;'.
+    record_path: elements
+    id_field: id
+    source_url_template: "https://www.openstreetmap.org/{type}/{id}"
+    fields:
+      type: type
+      id: id
+      latitude: lat
+      longitude: lon
+      center_latitude: center.lat
+      center_longitude: center.lon
+      tags: tags
+    exemplars:
+      - cafes near the Eiffel Tower on OpenStreetMap
+      - all hospitals in Berlin from OSM
+      - pharmacies tagged in a bounding box
+      - OSM features with amenity=bench
+    example:
+      data: "[out:json];node[amenity=cafe](48.85,2.29,48.86,2.30);out 5;"

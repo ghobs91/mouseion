@@ -65,7 +65,7 @@ class ProviderClient:
         )
         if cached is not None:
             return cached.body
-        body, _ = await self._fetch(prepared, cap)
+        body, _ = await self._fetch(manifest, prepared, cap)
         return body
 
     async def call(
@@ -110,7 +110,7 @@ class ProviderClient:
         if cached is not None:
             body, status, http_age = cached.body, cached.status, cached.age_s
         else:
-            body, status = await self._fetch(prepared, cap)
+            body, status = await self._fetch(manifest, prepared, cap)
             http_age = 0.0
             if ttl > 0 and status < 400:
                 self.cache.put(
@@ -169,7 +169,10 @@ class ProviderClient:
             hint=f"available: {sorted(manifest.capabilities)}",
         )
 
-    async def _fetch(self, prepared: Any, cap: Capability) -> tuple[Any, int]:
+    async def _fetch(
+        self, manifest: Manifest, prepared: Any, cap: Capability
+    ) -> tuple[Any, int]:
+        timeout = manifest.timeout_s or self.config.timeout_s
         try:
             response = await self._http.request(
                 prepared.method,
@@ -177,10 +180,11 @@ class ProviderClient:
                 params=prepared.params,
                 headers=prepared.headers,
                 json=prepared.json_body,
+                timeout=timeout,
             )
         except httpx.TimeoutException:
             raise ProviderError(
-                f"upstream timeout after {self.config.timeout_s}s",
+                f"upstream timeout after {timeout}s",
                 hint="narrow the query or retry",
             ) from None
         except httpx.HTTPError as exc:
