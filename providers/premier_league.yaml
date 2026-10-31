@@ -1,0 +1,90 @@
+id: premier_league
+title: Premier League
+category: sports
+domain: reference
+sub_category: soccer
+transport: http
+adapter: rest_json
+base: https://footballapi.pulselive.com
+regions: [GB]
+description: >-
+  The Premier League's own data service: fixtures, results, scores and
+  gameweeks. This is the backend the premierleague.com site uses, not a
+  third-party aggregator. Keyless; requires the site's Origin header.
+docs_url: https://www.premierleague.com/
+keywords:
+  - premier league
+  - soccer
+  - football
+  - epl
+  - fixture
+  - result
+  - score
+  - gameweek
+attribution: "Premier League"
+source:
+  is_primary: true
+  originator: "Premier League (official data service hosted by Pulselive)"
+  originator_domain: pulselive.com
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://footballapi.pulselive.com/football/competitions
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 30, burst: 8, concurrency: 2}
+cache_ttl: 300
+headers:
+  Origin: https://www.premierleague.com
+  Referer: https://www.premierleague.com/
+capabilities:
+  fixtures:
+    description: >-
+      Premier League fixtures and results, newest first. Returns kickoff, status,
+      gameweek, both teams and their scores. Statuses: U upcoming, L live,
+      C complete.
+    path: /football/fixtures
+    defaults: {comps: 1, sort: desc, statuses: "U,L,C"}
+    params:
+      comps: {type: integer, default: 1, description: "1 is the Premier League"}
+      statuses: {type: string, default: "U,L,C", description: "comma-separated U, L, C"}
+      limit: {type: integer, default: 10}
+    pagination: {mode: page, param: page, limit_param: pageSize, default_limit: 10, max_limit: 50, start: 0, total_pages_field: pageInfo.numPages}
+    record_path: content
+    id_field: id
+    fields:
+      id: id
+      kickoff: kickoff.label
+      status: status
+      gameweek: gameweek.gameweek
+      home: teams.0.team.name
+      away: teams.1.team.name
+      home_score: teams.0.score
+      away_score: teams.1.score
+      venue: ground.name
+      attendance: attendance
+    source_url_template: "https://www.premierleague.com/match/{id}"
+    exemplars:
+      - Premier League results
+      - Premier League fixtures this weekend
+      - who won the Arsenal match
+      - Premier League score
+    example: {statuses: "C", limit: 3}
+  competitions:
+    description: >-
+      Competitions the Premier League data service covers, with abbreviation and
+      level.
+    path: /football/competitions
+    record_path: content
+    id_field: id
+    fields:
+      id: id
+      abbreviation: abbreviation
+      name: description
+      level: level
+    source_url_template: "https://www.premierleague.com/"
+    exemplars:
+      - which competitions does the Premier League service cover
+    example: {}

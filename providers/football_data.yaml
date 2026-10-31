@@ -8,10 +8,10 @@ adapter: rest_json
 base: https://api.football-data.org/v4
 regions: []
 description: >-
-  Domestic top leagues and international tournaments: competitions, fixtures,
-  results and standings. Covers the Premier League, La Liga, Bundesliga, Serie A,
-  Ligue 1, Champions League, World Cup and European Championship on the free
-  plan. An aggregator of official league feeds, not an originating authority.
+  Domestic leagues whose official feeds are not public, plus standings:
+  La Liga, Bundesliga, Serie A and Ligue 1. The Premier League, UEFA competitions
+  and FIFA tournaments are served by their own providers. An aggregator of
+  official league feeds, not an originating authority.
 docs_url: https://docs.football-data.org/
 keywords:
   - soccer
@@ -32,8 +32,9 @@ source:
   originator_domain: football-data.org
   provenance: aggregator_exception
   exception_reason: >-
-    Aggregates official league and federation feeds. It is convenient for
-    cross-league scores but is not the originating authority.
+    Aggregates official league feeds for the leagues that do not expose a public
+    official API (La Liga, Bundesliga, Serie A, Ligue 1). Use it explicitly;
+    Premier League, UEFA and FIFA data come from their own services.
   tier: 2
   auth_policy:
     free: true

@@ -40,7 +40,7 @@ Captured 2026-10-31 from the Alexandria directory page.
 
 ## Where mouseion stands
 
-94 providers across ten routing domains. The counts below are providers, not
+96 providers across ten routing domains. The counts below are providers, not
 capabilities; one provider often covers several capabilities.
 
 | Domain | Providers | What is already strong |
@@ -76,7 +76,7 @@ card.
 | Travel (21) | OurAirports, FAA, Schiphol | routes, rail | **OurAirports** ✅, **FAA NAS** ✅, **Schiphol** ✅, OpenFlights | 1 / 2 |
 | News (16) | official registers only | global news index | GDELT (aggregator exception), Media Cloud, official press rooms | 1 / 2 |
 | Research (16) | 14 providers | citation graph, preprints | Semantic Scholar, CORE, bioRxiv/medRxiv | 2 / 1 |
-| Sports (14) | MLB, UEFA, football-data | other leagues | **MLB StatsAPI** ✅, **UEFA** ✅, **football-data.org** ✅ | 1 / 2 |
+| Sports (14) | MLB, UEFA, Premier League, FIFA, football-data | other leagues | **MLB** ✅, **UEFA** ✅, **Premier League** ✅, **FIFA** ✅; football-data.org only for La Liga/Bundesliga/Serie A/Ligue 1 | 1 / 2 |
 | Jobs (13) | USAJobs | occupations | **USAJobs** ✅, O*NET, Arbeitnow | 2 / 1 |
 | AI models (12) | **Hugging Face** | model catalogues | **Hugging Face** ✅, OpenRouter (commercial) | 1 |
 | People (12) | Wikidata, GLEIF, SEC insiders | sanctions, officers | OpenSanctions, Companies House officers | 2 |
@@ -99,6 +99,12 @@ card.
    Nominatim/Overpass do not carry.
 3. **AI models**: Hugging Face Hub. The originating registry for open models.
 4. **Retail**: Open Food Facts. Barcodes and nutrition, keyless.
+
+**Soccer sourcing note:** football-data.org does not publish its upstreams. The
+Premier League, UEFA and FIFA expose public official feeds, so those are used
+directly. La Liga, Bundesliga, Serie A and Ligue 1 do not expose a public
+official API (tested), so football-data.org remains an explicit-use aggregator
+for them.
 
 **P1 — shipped:**
 

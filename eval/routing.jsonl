@@ -105,3 +105,5 @@
 {"query": "Premier League standings", "expect": "football_data"}
 {"query": "ground stop at O'Hare", "expect": "faa_airport_status"}
 {"query": "flight status at Schiphol", "expect": "schiphol_flights"}
+{"query": "Premier League results", "expect": "premier_league"}
+{"query": "World Cup results", "expect": "fifa"}

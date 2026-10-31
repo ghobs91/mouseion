@@ -1,0 +1,96 @@
+id: fifa
+title: FIFA
+category: sports
+domain: reference
+sub_category: soccer
+transport: http
+adapter: rest_json
+base: https://api.fifa.com/api/v3
+regions: []
+description: >-
+  FIFA's own match calendar and competition list: World Cup and other FIFA
+  tournaments, with teams, scores, stage, stadium and match status. Official
+  federation source, keyless.
+docs_url: https://www.fifa.com/
+keywords:
+  - fifa
+  - world cup
+  - soccer
+  - football
+  - national team
+  - tournament
+  - match
+  - score
+  - fixture
+attribution: "FIFA"
+source:
+  is_primary: true
+  originator: "FIFA"
+  originator_domain: fifa.com
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.fifa.com/
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 30, burst: 8, concurrency: 2}
+cache_ttl: 300
+capabilities:
+  matches:
+    description: >-
+      FIFA calendar matches. Pass a competition id (17 is the World Cup) and
+      a date range; the calendar also carries non-FIFA fixtures, so filter.
+      Returns date, competition, stage, teams, scores, status and stadium.
+    path: /calendar/matches
+    defaults: {language: en}
+    params:
+      competition: {type: string, description: "FIFA competition id, e.g. 17 for the World Cup"}
+      season: {type: string, description: "FIFA season id"}
+      from_date: {type: string, description: "start date, YYYY-MM-DD"}
+      to_date: {type: string, description: "end date, YYYY-MM-DD"}
+      limit: {type: integer, default: 20}
+    alias: {competition: idCompetition, season: idSeason, from_date: from, to_date: to, limit: count}
+    record_path: Results
+    id_field: id
+    fields:
+      id: IdMatch
+      date: Date
+      competition: CompetitionName.0.Description
+      stage: StageName.0.Description
+      home: HomeTeam.TeamName.0.Description
+      away: AwayTeam.TeamName.0.Description
+      home_score: HomeTeamScore
+      away_score: AwayTeamScore
+      status: MatchStatus
+      stadium: Stadium.Name.0.Description
+    source_url_template: "https://www.fifa.com/"
+    query_map: {limit: limit}
+    exemplars:
+      - World Cup results
+      - FIFA match schedule
+      - national team tournament scores
+    example: {competition: "17", from_date: "2022-11-01", to_date: "2022-12-31", limit: 3}
+  competitions:
+    description: >-
+      FIFA competitions, with id, name, confederation, member association and
+      competition type.
+    path: /competitions
+    defaults: {language: en}
+    params:
+      limit: {type: integer, default: 20}
+    alias: {limit: count}
+    record_path: Results
+    id_field: id
+    fields:
+      id: IdCompetition
+      name: Name.0.Description
+      confederation: IdConfederation.0
+      member: IdMemberAssociation.0
+      type: CompetitionType
+    source_url_template: "https://www.fifa.com/"
+    exemplars:
+      - FIFA competition ids
+      - which FIFA tournaments are covered
+    example: {limit: 5}

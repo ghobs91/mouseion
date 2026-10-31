@@ -130,8 +130,8 @@ def test_search_orders_the_matched_capability_first(registry, cache):
 def test_eval_baseline_holds(registry, cache):
     index = JurisdictionIndex(load_jurisdictions(ROOT / "jurisdictions.yaml"))
     report = run(evaluate(Router(registry, cache, jurisdictions=index), load_cases()))
-    assert report["total"] == 89
-    assert report["top1"] >= 78, report["misses"]
+    assert report["total"] == 91
+    assert report["top1"] >= 79, report["misses"]
     assert report["top3"] >= report["top1"]
 
 
