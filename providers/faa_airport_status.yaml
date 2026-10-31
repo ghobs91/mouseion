@@ -1,0 +1,62 @@
+id: faa_airport_status
+title: FAA Airport Status
+category: places
+domain: transport_infrastructure
+sub_category: aviation_status
+transport: http
+adapter: faa_nas
+base: https://nasstatus.faa.gov
+regions: [US]
+description: >-
+  The FAA's live airport status: closures, arrival and departure delays, ground
+  delays and ground stops, with the reason and expected reopening. Official US
+  source, keyless.
+docs_url: https://nasstatus.faa.gov/
+keywords:
+  - flight
+  - airport
+  - delay
+  - ground stop
+  - closure
+  - faa
+  - travel
+  - aviation
+attribution: "Federal Aviation Administration"
+source:
+  is_primary: true
+  originator: "Federal Aviation Administration"
+  originator_domain: faa.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://nasstatus.faa.gov/
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 30, burst: 8, concurrency: 2}
+cache_ttl: 300
+capabilities:
+  status:
+    description: >-
+      Current FAA airport disruptions: closures, arrival/departure delays,
+      ground delays and ground stops. Returns the airport code, type, reason,
+      start, expected reopening and delay minutes.
+    path: /api/airport-status-information
+    fields:
+      type: type
+      airport: arpt
+      reason: reason
+      start: start
+      reopen: reopen
+      delay: delay
+      max_delay: max_delay
+      avg_delay: avg_delay
+      end_time: end_time
+    id_template: "{type}:{airport}"
+    source_url_template: "https://nasstatus.faa.gov/"
+    exemplars:
+      - is there a ground stop at an airport
+      - flight delays at a US airport
+      - airport closures right now
+    example: {}

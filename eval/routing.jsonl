@@ -30,7 +30,7 @@
 
 {"query": "how do I bake sourdough bread", "expect": null}
 {"query": "what is the capital of France", "expect": null}
-{"query": "who won the football match last night", "expect": null}
+{"query": "who won the football match last night", "expect": "uefa"}
 {"query": "recommend a good science fiction novel", "expect": null}
 {"query": "what is the weather in Paris tomorrow", "expect": null}
 
@@ -100,3 +100,8 @@
 {"query": "airports in France", "expect": "ourairports"}
 {"query": "search TMDB for a movie", "expect": "tmdb"}
 {"query": "federal data scientist jobs", "expect": "usajobs"}
+{"query": "Champions League results", "expect": "uefa"}
+{"query": "Nations League scores", "expect": "uefa"}
+{"query": "Premier League standings", "expect": "football_data"}
+{"query": "ground stop at O'Hare", "expect": "faa_airport_status"}
+{"query": "flight status at Schiphol", "expect": "schiphol_flights"}

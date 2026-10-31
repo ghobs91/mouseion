@@ -1,0 +1,116 @@
+id: football_data
+title: football-data.org
+category: sports
+domain: reference
+sub_category: soccer
+transport: http
+adapter: rest_json
+base: https://api.football-data.org/v4
+regions: []
+description: >-
+  Domestic top leagues and international tournaments: competitions, fixtures,
+  results and standings. Covers the Premier League, La Liga, Bundesliga, Serie A,
+  Ligue 1, Champions League, World Cup and European Championship on the free
+  plan. An aggregator of official league feeds, not an originating authority.
+docs_url: https://docs.football-data.org/
+keywords:
+  - soccer
+  - football
+  - premier league
+  - la liga
+  - bundesliga
+  - serie a
+  - ligue 1
+  - world cup
+  - standings
+  - fixture
+  - score
+attribution: "football-data.org"
+source:
+  is_primary: false
+  originator: "football-data.org"
+  originator_domain: football-data.org
+  provenance: aggregator_exception
+  exception_reason: >-
+    Aggregates official league and federation feeds. It is convenient for
+    cross-league scores but is not the originating authority.
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.football-data.org/client/register
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 10, burst: 3, concurrency: 1}
+cache_ttl: 300
+auth:
+  type: api_key
+  env: FOOTBALL_DATA_API_KEY
+  param: X-Auth-Token
+  location: header
+  signup_url: https://www.football-data.org/client/register
+capabilities:
+  competitions:
+    description: >-
+      Competitions available on the plan, with code, name, type and area.
+    path: /competitions
+    record_path: competitions
+    id_field: id
+    fields:
+      id: id
+      code: code
+      name: name
+      type: type
+      area: area.name
+    source_url_template: "https://www.football-data.org/competition/{code}"
+    exemplars:
+      - which football competitions are covered
+      - league codes for football-data
+    example: {}
+  matches:
+    description: >-
+      Fixtures and results for a competition, optionally one season or matchday.
+      Returns teams, score, status, matchday and kickoff.
+    path: /competitions/{code}/matches
+    params:
+      code: {type: string, required: true, description: "competition code, e.g. PL, PD, BL1, SA, FL1, CL"}
+      season: {type: integer, description: "season start year"}
+      matchday: {type: integer, description: "matchday number"}
+    record_path: matches
+    id_field: id
+    fields:
+      id: id
+      competition: competition.name
+      matchday: matchday
+      status: status
+      kickoff: utcDate
+      home: homeTeam.name
+      away: awayTeam.name
+      home_score: score.fullTime.home
+      away_score: score.fullTime.away
+    source_url_template: "https://www.football-data.org/match/{id}"
+    exemplars:
+      - Premier League results
+      - La Liga fixtures
+      - Bundesliga scores
+      - Champions League match results
+    example: {code: "PL", season: 2024}
+  standings:
+    description: >-
+      The standings table for a competition and season, by stage and group.
+    path: /competitions/{code}/standings
+    params:
+      code: {type: string, required: true, description: "competition code, e.g. PL"}
+      season: {type: integer, description: "season start year"}
+    record_path: standings
+    fields:
+      stage: stage
+      type: type
+      group: group
+      table: table
+    source_url_template: "https://www.football-data.org/competition/{code}"
+    exemplars:
+      - Premier League table
+      - league standings
+      - who is top of the table
+    example: {code: "PL", season: 2024}

@@ -1,0 +1,106 @@
+id: schiphol_flights
+title: Amsterdam Airport Schiphol Flights
+category: places
+domain: transport_infrastructure
+sub_category: aviation_status
+transport: http
+adapter: rest_json
+base: https://api.schiphol.nl/public-flights
+regions: [NL]
+description: >-
+  Flight status direct from Amsterdam Airport Schiphol: scheduled and actual
+  times, state (scheduled, delayed, departed, landed), gate, terminal,
+  destination and aircraft. Official airport source; covers flights at AMS only.
+docs_url: https://developer.schiphol.nl/
+keywords:
+  - flight
+  - flight status
+  - schiphol
+  - amsterdam
+  - airport
+  - departure
+  - arrival
+  - gate
+  - delay
+attribution: "Royal Schiphol Group"
+source:
+  is_primary: true
+  originator: "Royal Schiphol Group"
+  originator_domain: schiphol.nl
+  provenance: official
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://developer.schiphol.nl/
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 30, burst: 8, concurrency: 2}
+cache_ttl: 300
+auth:
+  type: api_key
+  env: SCHIPHOL_APP_KEY
+  param: app_key
+  location: header
+  signup_url: https://developer.schiphol.nl/
+headers:
+  ResourceVersion: v4
+headers_env:
+  app_id: SCHIPHOL_APP_ID
+capabilities:
+  flights:
+    description: >-
+      Search Schiphol flights by flight number, date and direction. Returns the
+      scheduled and actual times, state, gate, terminal, destination and
+      aircraft.
+    path: /flights
+    params:
+      flight_name: {type: string, description: "flight number, e.g. KL1234"}
+      date: {type: string, description: "YYYY-MM-DD"}
+      direction: {type: string, description: "D departure or A arrival"}
+    alias: {flight_name: flightname, date: scheduleDate, direction: flightDirection}
+    pagination: {mode: page, param: page, default_limit: 20, start: 0}
+    record_path: flights
+    id_field: id
+    fields:
+      id: id
+      flight_name: flightName
+      flight_number: flightNumber
+      direction: flightDirection
+      schedule: scheduleDateTime
+      actual: actualDateTime
+      states: publicFlightState.flightStates
+      gate: gate
+      terminal: terminal
+      destination: route.destinations
+      aircraft: aircraftType.iataMain
+    source_url_template: "https://www.schiphol.nl/en/departures/"
+    exemplars:
+      - flight status at Schiphol
+      - is a flight delayed at Amsterdam
+      - Schiphol departure gate
+    example: {flight_name: "KL1234", date: "2026-10-31"}
+  flight:
+    description: >-
+      One Schiphol flight by id, with times, state, gate, terminal, route and
+      aircraft.
+    path: /flights/{flight_id}
+    params:
+      flight_id: {type: string, required: true, description: "Schiphol flight id"}
+    id_field: id
+    fields:
+      id: id
+      flight_name: flightName
+      flight_number: flightNumber
+      direction: flightDirection
+      schedule: scheduleDateTime
+      actual: actualDateTime
+      states: publicFlightState.flightStates
+      gate: gate
+      terminal: terminal
+      destination: route.destinations
+      aircraft: aircraftType.iataMain
+    source_url_template: "https://www.schiphol.nl/en/departures/"
+    exemplars:
+      - Schiphol flight details
+    example: {flight_id: "1234567890"}

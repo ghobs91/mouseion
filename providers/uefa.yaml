@@ -1,0 +1,98 @@
+id: uefa
+title: UEFA Match Centre
+category: sports
+domain: reference
+sub_category: soccer
+transport: http
+adapter: rest_json
+base: https://match.uefa.com
+regions: []
+description: >-
+  UEFA's own match service: fixtures, results, scores and status for UEFA
+  competitions, including the European Championship, Nations League, Champions
+  League, Europa League and Conference League. Keyless; covers UEFA
+  competitions only, not domestic leagues.
+docs_url: https://www.uefa.com/
+keywords:
+  - soccer
+  - football
+  - uefa
+  - champions league
+  - europa league
+  - nations league
+  - euro
+  - national team
+  - match
+  - score
+  - fixture
+attribution: "UEFA"
+source:
+  is_primary: true
+  originator: "UEFA"
+  originator_domain: uefa.com
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.uefa.com/
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 30, burst: 8, concurrency: 2}
+cache_ttl: 300
+capabilities:
+  matches:
+    description: >-
+      Fixtures and results for one UEFA competition, newest first. Competition
+      ids: 1 Champions League, 3 European Championship, 14 Europa League,
+      2014 Nations League, 2019 Conference League.
+    path: /v5/matches
+    defaults: {order: DESC}
+    params:
+      competition_id: {type: string, required: true, description: "1 UCL, 3 EURO, 14 UEL, 2014 Nations League, 2019 UECL"}
+      season: {type: integer, description: "season start year, e.g. 2024"}
+      limit: {type: integer, default: 10}
+    alias: {competition_id: competitionId, season: seasonYear}
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 10, max_limit: 50}
+    fields:
+      id: id
+      status: status
+      kickoff: kickOffTime.dateTime
+      competition: competition.metaData.name
+      home: homeTeam.internationalName
+      away: awayTeam.internationalName
+      home_score: score.total.home
+      away_score: score.total.away
+      stadium: stadium.translations.name.EN
+      round: round.translations.name.EN
+    id_field: id
+    source_url_template: "https://www.uefa.com/uefachampionsleague/match/{id}/"
+    exemplars:
+      - UEFA Champions League results
+      - Nations League scores
+      - European Championship fixtures
+      - national team match result
+    example: {competition_id: "3", limit: 3}
+  match:
+    description: >-
+      One UEFA match by id: teams, score, status, kickoff, stadium and round.
+    path: /v5/matches/{match_id}
+    params:
+      match_id: {type: string, required: true, description: "UEFA match id"}
+    fields:
+      id: id
+      status: status
+      kickoff: kickOffTime.dateTime
+      competition: competition.metaData.name
+      home: homeTeam.internationalName
+      away: awayTeam.internationalName
+      home_score: score.total.home
+      away_score: score.total.away
+      stadium: stadium.translations.name.EN
+      round: round.translations.name.EN
+    id_field: id
+    source_url_template: "https://www.uefa.com/uefachampionsleague/match/{id}/"
+    exemplars:
+      - UEFA match details
+      - who won a Champions League match
+    example: {match_id: "2036211"}

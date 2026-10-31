@@ -665,7 +665,7 @@ itself. Mouseion's own remote-MCP proxy is for keeping one unified tool surface.
 
 ## What's here
 
-90 providers, 127 capabilities. The contract suite verifies every upstream live except the
+94 providers, 135 capabilities. The contract suite verifies every upstream live except the
 seven that need credentials this machine does not have (FRED, CourtListener, GitHub,
 Congress.gov, GovInfo, Shopify, and SEC's contact User-Agent is set but FRED's key is
 not). Their auth paths are verified.
@@ -694,6 +694,10 @@ not). Their auth paths are verified.
 | GitHub | free token | `search_repositories`, `repository`, `releases`, `commits` |
 | Internet Archive | none | `search`, `metadata` |
 | Library of Congress | none | `search` |
+| FAA Airport Status | none | `status` |
+| football-data.org | free key | `competitions`, `matches`, `standings` |
+| Schiphol Flights | free app id + key | `flights`, `flight` |
+| UEFA Match Centre | none | `matches`, `match` |
 | FEMA Flood Hazard Zones | none | `flood_zone` |
 | MLB StatsAPI | none | `teams`, `schedule`, `standings` |
 | MusicBrainz | none | `search_artists`, `search_releases`, `artist` |
@@ -783,7 +787,7 @@ never as an upstream 403.
 
 Five adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`, `cdx`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 453 offline tests and 125 live contract tests.
+eval, MCP server, CLI, GBNF export, 460 offline tests and 133 live contract tests.
 
 Eleven upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -819,7 +823,7 @@ Eleven upstream behaviours the adapter contract had to grow for, all now generic
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 453 offline: fixture replay
+pytest                    # 460 offline: fixture replay
 pytest -m live            # 84 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
@@ -842,7 +846,7 @@ page token before a user does.
 
 ## What's deliberately not here
 
-- **Coverage.** 90 providers is a spine, not an index. The current gap matrix is in
+- **Coverage.** 94 providers is a spine, not an index. The current gap matrix is in
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
   molecular repositories, transit, and the Cat 1 stretch. Most are keyless or free-key;
   each needs a manifest, a fixture, a live contract, and an audit entry before it counts.
@@ -867,6 +871,20 @@ models**; this batch adds Companies House, Open Food Facts, GeoNames and Hugging
 Face Hub. Next are Jobs, Sports, Entertainment, Travel and Real estate, then the
 IMF/OECD/BIS finance stretch. Marketing, apps, social and web analytics are
 deliberately not targeted: they are commercial platforms or have no official API.
+
+### Soccer and flight status
+
+Soccer is split by source. UEFA's own match service covers the European
+Championship, Nations League, Champions League, Europa League and Conference
+League — official and keyless. football-data.org covers the domestic top leagues
+(Premier League, La Liga, Bundesliga, Serie A, Ligue 1) plus the World Cup and
+Euros; it is an aggregator exception, so it is used explicitly or with
+`--allow-aggregators`, while UEFA is primary.
+
+Flight status comes from the operator, not a tracker. The FAA's NAS status gives
+US airport closures, delays and ground stops; Schiphol's public-flights API gives
+per-flight status at Amsterdam. FlightAware, Flightradar24 and similar aggregators
+are deliberately excluded.
 
 ## Honest ceiling
 

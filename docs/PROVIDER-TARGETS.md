@@ -40,7 +40,7 @@ Captured 2026-10-31 from the Alexandria directory page.
 
 ## Where mouseion stands
 
-90 providers across ten routing domains. The counts below are providers, not
+94 providers across ten routing domains. The counts below are providers, not
 capabilities; one provider often covers several capabilities.
 
 | Domain | Providers | What is already strong |
@@ -53,8 +53,8 @@ capabilities; one provider often covers several capabilities.
 | `developer_infrastructure` | 9 | npm, PyPI, crates, Go, Maven, GitHub, NVD, Hugging Face |
 | `archives_web_state` | 5 | Wayback, Internet Archive, LoC, UK National Archives |
 | `commerce` | 2 | Shopify catalog, Open Food Facts |
-| `transport_infrastructure` | 2 | OurAirports |
-| `reference` | 5 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs |
+| `transport_infrastructure` | 4 | OurAirports, FAA status, Schiphol flights |
+| `reference` | 7 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, UEFA, football-data |
 
 ## Gap matrix
 
@@ -73,10 +73,10 @@ card.
 | Life sciences (31) | UniProt, PubChem, PMC, GBIF | structures, genomes | RCSB PDB, Ensembl, bioRxiv, KEGG (academic) | 1 |
 | Places (23) | Nominatim, Overpass, USGS, **GeoNames** | hierarchy, timezone, population | **GeoNames** ✅, Who's On First, USGS GNIS | 2 / 1 |
 | Developer (21) | 9 providers | package registries, Q&A | **Hugging Face** ✅, Docker Hub, Stack Exchange | 1 |
-| Travel (21) | OurAirports | routes, rail | **OurAirports** ✅, OpenFlights, FAA NASR | 1 |
+| Travel (21) | OurAirports, FAA, Schiphol | routes, rail | **OurAirports** ✅, **FAA NAS** ✅, **Schiphol** ✅, OpenFlights | 1 / 2 |
 | News (16) | official registers only | global news index | GDELT (aggregator exception), Media Cloud, official press rooms | 1 / 2 |
 | Research (16) | 14 providers | citation graph, preprints | Semantic Scholar, CORE, bioRxiv/medRxiv | 2 / 1 |
-| Sports (14) | MLB StatsAPI | other leagues | **MLB StatsAPI** ✅, football-data.org | 1 / 2 |
+| Sports (14) | MLB, UEFA, football-data | other leagues | **MLB StatsAPI** ✅, **UEFA** ✅, **football-data.org** ✅ | 1 / 2 |
 | Jobs (13) | USAJobs | occupations | **USAJobs** ✅, O*NET, Arbeitnow | 2 / 1 |
 | AI models (12) | **Hugging Face** | model catalogues | **Hugging Face** ✅, OpenRouter (commercial) | 1 |
 | People (12) | Wikidata, GLEIF, SEC insiders | sanctions, officers | OpenSanctions, Companies House officers | 2 |

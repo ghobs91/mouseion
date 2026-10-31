@@ -4,6 +4,7 @@ from .atom import AtomAdapter
 from .base import Adapter, AdapterResult, PreparedRequest, extract_records
 from .cdx import CdxAdapter
 from .csv_adapter import CsvAdapter
+from .faa_nas import FaaNasAdapter
 from .html_table import HtmlTableAdapter
 from .rest_json import RestJsonAdapter
 from .sdmx_json import SdmxJsonAdapter
@@ -19,6 +20,7 @@ ADAPTERS: dict[str, Adapter] = {
         CdxAdapter(),
         CsvAdapter(),
         HtmlTableAdapter(),
+        FaaNasAdapter(),
     )
 }
 

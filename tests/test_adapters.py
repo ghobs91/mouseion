@@ -734,3 +734,57 @@ def test_strip_html_cleans_a_search_snippet():
 
     result = adapter.parse(manifest, cap, body, prepare(manifest, cap, {}))
     assert result.records[0].data["snippet"] == "Augusta Ada & King"
+
+
+def test_faa_nas_flattens_delay_types_into_airport_rows():
+    from mouseion.manifest import Manifest
+
+    manifest = Manifest.model_validate(
+        {
+            "id": "faa_example",
+            "title": "FAA Example",
+            "domain": "transport_infrastructure",
+            "sub_category": "aviation_status",
+            "source": {
+                "originator": "FAA",
+                "originator_domain": "faa.gov",
+                "auth_policy": {"evidence_url": "https://faa.gov", "verified_at": "2026-10-31"},
+            },
+            "base": "https://nasstatus.faa.gov",
+            "adapter": "faa_nas",
+            "capabilities": {
+                "status": {
+                    "description": "x",
+                    "path": "/api/airport-status-information",
+                    "fields": {
+                        "type": "type",
+                        "airport": "arpt",
+                        "reason": "reason",
+                        "reopen": "reopen",
+                    },
+                }
+            },
+        }
+    )
+    cap = manifest.capabilities["status"]
+    adapter = get_adapter(manifest.adapter)
+    body = {
+        "_raw_text": (
+            "<AIRPORT_STATUS_INFORMATION>"
+            "<Delay_type><Name>Airport Closures</Name>"
+            "<Airport_Closure_List>"
+            "<Airport><ARPT>SBY</ARPT><Reason>closed</Reason><Reopen>10:00</Reopen></Airport>"
+            "</Airport_Closure_List></Delay_type>"
+            "<Delay_type><Name>Ground Delays</Name>"
+            "<Ground_Delay_List>"
+            "<Delay><ARPT>ORD</ARPT><Reason>weather</Reason></Delay>"
+            "</Ground_Delay_List></Delay_type>"
+            "</AIRPORT_STATUS_INFORMATION>"
+        )
+    }
+
+    result = adapter.parse(manifest, cap, body, prepare(manifest, cap, {}))
+
+    assert [record.data["airport"] for record in result.records] == ["SBY", "ORD"]
+    assert result.records[0].data["type"] == "Airport Closures"
+    assert result.records[0].data["reason"] == "closed"
