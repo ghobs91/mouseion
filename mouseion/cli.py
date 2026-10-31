@@ -175,6 +175,18 @@ async def _run(args: argparse.Namespace) -> int:
             report = await doctor(app, model_url=args.model_url)
             _print(report)
             return 0 if report["ok"] else 1
+        if args.command == "dashboard":
+            from .dashboard import serve
+
+            serve(
+                app.registry,
+                host=args.host,
+                port=args.port,
+                open_browser=args.open,
+                jurisdictions_path=args.jurisdictions,
+                coverage_path=args.coverage,
+            )
+            return 0
         if args.command == "lookup":
             params = json.loads(args.params) if args.params else None
             result = await app.engine.lookup(
@@ -296,6 +308,13 @@ def main() -> None:
         default=None,
         help="OpenAI-compatible model server base URL, e.g. http://127.0.0.1:8889",
     )
+
+    p = sub.add_parser("dashboard", help="serve a local dashboard of sources and coverage")
+    p.add_argument("--host", default="127.0.0.1")
+    p.add_argument("--port", type=int, default=8765)
+    p.add_argument("--open", action="store_true", help="open the dashboard in a browser")
+    p.add_argument("--coverage", default=None, help="path to eval/civic-coverage.json")
+    p.add_argument("--jurisdictions", default=None, help="path to jurisdictions.yaml")
 
     p = sub.add_parser("auth", help="OAuth login for remote MCP providers")
     p.add_argument("action", choices=["login", "status", "logout"])

@@ -426,6 +426,31 @@ return `web_search_required` rather than an invented record. The `csv` adapter e
 for the wave-1 and wave-2 promotions: point it at a bulk export, project the columns,
 and page the file locally.
 
+## Dashboard
+
+A read-only local page over the registry, the civic matrix and the audit:
+
+```bash
+.venv/bin/mouseion dashboard --open
+# mouseion dashboard: http://127.0.0.1:8765/
+```
+
+Four views:
+
+- **Sources** — every provider, filterable by domain, tier and auth, with a detail
+  drawer showing capabilities, required params, coverage and access evidence.
+- **Domains** — provider and capability counts per domain, the tier split, and
+  category tags.
+- **Jurisdictions** — all 101 registry entries with the measured format of their
+  election and campaign-finance authority, and which providers cover them.
+- **Audit** — the source-policy findings.
+
+It is one static page and one JSON endpoint (`/api/snapshot`), served by the
+standard library. No build step, no npm, no second source of truth: the snapshot
+is rebuilt on every request, so editing a manifest and refreshing shows the
+change. It binds to `127.0.0.1` by default; use `--host` and `--port` to change
+that.
+
 ## Adding a provider
 
 A provider is a YAML file in `providers/`. Only genuinely bespoke upstreams need Python.
@@ -714,7 +739,7 @@ never as an upstream 403.
 
 Five adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`, `cdx`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 378 offline tests and 103 live contract tests.
+eval, MCP server, CLI, GBNF export, 388 offline tests and 103 live contract tests.
 
 Eleven upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -750,7 +775,7 @@ Eleven upstream behaviours the adapter contract had to grow for, all now generic
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 378 offline: fixture replay
+pytest                    # 388 offline: fixture replay
 pytest -m live            # 84 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```

@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mouseion · source dashboard</title>
+<style>
+  :root {
+    --bg: #0b0f14;
+    --panel: #111823;
+    --panel-2: #16202c;
+    --line: #223040;
+    --text: #dce6f2;
+    --muted: #93a7bc;
+    --dim: #6b8099;
+    --accent: #5eead4;
+    --accent-dim: #134e4a;
+    --warn: #fbbf24;
+    --error: #f87171;
+    --blue: #7dd3fc;
+    --violet: #c4b5fd;
+    --green: #86efac;
+    --radius: 10px;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .sr {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  .skip {
+    position: absolute; left: 12px; top: -40px; z-index: 20;
+    background: var(--accent); color: #04211d; padding: 8px 12px; border-radius: 6px;
+    font-weight: 600;
+  }
+  .skip:focus { top: 12px; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  header.top {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 22px 28px 14px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .mark {
+    width: 34px; height: 34px; display: grid; place-items: center;
+    border: 1px solid var(--line); border-radius: 9px; color: var(--accent);
+    font-size: 17px; background: var(--panel);
+  }
+  .brand h1 { margin: 0; font-size: 19px; letter-spacing: .2px; font-weight: 650; }
+  .brand p { margin: 0; color: var(--muted); font-size: 12px; letter-spacing: .4px; text-transform: uppercase; }
+  .stamp { color: var(--dim); font-family: var(--mono); font-size: 11.5px; text-align: right; }
+
+  .stats {
+    display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px;
+    padding: 6px 28px 18px;
+  }
+  .stat {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 12px 14px;
+  }
+  .stat .k { display: block; color: var(--muted); font-size: 11px; letter-spacing: .7px; text-transform: uppercase; }
+  .stat .v { display: block; font-size: 23px; font-weight: 640; font-family: var(--mono); margin-top: 2px; }
+  .stat .sub { color: var(--dim); font-size: 11px; font-family: var(--mono); }
+  .stat.ok .v { color: var(--accent); }
+  .stat.warn .v { color: var(--warn); }
+
+  nav.tabs {
+    display: flex; gap: 4px; padding: 0 28px; border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; background: rgba(11,15,20,.94); backdrop-filter: blur(6px); z-index: 5;
+  }
+  nav.tabs button {
+    appearance: none; background: none; border: 0; border-bottom: 2px solid transparent;
+    color: var(--muted); font: inherit; font-weight: 560; padding: 12px 14px; cursor: pointer;
+  }
+  nav.tabs button:hover { color: var(--text); }
+  nav.tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+
+  main { padding: 18px 28px 64px; }
+
+  .toolbar {
+    display: flex; flex-wrap: wrap; align-items: end; gap: 10px; margin-bottom: 14px;
+  }
+  .toolbar label { display: grid; gap: 4px; color: var(--muted); font-size: 11px; letter-spacing: .5px; text-transform: uppercase; }
+  .toolbar input, .toolbar select {
+    background: var(--panel); color: var(--text); border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 10px; font: inherit; min-width: 150px;
+  }
+  .toolbar input[type="search"] { min-width: 280px; }
+  .toolbar .count { margin-left: auto; color: var(--dim); font-family: var(--mono); font-size: 12px; }
+
+  table.grid {
+    width: 100%; border-collapse: separate; border-spacing: 0;
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    overflow: hidden;
+  }
+  table.grid th, table.grid td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.grid thead th {
+    position: sticky; top: 47px; background: var(--panel-2); color: var(--muted);
+    font-size: 11px; letter-spacing: .7px; text-transform: uppercase; font-weight: 600; z-index: 2;
+  }
+  table.grid tbody tr:last-child td { border-bottom: 0; }
+  table.grid tbody tr { cursor: pointer; }
+  table.grid tbody tr:hover { background: var(--panel-2); }
+  table.grid tbody tr:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .name { font-weight: 600; }
+  .id { color: var(--dim); font-family: var(--mono); font-size: 11.5px; }
+  .caps { display: flex; flex-wrap: wrap; gap: 4px; }
+  .cap {
+    font-family: var(--mono); font-size: 11px; color: var(--blue);
+    background: rgba(125,211,252,.08); border: 1px solid rgba(125,211,252,.18);
+    padding: 1px 6px; border-radius: 5px;
+  }
+  .badge {
+    display: inline-block; font-family: var(--mono); font-size: 11px; padding: 1px 7px;
+    border-radius: 999px; border: 1px solid var(--line); color: var(--muted);
+    white-space: nowrap;
+  }
+  .badge.t1 { color: var(--accent); border-color: var(--accent-dim); background: rgba(94,234,212,.07); }
+  .badge.t2 { color: var(--warn); border-color: rgba(251,191,36,.25); background: rgba(251,191,36,.06); }
+  .badge.json, .badge.csv { color: var(--accent); border-color: var(--accent-dim); background: rgba(94,234,212,.07); }
+  .badge.html_tables { color: var(--blue); border-color: rgba(125,211,252,.25); background: rgba(125,211,252,.06); }
+  .badge.html { color: var(--muted); }
+  .badge.pdf { color: var(--violet); border-color: rgba(196,181,253,.25); background: rgba(196,181,253,.06); }
+  .badge.blocked, .badge.auth_required { color: var(--warn); border-color: rgba(251,191,36,.25); }
+  .badge.tls_error, .badge.unreachable, .badge.error { color: var(--error); border-color: rgba(248,113,113,.28); }
+  .badge.none { color: var(--dim); }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 14px; cursor: pointer; text-align: left; color: inherit; font: inherit;
+  }
+  .card:hover { border-color: #2c3d51; background: var(--panel-2); }
+  .card h3 { margin: 0 0 2px; font-size: 14px; font-weight: 640; }
+  .card .mono { color: var(--dim); font-family: var(--mono); font-size: 11px; }
+  .card .nums { display: flex; gap: 16px; margin-top: 12px; }
+  .card .nums div { display: grid; }
+  .card .nums b { font-family: var(--mono); font-size: 17px; font-weight: 620; }
+  .card .nums span { color: var(--muted); font-size: 11px; }
+  .bar { display: flex; height: 6px; border-radius: 999px; overflow: hidden; margin-top: 12px; background: var(--line); }
+  .bar .a { background: var(--accent); }
+  .bar .b { background: var(--warn); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 18px; }
+  .chip { border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 999px; padding: 3px 10px; font-size: 12px; }
+  .chip b { color: var(--text); font-family: var(--mono); }
+
+  .drawer {
+    position: fixed; top: 0; right: 0; height: 100vh; width: min(560px, 94vw);
+    background: var(--panel); border-left: 1px solid var(--line); z-index: 30;
+    overflow-y: auto; padding: 22px 24px 40px;
+  }
+  .drawer h2 { margin: 0 0 2px; font-size: 18px; }
+  .drawer .close {
+    position: absolute; top: 12px; right: 14px; background: none; border: 0; color: var(--muted);
+    font-size: 24px; line-height: 1; cursor: pointer; padding: 4px 8px;
+  }
+  .drawer .close:hover { color: var(--text); }
+  .scrim { position: fixed; inset: 0; background: rgba(3,7,11,.6); z-index: 20; }
+  .kv { display: grid; grid-template-columns: 130px 1fr; gap: 6px 12px; margin: 14px 0; }
+  .kv dt { color: var(--muted); font-size: 12px; }
+  .kv dd { margin: 0; font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
+  .section-title { color: var(--muted); font-size: 11px; letter-spacing: .8px; text-transform: uppercase; margin: 22px 0 8px; }
+  .cap-block { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; background: var(--panel-2); }
+  .cap-block h4 { margin: 0 0 4px; font-family: var(--mono); font-size: 12.5px; color: var(--blue); }
+  .cap-block p { margin: 0; color: var(--muted); font-size: 12.5px; }
+  .cap-block .req { margin-top: 6px; font-family: var(--mono); font-size: 11px; color: var(--dim); }
+  .ex { margin: 6px 0 0; padding-left: 16px; color: var(--dim); font-size: 12px; }
+
+  .audit-group { margin-bottom: 22px; }
+  .finding { border-left: 2px solid var(--line); padding: 8px 12px; margin-bottom: 8px; background: var(--panel); border-radius: 0 8px 8px 0; }
+  .finding.error { border-left-color: var(--error); }
+  .finding.warning { border-left-color: var(--warn); }
+  .finding .who { font-family: var(--mono); font-size: 12px; color: var(--text); }
+  .finding .code { font-family: var(--mono); font-size: 11px; color: var(--dim); margin-left: 8px; }
+  .finding p { margin: 3px 0 0; color: var(--muted); font-size: 12.5px; }
+
+  .empty { color: var(--dim); padding: 30px; text-align: center; border: 1px dashed var(--line); border-radius: var(--radius); }
+  footer { padding: 0 28px 30px; color: var(--dim); font-size: 11.5px; font-family: var(--mono); }
+
+  @media (max-width: 980px) {
+    .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 620px) {
+    header.top, .stats, nav.tabs, main, footer { padding-left: 14px; padding-right: 14px; }
+    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    table.grid thead { display: none; }
+    table.grid, table.grid tbody, table.grid tr, table.grid td { display: block; width: 100%; }
+    table.grid tr { border-bottom: 1px solid var(--line); padding: 8px 0; }
+    table.grid td { border: 0; padding: 4px 12px; }
+    .toolbar input[type="search"] { min-width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="brand">
+    <span class="mark" aria-hidden="true">◈</span>
+    <div>
+      <h1>mouseion</h1>
+      <p>primary-source router</p>
+    </div>
+  </div>
+  <div class="stamp" id="stamp">loading…</div>
+</header>
+
+<section class="stats" aria-label="Registry totals" id="stats"></section>
+
+<nav class="tabs" role="tablist" aria-label="Dashboard views">
+  <button role="tab" id="tab-sources" aria-controls="panel-sources" aria-selected="true" data-tab="sources">Sources</button>
+  <button role="tab" id="tab-domains" aria-controls="panel-domains" aria-selected="false" data-tab="domains">Domains</button>
+  <button role="tab" id="tab-jurisdictions" aria-controls="panel-jurisdictions" aria-selected="false" data-tab="jurisdictions">Jurisdictions</button>
+  <button role="tab" id="tab-audit" aria-controls="panel-audit" aria-selected="false" data-tab="audit">Audit</button>
+</nav>
+
+<main id="main">
+  <section role="tabpanel" id="panel-sources" aria-labelledby="tab-sources">
+    <div class="toolbar">
+      <label>Search
+        <input id="q" type="search" placeholder="provider, capability, jurisdiction…" autocomplete="off">
+      </label>
+      <label>Domain <select id="f-domain"><option value="">all</option></select></label>
+      <label>Tier <select id="f-tier"><option value="">all</option><option value="1">1</option><option value="2">2</option></select></label>
+      <label>Auth <select id="f-auth"><option value="">all</option></select></label>
+      <span class="count" id="count"></span>
+    </div>
+    <table class="grid" id="providers">
+      <caption class="sr">Providers in the registry</caption>
+      <thead>
+        <tr><th scope="col">Provider</th><th scope="col">Domain</th><th scope="col">Capabilities</th><th scope="col">Tier</th><th scope="col">Auth</th><th scope="col">Coverage</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section role="tabpanel" id="panel-domains" aria-labelledby="tab-domains" hidden>
+    <p class="section-title">Routing domains</p>
+    <div class="cards" id="domain-cards"></div>
+    <p class="section-title">Category tags</p>
+    <div class="chips" id="category-chips"></div>
+  </section>
+
+  <section role="tabpanel" id="panel-jurisdictions" aria-labelledby="tab-jurisdictions" hidden>
+    <div class="toolbar">
+      <label>Search <input id="jq" type="search" placeholder="jurisdiction or authority…" autocomplete="off"></label>
+      <label>Level <select id="j-level"><option value="">all</option><option value="state">state</option><option value="territory">territory</option><option value="county">county</option><option value="city">city</option></select></label>
+      <label>State <select id="j-state"><option value="">all</option></select></label>
+      <span class="count" id="jcount"></span>
+    </div>
+    <table class="grid" id="jurisdictions">
+      <caption class="sr">Election jurisdictions and the format their authority publishes</caption>
+      <thead>
+        <tr><th scope="col">Jurisdiction</th><th scope="col">Level</th><th scope="col">Election authority</th><th scope="col">Campaign finance</th><th scope="col">Providers</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section role="tabpanel" id="panel-audit" aria-labelledby="tab-audit" hidden>
+    <div id="audit-body"></div>
+  </section>
+</main>
+
+<footer id="footer"></footer>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" hidden>
+  <button class="close" id="drawer-close" aria-label="Close details">×</button>
+  <div id="drawer-body"></div>
+</aside>
+
+<script>
+"use strict";
+
+const state = { data: null, tab: "sources", domain: "", tier: "", auth: "", q: "",
+                jLevel: "", jState: "", jq: "" };
+
+const $ = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+
+function el(tag, attrs = {}, ...children) {
+  const node = document.createElement(tag);
+  for (const [key, value] of Object.entries(attrs)) {
+    if (value === undefined || value === null || value === false) continue;
+    if (key === "class") node.className = value;
+    else if (key === "text") node.textContent = value;
+    else if (key === "html") node.innerHTML = value;
+    else if (key.startsWith("on")) node.addEventListener(key.slice(2), value);
+    else node.setAttribute(key, value);
+  }
+  for (const child of children.flat()) {
+    if (child === null || child === undefined) continue;
+    node.append(child.nodeType ? child : document.createTextNode(String(child)));
+  }
+  return node;
+}
+
+function badge(text, kind) {
+  return el("span", { class: "badge " + (kind || ""), text: text });
+}
+
+function pct(value) { return (value === null || value === undefined) ? "—" : value.toFixed(1) + "%"; }
+
+async function main() {
+  const response = await fetch("/api/snapshot", { cache: "no-store" });
+  if (!response.ok) throw new Error("snapshot failed: " + response.status);
+  state.data = await response.json();
+  renderStats();
+  renderFilters();
+  renderProviders();
+  renderDomains();
+  renderJurisdictions();
+  renderAudit();
+  $("#stamp").textContent = "snapshot " + state.data.generated_at.replace("T", " ").replace("+00:00", "Z");
+  $("#footer").textContent = "mouseion · " + state.data.totals.providers + " providers · " +
+    state.data.totals.capabilities + " capabilities · " + state.data.totals.jurisdictions +
+    " jurisdictions · data: /api/snapshot";
+}
+
+function renderStats() {
+  const t = state.data.totals;
+  const items = [
+    ["providers", t.providers, t.keyless + " keyless"],
+    ["capabilities", t.capabilities, t.domains + " domains"],
+    ["jurisdictions", t.jurisdictions, t.civic_providers + " civic sources"],
+    ["authority probe", pct(t.machine_readable_pct), t.machine_readable + "/" + t.authorities + " machine-readable"],
+    ["datasets catalogued", t.datasets, "Socrata + bulk"],
+    ["audit", t.audit_errors === 0 ? "clean" : t.audit_errors + " errors", t.audit_warnings + " warnings",
+      t.audit_errors === 0 ? "ok" : "warn"],
+  ];
+  const root = $("#stats");
+  root.replaceChildren(...items.map(([k, v, sub, cls]) =>
+    el("div", { class: "stat " + (cls || "") },
+      el("span", { class: "k", text: k }),
+      el("span", { class: "v", text: v }),
+      el("span", { class: "sub", text: sub }))));
+}
+
+function renderFilters() {
+  const domains = [...new Set(state.data.providers.map(p => p.domain))].sort();
+  const domainSelect = $("#f-domain");
+  for (const domain of domains) domainSelect.append(el("option", { value: domain, text: domain }));
+
+  const auths = [...new Set(state.data.providers.map(p => p.auth))].sort();
+  const authSelect = $("#f-auth");
+  for (const auth of auths) authSelect.append(el("option", { value: auth, text: auth }));
+
+  const states = [...new Set(state.data.jurisdictions.map(j => j.state).filter(Boolean))].sort();
+  const stateSelect = $("#j-state");
+  for (const code of states) stateSelect.append(el("option", { value: code, text: code }));
+
+  $("#q").addEventListener("input", e => { state.q = e.target.value.toLowerCase(); renderProviders(); });
+  domainSelect.addEventListener("change", e => { state.domain = e.target.value; renderProviders(); });
+  $("#f-tier").addEventListener("change", e => { state.tier = e.target.value; renderProviders(); });
+  authSelect.addEventListener("change", e => { state.auth = e.target.value; renderProviders(); });
+  $("#jq").addEventListener("input", e => { state.jq = e.target.value.toLowerCase(); renderJurisdictions(); });
+  $("#j-level").addEventListener("change", e => { state.jLevel = e.target.value; renderJurisdictions(); });
+  stateSelect.addEventListener("change", e => { state.jState = e.target.value; renderJurisdictions(); });
+}
+
+function matches(provider) {
+  if (state.domain && provider.domain !== state.domain) return false;
+  if (state.tier && String(provider.tier) !== state.tier) return false;
+  if (state.auth && provider.auth !== state.auth) return false;
+  if (!state.q) return true;
+  const haystack = [
+    provider.id, provider.title, provider.domain, provider.sub_category, provider.category,
+    provider.originator, provider.description, ...provider.jurisdictions,
+    ...provider.capabilities.map(c => c.name + " " + c.description),
+  ].join(" ").toLowerCase();
+  return haystack.includes(state.q);
+}
+
+function renderProviders() {
+  const rows = state.data.providers.filter(matches);
+  $("#count").textContent = rows.length + " / " + state.data.providers.length;
+  const body = $("#providers tbody");
+  if (!rows.length) {
+    body.replaceChildren(el("tr", {}, el("td", { colspan: 6 },
+      el("div", { class: "empty", text: "No provider matches those filters." }))));
+    return;
+  }
+  body.replaceChildren(...rows.map(provider => {
+    const coverage = provider.jurisdictions.length
+      ? provider.jurisdictions.slice(0, 3).join(", ") + (provider.jurisdictions.length > 3 ? " +" + (provider.jurisdictions.length - 3) : "")
+      : (provider.regions.length ? provider.regions.join(", ") : "global");
+    return el("tr", { tabindex: "0", "data-id": provider.id, onclick: () => openDrawer(provider),
+                      onkeydown: e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDrawer(provider); } } },
+      el("td", {},
+        el("div", { class: "name", text: provider.title }),
+        el("div", { class: "id", text: provider.id })),
+      el("td", {},
+        el("div", { text: provider.domain }),
+        el("div", { class: "id", text: provider.sub_category })),
+      el("td", {}, el("div", { class: "caps" },
+        provider.capabilities.map(c => el("span", { class: "cap", text: c.name })))),
+      el("td", {}, badge("tier " + provider.tier, provider.tier === 1 ? "t1" : "t2")),
+      el("td", {}, badge(provider.auth, provider.auth === "none" ? "none" : "")),
+      el("td", { class: "id", text: coverage }));
+  }));
+}
+
+function renderDomains() {
+  const cards = $("#domain-cards");
+  cards.replaceChildren(...state.data.domains.map(domain => {
+    const total = domain.tier1 + domain.tier2 || 1;
+    return el("button", { class: "card", type: "button",
+                          onclick: () => { state.domain = domain.domain; $("#f-domain").value = domain.domain; showTab("sources"); renderProviders(); } },
+      el("h3", { text: domain.domain }),
+      el("div", { class: "mono", text: domain.capabilities + " capabilities" }),
+      el("div", { class: "nums" },
+        el("div", {}, el("b", { text: domain.providers }), el("span", { text: "providers" })),
+        el("div", {}, el("b", { text: domain.tier1 }), el("span", { text: "tier 1" })),
+        el("div", {}, el("b", { text: domain.keyless }), el("span", { text: "keyless" }))),
+      el("div", { class: "bar", "aria-hidden": "true" },
+        el("span", { class: "a", style: "width:" + (100 * domain.tier1 / total) + "%" }),
+        el("span", { class: "b", style: "width:" + (100 * domain.tier2 / total) + "%" })));
+  }));
+
+  $("#category-chips").replaceChildren(
+    ...Object.entries(state.data.categories).map(([name, count]) =>
+      el("span", { class: "chip" }, name, " ", el("b", { text: count }))));
+}
+
+function formatBadge(authority) {
+  if (!authority) return el("span", { class: "id", text: "—" });
+  const format = authority.format || "not probed";
+  return badge(format, format);
+}
+
+function renderJurisdictions() {
+  const rows = state.data.jurisdictions.filter(row => {
+    if (state.jLevel && row.level !== state.jLevel) return false;
+    if (state.jState && row.state !== state.jState) return false;
+    if (!state.jq) return true;
+    const haystack = [row.id, row.name, row.election && row.election.name,
+      row.campaign_finance && row.campaign_finance.name, ...row.providers].join(" ").toLowerCase();
+    return haystack.includes(state.jq);
+  });
+  $("#jcount").textContent = rows.length + " / " + state.data.jurisdictions.length;
+  const body = $("#jurisdictions tbody");
+  if (!rows.length) {
+    body.replaceChildren(el("tr", {}, el("td", { colspan: 5 },
+      el("div", { class: "empty", text: "No jurisdiction matches those filters." }))));
+    return;
+  }
+  body.replaceChildren(...rows.map(row => el("tr", {},
+    el("td", {},
+      el("div", { class: "name", text: row.name }),
+      el("div", { class: "id", text: row.id })),
+    el("td", { class: "id", text: row.level }),
+    el("td", {}, authorityCell(row.election)),
+    el("td", {}, authorityCell(row.campaign_finance)),
+    el("td", { class: "id", text: row.providers.length ? row.providers.join(", ") : "—" }))));
+}
+
+function authorityCell(authority) {
+  if (!authority) return el("span", { class: "id", text: "—" });
+  const wrap = el("div", {},
+    el("div", { text: authority.name || "unnamed" }),
+    el("div", { class: "id" }, formatBadge(authority)));
+  if (authority.url) {
+    wrap.append(el("div", {}, el("a", { href: authority.url, target: "_blank", rel: "noreferrer",
+                                        text: authority.url.replace(/^https?:\/\//, "").slice(0, 48) })));
+  }
+  return wrap;
+}
+
+function renderAudit() {
+  const audit = state.data.audit;
+  const root = $("#audit-body");
+  root.replaceChildren();
+  const summary = el("div", { class: "toolbar" },
+    el("span", { class: "count", text: audit.errors + " errors · " + audit.warnings + " warnings" }));
+  root.append(summary);
+
+  const groups = [["error", audit.findings.filter(f => f.severity === "error")],
+                  ["warning", audit.findings.filter(f => f.severity === "warning")]];
+  for (const [severity, findings] of groups) {
+    if (!findings.length) continue;
+    const group = el("div", { class: "audit-group" },
+      el("p", { class: "section-title", text: severity + "s" }));
+    for (const finding of findings) {
+      group.append(el("div", { class: "finding " + severity },
+        el("span", { class: "who", text: finding.provider }),
+        el("span", { class: "code", text: finding.code }),
+        el("p", { text: finding.message })));
+    }
+    root.append(group);
+  }
+  if (!audit.findings.length) {
+    root.append(el("div", { class: "empty", text: "Audit is clean." }));
+  }
+}
+
+function openDrawer(provider) {
+  const drawer = $("#drawer");
+  const scrim = $("#scrim");
+  const body = $("#drawer-body");
+  body.replaceChildren();
+
+  body.append(el("h2", { id: "drawer-title", text: provider.title }),
+              el("div", { class: "id", text: provider.id }));
+
+  if (provider.description) body.append(el("p", { style: "color:var(--muted)", text: provider.description }));
+
+  body.append(el("dl", { class: "kv" },
+    el("dt", { text: "domain" }), el("dd", { text: provider.domain + " / " + provider.sub_category }),
+    el("dt", { text: "category" }), el("dd", { text: provider.category }),
+    el("dt", { text: "tier" }), el("dd", { text: String(provider.tier) + " · " + provider.provenance }),
+    el("dt", { text: "auth" }), el("dd", { text: provider.auth }),
+    el("dt", { text: "transport" }), el("dd", { text: provider.transport }),
+    el("dt", { text: "originator" }), el("dd", { text: provider.originator }),
+    el("dt", { text: "coverage" }),
+    el("dd", { text: provider.jurisdictions.length ? provider.jurisdictions.join(", ")
+                  : (provider.regions.length ? provider.regions.join(", ") : "global") }),
+    el("dt", { text: "cache ttl" }), el("dd", { text: provider.ttl === null ? "default" : provider.ttl + "s" }),
+    el("dt", { text: "rate limit" }),
+    el("dd", { text: provider.rate_limit.per_min + "/min · burst " + provider.rate_limit.burst })));
+
+  if (provider.docs_url) {
+    body.append(el("p", {}, el("a", { href: provider.docs_url, target: "_blank", rel: "noreferrer", text: "documentation ↗" })));
+  }
+
+  body.append(el("p", { class: "section-title", text: "capabilities (" + provider.capabilities.length + ")" }));
+  for (const capability of provider.capabilities) {
+    const block = el("div", { class: "cap-block" },
+      el("h4", { text: capability.name }),
+      el("p", { text: capability.description }));
+    if (capability.required.length) {
+      block.append(el("div", { class: "req", text: "required: " + capability.required.join(", ") }));
+    }
+    if (capability.datasets) {
+      block.append(el("div", { class: "req", text: capability.datasets + " named datasets" }));
+    }
+    if (capability.exemplars.length) {
+      block.append(el("ul", { class: "ex" },
+        capability.exemplars.map(text => el("li", { text }))));
+    }
+    body.append(block);
+  }
+
+  body.append(el("p", { class: "section-title", text: "access evidence" }),
+    el("dl", { class: "kv" },
+      el("dt", { text: "free" }), el("dd", { text: String(provider.evidence.free) }),
+      el("dt", { text: "card required" }), el("dd", { text: String(provider.evidence.card) }),
+      el("dt", { text: "trial" }), el("dd", { text: String(provider.evidence.trial) }),
+      el("dt", { text: "verified" }), el("dd", { text: provider.evidence.verified_at })),
+    el("p", {}, el("a", { href: provider.evidence.url, target: "_blank", rel: "noreferrer", text: "evidence ↗" })));
+
+  drawer.hidden = false;
+  scrim.hidden = false;
+  $("#drawer-close").focus();
+}
+
+function closeDrawer() {
+  $("#drawer").hidden = true;
+  $("#scrim").hidden = true;
+}
+
+function showTab(name) {
+  state.tab = name;
+  for (const button of $$("nav.tabs button")) {
+    const selected = button.dataset.tab === name;
+    button.setAttribute("aria-selected", String(selected));
+  }
+  for (const panel of $$("main [role=tabpanel]")) {
+    panel.hidden = panel.id !== "panel-" + name;
+  }
+  history.replaceState(null, "", "#" + name);
+}
+
+function init() {
+  for (const button of $$("nav.tabs button")) {
+    button.addEventListener("click", () => showTab(button.dataset.tab));
+    button.addEventListener("keydown", event => {
+      const tabs = $$("nav.tabs button");
+      const index = tabs.indexOf(button);
+      if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+        event.preventDefault();
+        const next = tabs[(index + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length];
+        next.focus(); showTab(next.dataset.tab);
+      }
+    });
+  }
+  $("#drawer-close").addEventListener("click", closeDrawer);
+  $("#scrim").addEventListener("click", closeDrawer);
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !$("#drawer").hidden) closeDrawer();
+  });
+  const initial = location.hash.replace("#", "");
+  if (["sources", "domains", "jurisdictions", "audit"].includes(initial)) showTab(initial);
+  main().catch(error => {
+    $("#stamp").textContent = "error";
+    $("#stats").replaceChildren(el("div", { class: "empty", text: String(error) }));
+  });
+}
+
+init();
+</script>
+</body>
+</html>
