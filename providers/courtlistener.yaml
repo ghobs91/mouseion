@@ -26,6 +26,7 @@ adapter: rest_json
 auth:
   type: api_key
   env: COURTLISTENER_TOKEN
+  signup_url: https://www.courtlistener.com/profile/api/
   param: Authorization
   location: header
   prefix: "Token "

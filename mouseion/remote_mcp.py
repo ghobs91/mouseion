@@ -12,7 +12,6 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import os
 import queue
 import threading
 import time
@@ -37,6 +36,7 @@ from mcp.shared.auth import (
 )
 
 from .cache import Cache
+from .credentials import resolve
 from .config import Settings
 from .config import settings as default_settings
 from .envelope import Envelope, ProviderError, Record, SourceStatus, utcnow
@@ -270,12 +270,15 @@ class RemoteMCPClient:
                     f"provider '{manifest.id}' has incomplete client credentials",
                     hint="set auth.token_url, auth.client_id_env, auth.client_secret_env",
                 )
-            client_id = os.getenv(auth.client_id_env)
-            client_secret = os.getenv(auth.client_secret_env)
+            client_id = resolve(auth.client_id_env)
+            client_secret = resolve(auth.client_secret_env)
             if not client_id or not client_secret:
                 raise ProviderError(
                     f"missing credentials for '{manifest.id}'",
-                    hint=f"set {auth.client_id_env} and {auth.client_secret_env}",
+                    hint=(
+                        f"set {auth.client_id_env} and {auth.client_secret_env}, "
+                        "or save them in the dashboard"
+                    ),
                 )
             return ClientCredentialsAuth(
                 auth.token_url,

@@ -63,7 +63,7 @@
   .stamp { color: var(--dim); font-family: var(--mono); font-size: 11.5px; text-align: right; }
 
   .stats {
-    display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(158px, 1fr)); gap: 10px;
     padding: 6px 28px 18px;
   }
   .stat {
@@ -101,14 +101,31 @@
   .toolbar .count { margin-left: auto; color: var(--dim); font-family: var(--mono); font-size: 12px; }
 
   table.grid {
-    width: 100%; border-collapse: separate; border-spacing: 0;
+    width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed;
     background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
-    overflow: hidden;
+    background-clip: padding-box;
   }
+  table.grid td, table.grid th { overflow-wrap: anywhere; }
+  #providers th:nth-child(1) { width: 23%; }
+  #providers th:nth-child(2) { width: 17%; }
+  #providers th:nth-child(3) { width: 27%; }
+  #providers th:nth-child(4) { width: 8%; }
+  #providers th:nth-child(5) { width: 13%; }
+  #providers th:nth-child(6) { width: 12%; }
+  #jurisdictions th:nth-child(1) { width: 15%; }
+  #jurisdictions th:nth-child(2) { width: 7%; }
+  #jurisdictions th:nth-child(3) { width: 29%; }
+  #jurisdictions th:nth-child(4) { width: 30%; }
+  #jurisdictions th:nth-child(5) { width: 19%; }
+  table.grid thead th:first-child { border-top-left-radius: var(--radius); }
+  table.grid thead th:last-child { border-top-right-radius: var(--radius); }
+  table.grid tbody tr:last-child td:first-child { border-bottom-left-radius: var(--radius); }
+  table.grid tbody tr:last-child td:last-child { border-bottom-right-radius: var(--radius); }
+  table.grid thead { position: sticky; top: 48px; z-index: 2; }
   table.grid th, table.grid td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
   table.grid thead th {
-    position: sticky; top: 47px; background: var(--panel-2); color: var(--muted);
-    font-size: 11px; letter-spacing: .7px; text-transform: uppercase; font-weight: 600; z-index: 2;
+    background: var(--panel-2); color: var(--muted);
+    font-size: 11px; letter-spacing: .7px; text-transform: uppercase; font-weight: 600;
   }
   table.grid tbody tr:last-child td { border-bottom: 0; }
   table.grid tbody tr { cursor: pointer; }
@@ -190,6 +207,40 @@
   .empty { color: var(--dim); padding: 30px; text-align: center; border: 1px dashed var(--line); border-radius: var(--radius); }
   footer { padding: 0 28px 30px; color: var(--dim); font-size: 11.5px; font-family: var(--mono); }
 
+  .note {
+    color: var(--muted); font-size: 12.5px; border: 1px solid var(--line);
+    background: var(--panel); border-radius: var(--radius); padding: 10px 14px; margin: 0 0 16px;
+  }
+  .note code { font-family: var(--mono); color: var(--text); }
+  .cred-card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 14px 16px; margin-bottom: 10px;
+  }
+  .cred-head { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+  .cred-head h3 { margin: 0; font-size: 14px; }
+  .cred-field { margin-top: 12px; }
+  .cred-field > label { display: block; color: var(--muted); font-size: 11px; letter-spacing: .5px; text-transform: uppercase; margin-bottom: 5px; }
+  .cred-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .cred-row input {
+    flex: 1 1 240px; min-width: 180px; background: var(--panel-2); color: var(--text);
+    border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font: inherit;
+    font-family: var(--mono); font-size: 12.5px;
+  }
+  .cred-row button {
+    background: var(--accent); color: #04211d; border: 0; border-radius: 8px;
+    padding: 8px 14px; font: inherit; font-weight: 620; cursor: pointer;
+  }
+  .cred-row button:hover { filter: brightness(1.08); }
+  .cred-row button.ghost {
+    background: transparent; color: var(--muted); border: 1px solid var(--line); font-weight: 500;
+  }
+  .cred-row button.ghost:hover { color: var(--text); }
+  .cred-row .status { font-family: var(--mono); font-size: 11.5px; color: var(--dim); }
+  .cred-row .status.error { color: var(--error); }
+  .cred-block { margin-top: 18px; }
+  .cred-block .cred-field { margin-top: 10px; }
+  .cred-note { color: var(--dim); font-size: 12px; font-family: var(--mono); }
+
   @media (max-width: 980px) {
     .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
@@ -227,6 +278,7 @@
   <button role="tab" id="tab-sources" aria-controls="panel-sources" aria-selected="true" data-tab="sources">Sources</button>
   <button role="tab" id="tab-domains" aria-controls="panel-domains" aria-selected="false" data-tab="domains">Domains</button>
   <button role="tab" id="tab-jurisdictions" aria-controls="panel-jurisdictions" aria-selected="false" data-tab="jurisdictions">Jurisdictions</button>
+  <button role="tab" id="tab-credentials" aria-controls="panel-credentials" aria-selected="false" data-tab="credentials">Credentials</button>
   <button role="tab" id="tab-audit" aria-controls="panel-audit" aria-selected="false" data-tab="audit">Audit</button>
 </nav>
 
@@ -275,6 +327,15 @@
 
   <section role="tabpanel" id="panel-audit" aria-labelledby="tab-audit" hidden>
     <div id="audit-body"></div>
+  </section>
+
+  <section role="tabpanel" id="panel-credentials" aria-labelledby="tab-credentials" hidden>
+    <p class="note">
+      Keys are stored locally in <code>.mouseion/credentials.json</code> (mode 0600) and are never
+      shown again. Environment variables take precedence: a key saved here is used only when the
+      variable is unset.
+    </p>
+    <div id="credential-list"></div>
   </section>
 </main>
 
@@ -328,6 +389,7 @@ async function main() {
   renderDomains();
   renderJurisdictions();
   renderAudit();
+  renderCredentials();
   $("#stamp").textContent = "snapshot " + state.data.generated_at.replace("T", " ").replace("+00:00", "Z");
   $("#footer").textContent = "mouseion · " + state.data.totals.providers + " providers · " +
     state.data.totals.capabilities + " capabilities · " + state.data.totals.jurisdictions +
@@ -342,6 +404,8 @@ function renderStats() {
     ["jurisdictions", t.jurisdictions, t.civic_providers + " civic sources"],
     ["authority probe", pct(t.machine_readable_pct), t.machine_readable + "/" + t.authorities + " machine-readable"],
     ["datasets catalogued", t.datasets, "Socrata + bulk"],
+    ["credentials", t.credentials_missing === 0 ? "ready" : t.credentials_missing + " missing",
+      t.credential_fields + " fields", t.credentials_missing === 0 ? "ok" : "warn"],
     ["audit", t.audit_errors === 0 ? "clean" : t.audit_errors + " errors", t.audit_warnings + " warnings",
       t.audit_errors === 0 ? "ok" : "warn"],
   ];
@@ -510,6 +574,130 @@ function renderAudit() {
   }
 }
 
+function credentialBadge(cred) {
+  const source = cred.source;
+  const label = source === "env" ? "environment" : source === "store" ? "saved" : "missing";
+  return el("span", { class: "badge " + (source ? "json" : "blocked"),
+                      "data-cred-badge": cred.env, text: label });
+}
+
+function credentialForm(provider, cred) {
+  const wrap = el("div", { class: "cred-field" });
+  if (cred.oauth) {
+    wrap.append(el("div", { class: "cred-note",
+      text: "OAuth — run: mouseion auth login " + provider.id }));
+    return wrap;
+  }
+
+  wrap.append(el("label", {}, cred.label, " ", el("span", { class: "id", text: cred.env })));
+  const input = el("input", { type: "password", autocomplete: "off", spellcheck: "false",
+                              placeholder: "paste " + cred.label,
+                              "aria-label": provider.title + " " + cred.label });
+  const status = el("span", { class: "status" });
+  const save = el("button", { type: "button", text: "Save" });
+  const remove = el("button", { type: "button", class: "ghost", text: "Remove",
+                                "data-cred-remove": cred.env });
+  remove.hidden = cred.source !== "store";
+
+  save.addEventListener("click", () => saveCredential(cred.env, input, status));
+  input.addEventListener("keydown", event => {
+    if (event.key === "Enter") { event.preventDefault(); saveCredential(cred.env, input, status); }
+  });
+  remove.addEventListener("click", () => removeCredential(cred.env, status));
+
+  wrap.append(el("div", { class: "cred-row" }, input, save, remove, status, credentialBadge(cred)));
+  return wrap;
+}
+
+function setCredentialState(env, source) {
+  for (const badgeEl of $$('[data-cred-badge="' + env + '"]')) {
+    badgeEl.textContent = source === "env" ? "environment" : source === "store" ? "saved" : "missing";
+    badgeEl.className = "badge " + (source ? "json" : "blocked");
+  }
+  for (const button of $$('[data-cred-remove="' + env + '"]')) {
+    button.hidden = source !== "store";
+  }
+}
+
+async function refreshStats() {
+  try {
+    const response = await fetch("/api/snapshot", { cache: "no-store" });
+    if (!response.ok) return;
+    const data = await response.json();
+    state.data.totals = data.totals;
+    renderStats();
+  } catch (_) {
+    // Keep the previous numbers; the badge already shows the outcome.
+  }
+}
+
+async function saveCredential(env, input, status) {
+  const value = input.value.trim();
+  if (!value) {
+    status.textContent = "enter a value first";
+    status.className = "status error";
+    return;
+  }
+  status.textContent = "saving…";
+  status.className = "status";
+  try {
+    const response = await fetch("/api/credentials", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Mouseion-Request": "1" },
+      body: JSON.stringify({ env, value }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || ("HTTP " + response.status));
+    input.value = "";
+    status.textContent = data.source === "env" ? "saved (environment overrides)" : "saved";
+    setCredentialState(env, data.source);
+    refreshStats();
+  } catch (error) {
+    status.textContent = String(error.message || error);
+    status.className = "status error";
+  }
+}
+
+async function removeCredential(env, status) {
+  status.textContent = "removing…";
+  status.className = "status";
+  try {
+    const response = await fetch("/api/credentials?env=" + encodeURIComponent(env), {
+      method: "DELETE",
+      headers: { "X-Mouseion-Request": "1" },
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || ("HTTP " + response.status));
+    status.textContent = data.configured ? "removed (environment still set)" : "removed";
+    setCredentialState(env, data.configured ? "env" : null);
+    refreshStats();
+  } catch (error) {
+    status.textContent = String(error.message || error);
+    status.className = "status error";
+  }
+}
+
+function renderCredentials() {
+  const list = $("#credential-list");
+  const providers = state.data.providers.filter(provider => provider.credentials.length);
+  if (!providers.length) {
+    list.replaceChildren(el("div", { class: "empty", text: "No provider needs credentials." }));
+    return;
+  }
+  list.replaceChildren(...providers.map(provider => {
+    const card = el("div", { class: "cred-card" },
+      el("div", { class: "cred-head" },
+        el("div", {},
+          el("h3", { text: provider.title }),
+          el("div", { class: "id", text: provider.id })),
+        provider.auth_signup
+          ? el("a", { href: provider.auth_signup, target: "_blank", rel: "noreferrer", text: "get a key ↗" })
+          : null));
+    for (const cred of provider.credentials) card.append(credentialForm(provider, cred));
+    return card;
+  }));
+}
+
 function openDrawer(provider) {
   const drawer = $("#drawer");
   const scrim = $("#scrim");
@@ -553,6 +741,15 @@ function openDrawer(provider) {
     if (capability.exemplars.length) {
       block.append(el("ul", { class: "ex" },
         capability.exemplars.map(text => el("li", { text }))));
+    }
+    body.append(block);
+  }
+
+  if (provider.credentials.length) {
+    body.append(el("p", { class: "section-title", text: "credentials" }));
+    const block = el("div", { class: "cred-block" });
+    for (const credential of provider.credentials) {
+      block.append(credentialForm(provider, credential));
     }
     body.append(block);
   }
@@ -606,7 +803,7 @@ function init() {
     if (event.key === "Escape" && !$("#drawer").hidden) closeDrawer();
   });
   const initial = location.hash.replace("#", "");
-  if (["sources", "domains", "jurisdictions", "audit"].includes(initial)) showTab(initial);
+  if (["sources", "domains", "jurisdictions", "credentials", "audit"].includes(initial)) showTab(initial);
   main().catch(error => {
     $("#stamp").textContent = "error";
     $("#stats").replaceChildren(el("div", { class: "empty", text: String(error) }));

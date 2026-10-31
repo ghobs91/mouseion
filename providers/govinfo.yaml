@@ -26,6 +26,7 @@ adapter: rest_json
 auth:
   type: api_key
   env: GOVINFO_API_KEY
+  signup_url: https://api.data.gov/signup/
   param: api_key
   location: query
 attribution: "GovInfo, U.S. Government Publishing Office"

@@ -10,16 +10,18 @@ changes, the next request reflects it.
 
 from __future__ import annotations
 
+import ipaddress
 import json
 import threading
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Callable
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 from .audit import audit_registry, summarize
 from .civic import Jurisdiction, load_jurisdictions
+from .credentials import CredentialStore, default as default_store
 from .registry import Registry
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -41,11 +43,13 @@ def build_snapshot(
     jurisdictions_path: Path | str | None = None,
     coverage_path: Path | str | None = None,
     datasets_path: Path | str | None = None,
+    store: CredentialStore | None = None,
 ) -> dict[str, Any]:
     """Everything the page needs, in one JSON document."""
     manifests = registry.manifests
+    store = store or default_store()
 
-    providers = [_provider(manifest) for manifest in manifests.values()]
+    providers = [_provider(manifest, store) for manifest in manifests.values()]
     providers.sort(key=lambda item: (item["domain"], item["id"]))
 
     domains = _by_domain(providers)
@@ -68,6 +72,14 @@ def build_snapshot(
     machine_readable = sum(1 for fmt in formats if fmt in {"json", "csv"})
     authorities = len(formats)
 
+    credential_fields = [
+        credential
+        for provider in providers
+        for credential in provider["credentials"]
+        if credential["env"]
+    ]
+    credentials_missing = sum(1 for credential in credential_fields if not credential["configured"])
+
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "totals": {
@@ -84,6 +96,8 @@ def build_snapshot(
             if authorities
             else 0.0,
             "datasets": datasets.get("kept", 0) if datasets else 0,
+            "credential_fields": len(credential_fields),
+            "credentials_missing": credentials_missing,
             "audit_errors": audit["errors"],
             "audit_warnings": audit["warnings"],
         },
@@ -105,7 +119,7 @@ def build_snapshot(
     }
 
 
-def _provider(manifest: Any) -> dict[str, Any]:
+def _provider(manifest: Any, store: CredentialStore) -> dict[str, Any]:
     capabilities = []
     for name, capability in manifest.capabilities.items():
         capabilities.append(
@@ -147,7 +161,54 @@ def _provider(manifest: Any) -> dict[str, Any]:
             "trial": manifest.source.auth_policy.trial,
         },
         "rate_limit": manifest.source.rate_limit.model_dump(),
+        "credentials": _credentials(manifest, store),
+        "auth_signup": manifest.auth.signup_url,
     }
+
+
+def _credentials(manifest: Any, store: CredentialStore) -> list[dict[str, Any]]:
+    """Which credentials this provider needs, and whether they are configured.
+
+    Values never leave the store: the page gets a boolean and a source.
+    """
+    auth = manifest.auth
+    if auth.type == "oauth":
+        return [
+            {
+                "env": None,
+                "label": "OAuth",
+                "configured": False,
+                "source": None,
+                "signup_url": auth.signup_url,
+                "oauth": True,
+            }
+        ]
+
+    fields: list[tuple[str | None, str]] = []
+    if auth.type == "api_key":
+        fields.append((auth.env, "API key"))
+    elif auth.type == "user_agent":
+        fields.append((auth.env, "contact address"))
+    elif auth.type == "client_credentials":
+        fields.append((auth.client_id_env, "client ID"))
+        fields.append((auth.client_secret_env, "client secret"))
+
+    out: list[dict[str, Any]] = []
+    for env, label in fields:
+        if not env:
+            continue
+        source = store.source(env)
+        out.append(
+            {
+                "env": env,
+                "label": label,
+                "configured": source is not None,
+                "source": source,
+                "signup_url": auth.signup_url,
+                "oauth": False,
+            }
+        )
+    return out
 
 
 def _by_domain(providers: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -263,7 +324,11 @@ def _authority(authority: Any, probe: dict[str, Any]) -> dict[str, Any] | None:
 
 class DashboardHandler(BaseHTTPRequestHandler):
     snapshot: Callable[[], dict[str, Any]]
+    store: CredentialStore
+    known_envs: frozenset[str]
     web_dir: Path = WEB_DIR
+
+    # -- routing --------------------------------------------------------
 
     def do_GET(self) -> None:  # noqa: N802 - http.server API
         path = urlparse(self.path).path
@@ -278,6 +343,100 @@ class DashboardHandler(BaseHTTPRequestHandler):
             return
         self._file(path.lstrip("/"))
 
+    def do_POST(self) -> None:  # noqa: N802
+        if urlparse(self.path).path != "/api/credentials":
+            self.send_error(404)
+            return
+        if not self._writable():
+            self._json({"error": "forbidden"}, status=403)
+            return
+        payload = self._body()
+        if payload is None:
+            self._json({"error": "expected a JSON object"}, status=400)
+            return
+
+        env = payload.get("env")
+        value = payload.get("value")
+        if not isinstance(env, str) or env not in self.known_envs:
+            self._json({"error": "unknown credential name"}, status=400)
+            return
+        if not isinstance(value, str):
+            self._json({"error": "value must be a string"}, status=400)
+            return
+        try:
+            self.store.set(env, value)
+        except ValueError as exc:
+            self._json({"error": str(exc)}, status=400)
+            return
+        self._json(
+            {
+                "env": env,
+                "configured": True,
+                "source": self.store.source(env),
+            }
+        )
+
+    def do_DELETE(self) -> None:  # noqa: N802
+        parsed = urlparse(self.path)
+        if parsed.path != "/api/credentials":
+            self.send_error(404)
+            return
+        if not self._writable():
+            self._json({"error": "forbidden"}, status=403)
+            return
+        env = (parse_qs(parsed.query).get("env") or [None])[0]
+        if not env or env not in self.known_envs:
+            self._json({"error": "unknown credential name"}, status=400)
+            return
+        removed = self.store.delete(env)
+        self._json(
+            {
+                "env": env,
+                "removed": removed,
+                "configured": self.store.source(env) is not None,
+            }
+        )
+
+    # -- guards ---------------------------------------------------------
+
+    def _writable(self) -> bool:
+        """Writes are loopback-only, same-origin, and require a custom header.
+
+        The header forces a CORS preflight for any cross-origin page, and we never
+        answer preflight, so a hostile site cannot POST a key to localhost. The
+        loopback check keeps the endpoint closed even when the server is bound to
+        a LAN address.
+        """
+        try:
+            if not ipaddress.ip_address(self.client_address[0]).is_loopback:
+                return False
+        except ValueError:
+            return False
+        if self.headers.get("X-Mouseion-Request") != "1":
+            return False
+        origin = self.headers.get("Origin")
+        if origin and urlparse(origin).netloc != (self.headers.get("Host") or ""):
+            return False
+        return True
+
+    def _body(self) -> dict[str, Any] | None:
+        content_type = self.headers.get("Content-Type", "").split(";")[0].strip().lower()
+        if content_type != "application/json":
+            return None
+        try:
+            length = int(self.headers.get("Content-Length") or 0)
+        except ValueError:
+            return None
+        if length <= 0 or length > 8192:
+            return None
+        try:
+            payload = json.loads(self.rfile.read(length))
+        except ValueError:
+            return None
+        return payload if isinstance(payload, dict) else None
+
+    # -- responses ------------------------------------------------------
+
     def _file(self, name: str) -> None:
         candidate = (self.web_dir / name).resolve()
         if not str(candidate).startswith(str(self.web_dir.resolve())) or not candidate.is_file():
@@ -288,20 +447,35 @@ class DashboardHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", _CONTENT_TYPES.get(candidate.suffix, "application/octet-stream"))
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
+        self._security_headers()
         self.end_headers()
         self.wfile.write(body)
 
-    def _json(self, payload: Any) -> None:
+    def _json(self, payload: Any, status: int = 200) -> None:
         body = json.dumps(payload, ensure_ascii=False, default=str).encode("utf-8")
-        self.send_response(200)
+        self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
+        self._security_headers()
         self.end_headers()
         self.wfile.write(body)
 
+    def _security_headers(self) -> None:
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header(
+            "Content-Security-Policy",
+            "default-src 'self'; script-src 'self' 'unsafe-inline'; "
+            "style-src 'self' 'unsafe-inline'; connect-src 'self'; "
+            "img-src 'self' data:; base-uri 'none'; form-action 'none'; "
+            "frame-ancestors 'none'",
+        )
+
     def log_message(self, format: str, *args: Any) -> None:  # noqa: A002
-        # One line per request is noise for a local dashboard.
+        # One line per request is noise for a local dashboard, and request lines
+        # can contain credential names.
         return
 
 
@@ -317,6 +491,17 @@ def serve(
 ) -> None:
     """Serve until interrupted. Rebuilds the snapshot on every request."""
     lock = threading.Lock()
+    store = default_store()
+    known_envs = frozenset(
+        name
+        for manifest in registry.manifests.values()
+        for name in (
+            manifest.auth.env,
+            manifest.auth.client_id_env,
+            manifest.auth.client_secret_env,
+        )
+        if name
+    )
 
     def snapshot() -> dict[str, Any]:
         with lock:
@@ -325,16 +510,26 @@ def serve(
                 jurisdictions_path=jurisdictions_path,
                 coverage_path=coverage_path,
                 datasets_path=datasets_path,
+                store=store,
             )
 
     handler = type(
         "BoundDashboardHandler",
         (DashboardHandler,),
-        {"snapshot": staticmethod(snapshot)},
+        {
+            "snapshot": staticmethod(snapshot),
+            "store": store,
+            "known_envs": known_envs,
+        },
     )
     server = ThreadingHTTPServer((host, port), handler)
     url = f"http://{host}:{port}/"
     print(f"mouseion dashboard: {url}", flush=True)
+    if host not in {"127.0.0.1", "localhost", "::1"}:
+        print(
+            "note: credential writes stay restricted to loopback clients",
+            flush=True,
+        )
     if open_browser:
         import webbrowser
 

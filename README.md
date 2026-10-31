@@ -435,7 +435,7 @@ A read-only local page over the registry, the civic matrix and the audit:
 # mouseion dashboard: http://127.0.0.1:8765/
 ```
 
-Four views:
+Five views:
 
 - **Sources** — every provider, filterable by domain, tier and auth, with a detail
   drawer showing capabilities, required params, coverage and access evidence.
@@ -443,7 +443,22 @@ Four views:
   category tags.
 - **Jurisdictions** — all 101 registry entries with the measured format of their
   election and campaign-finance authority, and which providers cover them.
+- **Credentials** — the eight key fields across seven providers, each with a link
+  to where the key is issued and a field to save it.
 - **Audit** — the source-policy findings.
+
+### Credentials
+
+Providers that need a key show a **get a key** link and an input in the
+Credentials tab (and in their drawer). Saving writes to
+`.mouseion/credentials.json` with mode `0600`; the value is never returned by the
+API and never displayed again.
+
+Precedence is environment first, then the store: a `.env` entry or a shell export
+overrides a saved key, and the page labels that field `environment` so the
+override is visible. Writes are accepted only from loopback clients, require a
+same-origin JSON request with a custom header, and the server sends
+`X-Frame-Options: DENY`, `nosniff` and a restrictive CSP.
 
 It is one static page and one JSON endpoint (`/api/snapshot`), served by the
 standard library. No build step, no npm, no second source of truth: the snapshot
@@ -739,7 +754,7 @@ never as an upstream 403.
 
 Five adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`, `cdx`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 388 offline tests and 103 live contract tests.
+eval, MCP server, CLI, GBNF export, 408 offline tests and 103 live contract tests.
 
 Eleven upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -775,7 +790,7 @@ Eleven upstream behaviours the adapter contract had to grow for, all now generic
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 388 offline: fixture replay
+pytest                    # 408 offline: fixture replay
 pytest -m live            # 84 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```

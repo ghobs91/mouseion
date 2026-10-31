@@ -212,3 +212,31 @@ def test_zip_bulk_body_is_cached_as_base64_and_parsed(config):
     assert out["records"][0]["data"]["committee"] == "Test Committee"
     assert out["records"][0]["data"]["amount"] == "42"
     assert out["truncated"] is False
+
+
+def test_stored_credential_is_used_by_the_adapter(config, monkeypatch, tmp_path):
+    from mouseion import credentials
+
+    monkeypatch.delenv("FRED_API_KEY", raising=False)
+    store = credentials.CredentialStore(tmp_path / "credentials.json")
+    store.set("FRED_API_KEY", "stored-key")
+    monkeypatch.setattr(credentials, "_default", store)
+
+    seen: dict[str, str] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["url"] = str(request.url)
+        return httpx.Response(
+            200, json={"observations": [{"date": "2026-01-01", "value": "1.0"}]}
+        )
+
+    app = make_app(config, handler)
+    out = run(
+        app.toolkit.provider_call(
+            "fred", "series_observations", {"series_id": "UNRATE", "limit": 1}
+        )
+    )
+    run(app.aclose())
+
+    assert "api_key=stored-key" in seen["url"]
+    assert len(out["records"]) == 1

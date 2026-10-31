@@ -35,6 +35,7 @@ auth:
   token_url: https://api.shopify.com/auth/access_token
   client_id_env: SHOPIFY_CLIENT_ID
   client_secret_env: SHOPIFY_CLIENT_SECRET
+  signup_url: https://dev.shopify.com/dashboard
 attribution: "Shopify Global Catalog"
 source:
   is_primary: true

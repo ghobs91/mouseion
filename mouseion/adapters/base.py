@@ -8,7 +8,6 @@ means adding a YAML file.
 
 from __future__ import annotations
 
-import os
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
@@ -17,6 +16,7 @@ from urllib.parse import quote
 
 from ..config import Settings
 from ..config import settings as default_settings
+from ..credentials import resolve
 from ..envelope import ProviderError, Record, dig, utcnow
 from ..manifest import Capability, Manifest
 
@@ -112,7 +112,7 @@ class Adapter(ABC):
         if auth.type == "user_agent":
             # Some upstreams (SEC) block unidentified clients. Fail with a hint
             # instead of forwarding a 403 HTML page to the model.
-            value = os.getenv(auth.env) if auth.env else None
+            value = resolve(auth.env)
             if not value:
                 raise ProviderError(
                     f"provider '{manifest.id}' requires a contact User-Agent",
@@ -124,11 +124,11 @@ class Adapter(ABC):
             return
         if not auth.env:
             raise ProviderError(f"provider '{manifest.id}' declares api_key auth without env")
-        key = os.getenv(auth.env)
+        key = resolve(auth.env)
         if not key:
             raise ProviderError(
                 f"missing credential for provider '{manifest.id}'",
-                hint=f"set {auth.env} in the environment; provider_describe names the auth type",
+                hint=f"set {auth.env} in the environment or save it in the dashboard",
             )
         if auth.location == "query":
             params[auth.param or "api_key"] = key

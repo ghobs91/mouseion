@@ -107,6 +107,8 @@ class Auth(BaseModel):
     token_url: str | None = None
     client_id_env: str | None = None
     client_secret_env: str | None = None
+    #: Where a human obtains the credential, shown by the dashboard.
+    signup_url: str | None = None
 
 
 class AuthPolicy(BaseModel):

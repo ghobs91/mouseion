@@ -26,6 +26,7 @@ adapter: rest_json
 auth:
   type: api_key
   env: FRED_API_KEY
+  signup_url: https://fred.stlouisfed.org/docs/api/api_key.html
   param: api_key
   location: query
 attribution: "Federal Reserve Bank of St. Louis"

@@ -25,6 +25,7 @@ adapter: rest_json
 auth:
   type: api_key
   env: GITHUB_TOKEN
+  signup_url: https://github.com/settings/tokens
   param: Authorization
   location: header
   prefix: "Bearer "

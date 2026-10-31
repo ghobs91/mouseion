@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import os
 import re
 import time
 from dataclasses import dataclass
@@ -28,6 +27,7 @@ from .cache import cache_key
 from .client import ProviderClient
 from .config import Settings
 from .config import settings as default_settings
+from .credentials import resolve
 from .envelope import Envelope, ProviderError
 from .manifest import Capability, Manifest
 from .registry import Registry
@@ -531,7 +531,7 @@ class Engine:
         if negative is not None and negative[0] > self.clock():
             return result(f"negative_cache:{negative[1]}"), None
 
-        if manifest.auth.type == "api_key" and not os.getenv(manifest.auth.env or ""):
+        if manifest.auth.type == "api_key" and not resolve(manifest.auth.env):
             return (
                 result(
                     "missing_credential",
