@@ -366,6 +366,7 @@ def _csv_manifest():
                 "filings": {
                     "description": "Candidate filings",
                     "path": "/filings.csv",
+                    "params": {"limit": {"type": "integer", "default": 2}},
                     "fields": {"name": "name", "office": "office"},
                     "pagination": {"mode": "offset", "default_limit": 2},
                     "local_window": True,
@@ -498,3 +499,88 @@ def test_dataset_param_must_be_declared():
                 },
             }
         )
+
+
+# -- ZIP bulk archives ----------------------------------------------------
+
+
+def _zip_body(members: dict[str, str]) -> dict[str, str]:
+    import base64
+    import io
+    import zipfile
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
+        for name, text in members.items():
+            archive.writestr(name, text)
+    return {"_raw_b64": base64.b64encode(buffer.getvalue()).decode("ascii")}
+
+
+def test_csv_adapter_reads_a_zip_member():
+    manifest = _csv_manifest()
+    cap = manifest.capabilities["filings"]
+    adapter = get_adapter(manifest.adapter)
+    body = _zip_body({"filings.csv": "name,office\nA,Mayor\nB,Council\n"})
+
+    result = adapter.parse(manifest, cap, body, prepare(manifest, cap, {"limit": 5}))
+    assert [record.data["name"] for record in result.records] == ["A", "B"]
+
+
+def test_csv_adapter_selects_a_named_zip_member():
+    manifest = _csv_manifest()
+    cap = manifest.capabilities["filings"]
+    cap.zip_member = "wanted.csv"
+    adapter = get_adapter(manifest.adapter)
+    body = _zip_body(
+        {
+            "other.csv": "name,office\nX,Other\n",
+            "wanted.csv": "name,office\nA,Mayor\n",
+        }
+    )
+
+    result = adapter.parse(manifest, cap, body, prepare(manifest, cap, {"limit": 5}))
+    assert [record.data["name"] for record in result.records] == ["A"]
+
+
+def test_csv_adapter_reports_a_missing_zip_member():
+    from mouseion.envelope import ProviderError
+
+    manifest = _csv_manifest()
+    cap = manifest.capabilities["filings"]
+    cap.zip_member = "absent.csv"
+    adapter = get_adapter(manifest.adapter)
+    body = _zip_body({"filings.csv": "name,office\nA,Mayor\n"})
+
+    with pytest.raises(ProviderError) as exc:
+        adapter.parse(manifest, cap, body, prepare(manifest, cap, {}))
+    assert "absent.csv" in str(exc.value)
+
+
+def test_csv_adapter_pages_a_bulk_file_without_reading_it_all():
+    manifest = _csv_manifest()
+    cap = manifest.capabilities["filings"]
+    adapter = get_adapter(manifest.adapter)
+    rows = "name,office\n" + "".join(f"P{i},Office\n" for i in range(100))
+    body = {"_raw_text": rows}
+
+    first = adapter.parse(manifest, cap, body, prepare(manifest, cap, {"limit": 5}))
+    assert len(first.records) == 5
+    assert first.next_cursor == "5"
+
+    last = adapter.parse(
+        manifest, cap, body, prepare(manifest, cap, {"limit": 5}, cursor="95")
+    )
+    assert [record.data["name"] for record in last.records] == [
+        "P95",
+        "P96",
+        "P97",
+        "P98",
+        "P99",
+    ]
+    assert last.next_cursor is None
+
+    past_end = adapter.parse(
+        manifest, cap, body, prepare(manifest, cap, {"limit": 5}, cursor="100")
+    )
+    assert past_end.records == []
+    assert past_end.next_cursor is None

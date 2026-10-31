@@ -389,6 +389,12 @@ Each is a Socrata resource with a column projection, a recorded fixture, a live
 contract test, and a routing eval case. They share no failover cluster: a New York
 query must never fail over to a Los Angeles dataset.
 
+Wave 2 adds the bulk path. Colorado's TRACER system publishes annual ZIP archives
+of contributions and expenditures, so `colorado_campaign_finance` reads the archive
+member and parses only the rows a page needs — a 68MB CSV never materializes in
+memory. Bulk archives are not committed as fixtures (they are multi-megabyte); the
+adapter has unit tests with synthetic archives and the source has a live contract.
+
 A jurisdiction becomes a provider only after its surface passes the probe. Until then
 it is a registry row, and an unregistered or non-machine-readable jurisdiction should
 return `web_search_required` rather than an invented record. The `csv` adapter exists
@@ -466,6 +472,8 @@ optional):
 | `query_template` | nested query filters (`conditions[0][property]=state`), flattened |
 | `map_exclude` | keys to skip when the records live in an object keyed by id |
 | `local_window` | upstream returns a fixed, unstable window — cache it and page locally |
+| `datasets` | portals that publish one dataset per election: friendly key → upstream id, selected by `dataset_param` |
+| `zip_member` | for ZIP bulk downloads, the CSV member to read (default: first `.csv`) |
 
 Add a file, run `mouseion providers`, and it is live. Unknown caller params are dropped
 rather than forwarded, so a hallucinated parameter is a no-op instead of a 400 the model
@@ -574,7 +582,7 @@ itself. Mouseion's own remote-MCP proxy is for keeping one unified tool surface.
 
 ## What's here
 
-76 providers, 100 capabilities. The contract suite verifies every upstream live except the
+77 providers, 102 capabilities. The contract suite verifies every upstream live except the
 seven that need credentials this machine does not have (FRED, CourtListener, GitHub,
 Congress.gov, GovInfo, Shopify, and SEC's contact User-Agent is set but FRED's key is
 not). Their auth paths are verified.
@@ -646,6 +654,7 @@ not). Their auth paths are verified.
 | Dallas Campaign Finance | none | `transactions` |
 | Fulton County Election Results | none | `results` |
 | King County Election Results | none | `results` (73 elections, 2004–2026) |
+| Colorado Campaign Finance | none | `contributions`, `expenditures` (bulk ZIP) |
 | Ramsey County Election Results | none | `results` |
 | UK National Archives | none | `search` |
 | UK Parliament | none | `bills` |
@@ -678,7 +687,7 @@ never as an upstream 403.
 
 Five adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`, `cdx`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 355 offline tests and 98 live contract tests.
+eval, MCP server, CLI, GBNF export, 360 offline tests and 100 live contract tests.
 
 Eleven upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -714,7 +723,7 @@ Eleven upstream behaviours the adapter contract had to grow for, all now generic
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 355 offline: fixture replay
+pytest                    # 360 offline: fixture replay
 pytest -m live            # 84 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
@@ -737,7 +746,7 @@ page token before a user does.
 
 ## What's deliberately not here
 
-- **Coverage.** 76 providers is a spine, not an index. The current gap matrix is in
+- **Coverage.** 77 providers is a spine, not an index. The current gap matrix is in
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
   molecular repositories, transit, and the Cat 1 stretch. Most are keyless or free-key;
   each needs a manifest, a fixture, a live contract, and an audit entry before it counts.

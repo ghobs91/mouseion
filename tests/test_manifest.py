@@ -15,6 +15,7 @@ def test_all_manifests_load(registry):
         "congress_gov",
         "courtlistener",
         "courtlistener_mcp",
+        "colorado_campaign_finance",
         "crates_io",
         "crossref",
         "data_gov_au",

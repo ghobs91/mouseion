@@ -1,0 +1,121 @@
+id: colorado_campaign_finance
+title: Colorado Campaign Finance (TRACER)
+category: government
+domain: civic_local
+sub_category: campaign_finance
+transport: http
+adapter: csv
+base: https://tracer.sos.colorado.gov
+regions: [US]
+description: >-
+  Colorado campaign-finance bulk data from the Secretary of State's TRACER
+  system: annual ZIP archives of itemized contributions and expenditures. One row
+  per transaction, with committee, candidate, donor or payee, amount, date and
+  jurisdiction. Bulk download, not a search API: pick a year and page the file.
+docs_url: https://tracer.sos.colorado.gov/PublicSite/DataDownload.aspx
+keywords:
+  - campaign finance
+  - campaign contributions
+  - campaign spending
+  - colorado
+  - tracer
+  - donors
+  - bulk data
+  - who funded
+attribution: "Colorado Secretary of State"
+source:
+  is_primary: true
+  originator: "Colorado Secretary of State"
+  originator_domain: tracer.sos.colorado.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://tracer.sos.colorado.gov/PublicSite/DataDownload.aspx
+    verified_at: 2026-10-30
+  rate_limit: {per_min: 6, burst: 2, concurrency: 1}
+cache_ttl: 604800
+max_body_bytes: 25000000
+timeout_s: 180
+capabilities:
+  contributions:
+    description: >-
+      Page Colorado itemized contributions for one year. Pass `year` (2023-2025);
+      each page reads only the rows it needs from the annual archive.
+    path: /PublicSite/Docs/BulkDataDownloads/{dataset}
+    dataset_param: year
+    datasets:
+      2023: "2023_ContributionData.csv.zip"
+      2024: "2024_ContributionData.csv.zip"
+      2025: "2025_ContributionData.csv.zip"
+    params:
+      year: {type: integer, required: true, description: "2023, 2024 or 2025"}
+      limit: {type: integer, default: 25}
+    local_window: true
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 1000}
+    id_field: record_id
+    fields:
+      record_id: RecordID
+      committee: CommitteeName
+      candidate: CandidateName
+      committee_type: CommitteeType
+      jurisdiction: Jurisdiction
+      amount: ContributionAmount
+      date: ContributionDate
+      contributor_last: LastName
+      contributor_first: FirstName
+      city: City
+      state: State
+      zip: Zip
+      contributor_type: ContributorType
+      contribution_type: ContributionType
+      receipt_type: ReceiptType
+      employer: Employer
+      occupation: Occupation
+      filed: FiledDate
+    source_url_template: "https://tracer.sos.colorado.gov/PublicSite/DataDownload.aspx"
+    exemplars:
+      - Colorado campaign contributions by committee
+      - who contributed to a Colorado candidate
+      - Colorado campaign finance bulk data
+    example: {year: 2023, limit: 3}
+  expenditures:
+    description: >-
+      Page Colorado itemized expenditures for one year. Pass `year` (2024-2026);
+      each page reads only the rows it needs from the annual archive.
+    path: /PublicSite/Docs/BulkDataDownloads/{dataset}
+    dataset_param: year
+    datasets:
+      2024: "2024_ExpenditureData.csv.zip"
+      2025: "2025_ExpenditureData.csv.zip"
+      2026: "2026_ExpenditureData.csv.zip"
+    params:
+      year: {type: integer, required: true, description: "2024, 2025 or 2026"}
+      limit: {type: integer, default: 25}
+    local_window: true
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 1000}
+    id_field: record_id
+    fields:
+      record_id: RecordID
+      committee: CommitteeName
+      candidate: CandidateName
+      committee_type: CommitteeType
+      jurisdiction: Jurisdiction
+      amount: ExpenditureAmount
+      date: ExpenditureDate
+      payee_last: LastName
+      payee_first: FirstName
+      city: City
+      state: State
+      zip: Zip
+      purpose: Explanation
+      expenditure_type: ExpenditureType
+      payment_type: PaymentType
+      filed: FiledDate
+    source_url_template: "https://tracer.sos.colorado.gov/PublicSite/DataDownload.aspx"
+    exemplars:
+      - what did a Colorado campaign spend money on
+      - Colorado campaign expenditures bulk data
+    example: {year: 2025, limit: 3}

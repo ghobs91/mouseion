@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import json
 from datetime import timedelta
 from typing import Any
@@ -206,9 +207,10 @@ class ProviderClient:
             raise ProviderError(f"upstream request failed: {exc}") from None
 
         raw = response.content
-        if len(raw) > self.config.max_body_bytes:
+        limit = manifest.max_body_bytes or self.config.max_body_bytes
+        if len(raw) > limit:
             raise ProviderError(
-                f"upstream response is {len(raw)} bytes, over the {self.config.max_body_bytes} limit",
+                f"upstream response is {len(raw)} bytes, over the {limit} limit",
                 hint="narrow the filter or reduce 'limit'",
                 status=response.status_code,
             )
@@ -217,8 +219,12 @@ class ProviderClient:
             body = response.json()
         except ValueError:
             # Keep the full text: the Atom adapter needs every <entry>, and the
-            # body-size limit above already bounds this.
-            body = {"_raw_text": response.text}
+            # body-size limit above already bounds this. Binary bulk archives are
+            # base64 so the cached body stays JSON-serializable.
+            if raw[:4] == b"PK\x03\x04" or "zip" in response.headers.get("content-type", ""):
+                body = {"_raw_b64": base64.b64encode(raw).decode("ascii")}
+            else:
+                body = {"_raw_text": response.text}
 
         if response.status_code >= 400:
             if response.status_code == 404 and cap.empty_on_404:

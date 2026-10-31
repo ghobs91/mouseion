@@ -185,7 +185,10 @@ Remaining work is promotion, not seeding:
      state and city, Washington, Hawaii, Los Angeles, Austin, Oakland, Dallas,
      Maryland, Fulton County (GA), Ramsey County (MN) and King County (WA). King
      County uses `datasets:` to map 73 election keys to per-election resources.
-   - wave 2: CSV/bulk downloads
+   - **wave 2: CSV/bulk downloads — done.** `colorado_campaign_finance` pages
+     Colorado TRACER's annual ZIP archives (2023-2026). The CSV adapter now reads a
+     ZIP member and stops parsing at the last row a page needs, so a 68MB export
+     costs one page of memory.
    - wave 3: HTML tables where no machine-readable surface exists
 5. Every promoted source still gets a manifest, fixture, live contract, audit
    entry, and eval cases.

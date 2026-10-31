@@ -79,3 +79,5 @@
 {"query": "which Maryland lobbyists gave to candidates", "expect": "maryland_lobbyist_contributions"}
 {"query": "King County election results by precinct", "expect": "king_county_election_results"}
 {"query": "Seattle precinct vote counts", "expect": "king_county_election_results"}
+{"query": "Colorado campaign contributions by committee", "expect": "colorado_campaign_finance"}
+{"query": "what did a Colorado campaign spend money on", "expect": "colorado_campaign_finance"}

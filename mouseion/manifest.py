@@ -236,6 +236,8 @@ class Capability(BaseModel):
     local_window: bool = False
     #: Some responses are columnar: {field: [v1, v2, ...], ...}. Zip them into rows.
     transpose: bool = False
+    #: For a ZIP bulk download: the CSV member to read. Empty means the first .csv.
+    zip_member: str | None = None
     example: dict[str, Any] | None = None
 
     @field_validator("params", mode="before")
@@ -247,6 +249,15 @@ class Capability(BaseModel):
         for name, spec in value.items():
             out[name] = {"type": spec} if isinstance(spec, str) else spec
         return out
+
+    @field_validator("datasets", mode="before")
+    @classmethod
+    def _dataset_keys_are_strings(cls, value: Any) -> Any:
+        # YAML reads an unquoted `2024:` key as an int; election and year keys
+        # are strings to the caller.
+        if isinstance(value, dict):
+            return {str(key): item for key, item in value.items()}
+        return value
 
     @field_validator("alias")
     @classmethod
@@ -351,6 +362,8 @@ class Manifest(BaseModel):
     cache_ttl: float | None = None
     #: Per-provider request timeout; falls back to MOUSEION_TIMEOUT.
     timeout_s: float | None = None
+    #: Per-provider response size cap; bulk downloads need a higher ceiling.
+    max_body_bytes: int | None = None
     headers: dict[str, str] = Field(default_factory=dict)
     limits: dict[str, Any] = Field(default_factory=dict)
     capabilities: dict[str, Capability]

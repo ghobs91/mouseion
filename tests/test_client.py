@@ -178,3 +178,37 @@ def test_local_window_pages_from_one_fetch(config, monkeypatch):
     ids_second = [record["source_record_id"] for record in second["records"]]
     assert len(ids_first) == 3
     assert not set(ids_first) & set(ids_second)
+
+
+def test_zip_bulk_body_is_cached_as_base64_and_parsed(config):
+    import io
+    import zipfile
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        archive.writestr(
+            "2026_ExpenditureData.csv",
+            "RecordID,CommitteeName,ExpenditureAmount,ExpenditureDate\n"
+            "1,Test Committee,42,2026-01-01\n",
+        )
+    payload = buffer.getvalue()
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.url.path.endswith("2026_ExpenditureData.csv.zip")
+        return httpx.Response(
+            200, content=payload, headers={"content-type": "application/zip"}
+        )
+
+    app = make_app(config, handler)
+    out = run(
+        app.toolkit.provider_call(
+            "colorado_campaign_finance", "expenditures", {"year": 2026, "limit": 1}
+        )
+    )
+    run(app.aclose())
+
+    assert out["provider"] == "colorado_campaign_finance"
+    assert len(out["records"]) == 1
+    assert out["records"][0]["data"]["committee"] == "Test Committee"
+    assert out["records"][0]["data"]["amount"] == "42"
+    assert out["truncated"] is False
