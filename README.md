@@ -402,8 +402,10 @@ article, sections, links, coordinates) through the MediaWiki API directly. It is
 marked `aggregator_exception`, `is_primary: false`, because Wikipedia is a
 tertiary reference: it is useful for orientation and for the sources it cites,
 not as an originating authority. The engine therefore does not use it
-automatically; call it explicitly or pass `--allow-aggregators`. Its terms
-(`CC BY-SA 4.0`) travel with every envelope.
+automatically; call it explicitly or pass `--allow-aggregators`. If a query
+clearly targets it, the engine abstains with `no_primary_candidates` rather than
+substituting a much weaker primary source. Its terms (`CC BY-SA 4.0`) travel with
+every envelope.
 
 Wave 3 adds the table-only path. `el_paso_elected_officials` reads the city
 clerk's roster and `rhode_island_recent_filings` reads the ERTS recent-filings
@@ -765,7 +767,7 @@ never as an upstream 403.
 
 Five adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`, `cdx`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 421 offline tests and 109 live contract tests.
+eval, MCP server, CLI, GBNF export, 423 offline tests and 109 live contract tests.
 
 Eleven upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -801,7 +803,7 @@ Eleven upstream behaviours the adapter contract had to grow for, all now generic
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 421 offline: fixture replay
+pytest                    # 423 offline: fixture replay
 pytest -m live            # 84 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```

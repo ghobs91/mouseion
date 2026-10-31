@@ -16,7 +16,7 @@ Global Catalog is live. The local-election track now has a jurisdiction registry
 catalog search that promoted five campaign-finance providers in wave 1. IMF, BoJ, OECD, BIS, and on-chain nodes remain
 as Cat 1 stretch.
 **Basis:** the 2026-10-29 specification plus the repository as it actually stands:
-80 providers, 111 capabilities, 421 passing offline tests, 109 live contract tests.
+80 providers, 111 capabilities, 423 passing offline tests, 109 live contract tests.
 
 ---
 

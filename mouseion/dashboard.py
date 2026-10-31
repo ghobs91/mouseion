@@ -325,7 +325,7 @@ def _authority(authority: Any, probe: dict[str, Any]) -> dict[str, Any] | None:
 class DashboardHandler(BaseHTTPRequestHandler):
     snapshot: Callable[[], dict[str, Any]]
     store: CredentialStore
-    known_envs: frozenset[str]
+    known_envs: Callable[[], frozenset[str]]
     web_dir: Path = WEB_DIR
 
     # -- routing --------------------------------------------------------
@@ -357,7 +357,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
 
         env = payload.get("env")
         value = payload.get("value")
-        if not isinstance(env, str) or env not in self.known_envs:
+        if not isinstance(env, str) or env not in self.known_envs():
             self._json({"error": "unknown credential name"}, status=400)
             return
         if not isinstance(value, str):
@@ -385,7 +385,7 @@ class DashboardHandler(BaseHTTPRequestHandler):
             self._json({"error": "forbidden"}, status=403)
             return
         env = (parse_qs(parsed.query).get("env") or [None])[0]
-        if not env or env not in self.known_envs:
+        if not env or env not in self.known_envs():
             self._json({"error": "unknown credential name"}, status=400)
             return
         removed = self.store.delete(env)
@@ -492,21 +492,29 @@ def serve(
     """Serve until interrupted. Rebuilds the snapshot on every request."""
     lock = threading.Lock()
     store = default_store()
-    known_envs = frozenset(
-        name
-        for manifest in registry.manifests.values()
-        for name in (
-            manifest.auth.env,
-            manifest.auth.client_id_env,
-            manifest.auth.client_secret_env,
+    providers_dir = getattr(registry, "directory", None)
+
+    def current() -> Registry:
+        # Reload manifests per request so adding a provider does not need a
+        # restart. Parsing 80 YAML files is cheap next to a page render.
+        return Registry.load(providers_dir) if providers_dir else registry
+
+    def known_envs() -> frozenset[str]:
+        return frozenset(
+            name
+            for manifest in current().manifests.values()
+            for name in (
+                manifest.auth.env,
+                manifest.auth.client_id_env,
+                manifest.auth.client_secret_env,
+            )
+            if name
         )
-        if name
-    )
 
     def snapshot() -> dict[str, Any]:
         with lock:
             return build_snapshot(
-                registry,
+                current(),
                 jurisdictions_path=jurisdictions_path,
                 coverage_path=coverage_path,
                 datasets_path=datasets_path,
@@ -519,7 +527,7 @@ def serve(
         {
             "snapshot": staticmethod(snapshot),
             "store": store,
-            "known_envs": known_envs,
+            "known_envs": staticmethod(known_envs),
         },
     )
     server = ThreadingHTTPServer((host, port), handler)

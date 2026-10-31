@@ -107,7 +107,7 @@ def server(registry, store):
     handler = type(
         "TestDashboardHandler",
         (DashboardHandler,),
-        {"snapshot": staticmethod(snapshot), "store": store, "known_envs": known},
+        {"snapshot": staticmethod(snapshot), "store": store, "known_envs": staticmethod(lambda: known)},
     )
     httpd = ThreadingHTTPServer(("127.0.0.1", 0), handler)
     thread = threading.Thread(target=httpd.serve_forever, daemon=True)

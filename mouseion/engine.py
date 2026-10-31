@@ -488,7 +488,8 @@ class Engine:
             return [top], aggregator_available
 
         # The top hit is an aggregator with no cluster. Use the first primary hit
-        # as a discovery fallback, but do not invent a failover group.
+        # only when it is competitive: substituting a much weaker register for the
+        # source the user asked for is a wrong answer, not a fallback.
         primary = next(
             (
                 candidate
@@ -497,7 +498,9 @@ class Engine:
             ),
             None,
         )
-        return ([primary], aggregator_available) if primary else ([], aggregator_available)
+        if primary is None or primary.score < top.score * 0.8:
+            return [], aggregator_available
+        return [primary], aggregator_available
 
     # -- execution ------------------------------------------------------
 

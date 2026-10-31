@@ -507,3 +507,36 @@ def test_uncovered_jurisdiction_reports_the_gap():
     assert result.reason == "no_jurisdiction_coverage"
     assert result.jurisdictions == ("US-IL-CHICAGO",)
     assert client.calls == []
+
+
+def test_a_weak_primary_does_not_replace_an_aggregator():
+    agg = manifest("agg", cluster=None, primary=False)
+    primary = manifest("primary")
+    engine, client = make_engine(
+        [agg, primary],
+        [Candidate("agg", "search", 1.0), Candidate("primary", "search", 0.2)],
+        {"agg": envelope("agg"), "primary": envelope("primary")},
+    )
+
+    result = run(engine.lookup("anything"))
+
+    assert result.web_search_required is True
+    assert result.reason == "no_primary_candidates"
+    assert result.aggregator_available is True
+    assert client.calls == []
+
+
+def test_a_competitive_primary_can_stand_in_for_an_aggregator():
+    agg = manifest("agg", cluster=None, primary=False)
+    primary = manifest("primary")
+    engine, client = make_engine(
+        [agg, primary],
+        [Candidate("agg", "search", 0.5), Candidate("primary", "search", 0.45)],
+        {"agg": envelope("agg"), "primary": envelope("primary")},
+    )
+
+    result = run(engine.lookup("anything"))
+
+    assert result.web_search_required is False
+    assert result.envelope is not None and result.envelope.provider == "primary"
+    assert client.calls and client.calls[0][0] == "primary"

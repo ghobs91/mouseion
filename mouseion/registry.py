@@ -102,7 +102,11 @@ class Registry:
 
     @classmethod
     def load(cls, directory: Path | str) -> Registry:
-        return cls(load_manifests(Path(directory)))
+        directory = Path(directory)
+        registry = cls(load_manifests(directory))
+        #: Kept so long-running tools (the dashboard) can reload manifests.
+        registry.directory = directory
+        return registry
 
     # -- lookup ---------------------------------------------------------
 
