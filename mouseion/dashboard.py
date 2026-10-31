@@ -22,6 +22,7 @@ from urllib.parse import parse_qs, urlparse
 from .audit import audit_registry, summarize
 from .civic import Jurisdiction, load_jurisdictions
 from .credentials import CredentialStore, default as default_store
+from .favicons import FaviconStore, normalize_host
 from .registry import Registry
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -161,6 +162,8 @@ def _provider(manifest: Any, store: CredentialStore) -> dict[str, Any]:
             "trial": manifest.source.auth_policy.trial,
         },
         "rate_limit": manifest.source.rate_limit.model_dump(),
+        "favicon_host": normalize_host(manifest.source.originator_domain)
+        or normalize_host(manifest.base),
         "credentials": _credentials(manifest, store),
         "auth_signup": manifest.auth.signup_url,
     }
@@ -275,6 +278,27 @@ def _file_mtime(path: Path | str | None) -> str | None:
     )
 
 
+def _allowed_hosts(registry: Registry, jurisdictions: list[Jurisdiction]) -> set[str]:
+    """Only hosts the registry or the jurisdiction file already names."""
+    hosts: set[str] = set()
+
+    def add(value: str | None) -> None:
+        host = normalize_host(value)
+        if not host:
+            return
+        hosts.add(host)
+        hosts.add(host[4:] if host.startswith("www.") else "www." + host)
+
+    for manifest in registry.manifests.values():
+        add(manifest.base)
+        add(manifest.source.originator_domain)
+    for jurisdiction in jurisdictions:
+        for authority in (jurisdiction.election, jurisdiction.campaign_finance):
+            if authority is not None:
+                add(authority.url)
+    return hosts
+
+
 def _coverage_rows(
     jurisdictions: list[Jurisdiction],
     coverage: dict[str, Any] | None,
@@ -319,12 +343,14 @@ def _authority(authority: Any, probe: dict[str, Any]) -> dict[str, Any] | None:
         "format": probe.get("format"),
         "http": probe.get("http"),
         "detail": probe.get("detail", ""),
+        "favicon_host": normalize_host(authority.url) if authority else normalize_host(probe.get("url")),
     }
 
 
 class DashboardHandler(BaseHTTPRequestHandler):
     snapshot: Callable[[], dict[str, Any]]
     store: CredentialStore
+    favicons: FaviconStore
     known_envs: Callable[[], frozenset[str]]
     web_dir: Path = WEB_DIR
 
@@ -332,6 +358,23 @@ class DashboardHandler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:  # noqa: N802 - http.server API
         path = urlparse(self.path).path
+        if path == "/api/favicon":
+            query = parse_qs(urlparse(self.path).query)
+            host = (query.get("host") or [None])[0]
+            label = (query.get("label") or [""])[0]
+            try:
+                body, content_type = self.favicons.get(host, label)
+            except KeyError:
+                self.send_error(404)
+                return
+            self.send_response(200)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "public, max-age=86400")
+            self._security_headers()
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if path == "/api/snapshot":
             self._json(self.snapshot())
             return
@@ -521,12 +564,14 @@ def serve(
                 store=store,
             )
 
+    favicons = FaviconStore(_allowed_hosts(registry, _jurisdictions(jurisdictions_path)))
     handler = type(
         "BoundDashboardHandler",
         (DashboardHandler,),
         {
             "snapshot": staticmethod(snapshot),
             "store": store,
+            "favicons": favicons,
             "known_envs": staticmethod(known_envs),
         },
     )

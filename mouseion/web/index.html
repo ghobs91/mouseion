@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <title>mouseion · source dashboard</title>
 <style>
   :root {
@@ -132,6 +133,12 @@
   table.grid tbody tr:hover { background: var(--panel-2); }
   table.grid tbody tr:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
   .name { font-weight: 600; }
+  .name-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .fav {
+    width: 20px; height: 20px; border-radius: 5px; object-fit: contain;
+    background: var(--panel-2); flex: 0 0 auto;
+  }
+  .fav.lg { width: 28px; height: 28px; border-radius: 7px; }
   .id { color: var(--dim); font-family: var(--mono); font-size: 11.5px; }
   .caps { display: flex; flex-wrap: wrap; gap: 4px; }
   .cap {
@@ -379,6 +386,26 @@ function badge(text, kind) {
 
 function pct(value) { return (value === null || value === undefined) ? "—" : value.toFixed(1) + "%"; }
 
+function monogram(label) {
+  const text = (label || "?").replace(/[^A-Za-z0-9]/g, "").slice(0, 2).toUpperCase() || "?";
+  const hue = [...(label || "?")].reduce((sum, ch) => sum + ch.charCodeAt(0), 0) % 360;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="hsl(${hue} 42% 22%)"/><text x="32" y="42" font-family="system-ui,sans-serif" font-size="26" font-weight="700" fill="hsl(${hue} 80% 78%)" text-anchor="middle">${text}</text></svg>`;
+  return "data:image/svg+xml," + encodeURIComponent(svg);
+}
+
+function faviconImg(host, label, cls) {
+  const img = el("img", {
+    class: "fav " + (cls || ""),
+    alt: "",
+    decoding: "async",
+    src: host
+      ? "/api/favicon?host=" + encodeURIComponent(host) + "&label=" + encodeURIComponent(label || host)
+      : monogram(label || host || "?"),
+  });
+  img.addEventListener("error", () => { img.src = monogram(label || host || "?"); }, { once: true });
+  return img;
+}
+
 async function main() {
   const response = await fetch("/api/snapshot", { cache: "no-store" });
   if (!response.ok) throw new Error("snapshot failed: " + response.status);
@@ -468,8 +495,11 @@ function renderProviders() {
     return el("tr", { tabindex: "0", "data-id": provider.id, onclick: () => openDrawer(provider),
                       onkeydown: e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDrawer(provider); } } },
       el("td", {},
-        el("div", { class: "name", text: provider.title }),
-        el("div", { class: "id", text: provider.id })),
+        el("div", { class: "name-row" },
+          faviconImg(provider.favicon_host, provider.title),
+          el("div", {},
+            el("div", { class: "name", text: provider.title }),
+            el("div", { class: "id", text: provider.id })))),
       el("td", {},
         el("div", { text: provider.domain }),
         el("div", { class: "id", text: provider.sub_category })),
@@ -538,7 +568,9 @@ function renderJurisdictions() {
 function authorityCell(authority) {
   if (!authority) return el("span", { class: "id", text: "—" });
   const wrap = el("div", {},
-    el("div", { text: authority.name || "unnamed" }),
+    el("div", { class: "name-row" },
+      faviconImg(authority.favicon_host, authority.name || authority.favicon_host || "?"),
+      el("div", { text: authority.name || "unnamed" })),
     el("div", { class: "id" }, formatBadge(authority)));
   if (authority.url) {
     wrap.append(el("div", {}, el("a", { href: authority.url, target: "_blank", rel: "noreferrer",
@@ -687,9 +719,11 @@ function renderCredentials() {
   list.replaceChildren(...providers.map(provider => {
     const card = el("div", { class: "cred-card" },
       el("div", { class: "cred-head" },
-        el("div", {},
-          el("h3", { text: provider.title }),
-          el("div", { class: "id", text: provider.id })),
+        el("div", { class: "name-row" },
+          faviconImg(provider.favicon_host, provider.title),
+          el("div", {},
+            el("h3", { text: provider.title }),
+            el("div", { class: "id", text: provider.id }))),
         provider.auth_signup
           ? el("a", { href: provider.auth_signup, target: "_blank", rel: "noreferrer", text: "get a key ↗" })
           : null));
@@ -704,8 +738,11 @@ function openDrawer(provider) {
   const body = $("#drawer-body");
   body.replaceChildren();
 
-  body.append(el("h2", { id: "drawer-title", text: provider.title }),
-              el("div", { class: "id", text: provider.id }));
+  body.append(el("div", { class: "name-row" },
+    faviconImg(provider.favicon_host, provider.title, "lg"),
+    el("div", {},
+      el("h2", { id: "drawer-title", text: provider.title }),
+      el("div", { class: "id", text: provider.id }))));
 
   if (provider.description) body.append(el("p", { style: "color:var(--muted)", text: provider.description }));
 

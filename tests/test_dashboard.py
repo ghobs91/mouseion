@@ -11,6 +11,7 @@ from http.server import ThreadingHTTPServer
 
 from mouseion.credentials import CredentialStore
 from mouseion.dashboard import DashboardHandler, build_snapshot
+from mouseion.favicons import FaviconStore
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -89,7 +90,7 @@ def test_snapshot_survives_missing_coverage_files(registry):
 
 
 @pytest.fixture
-def server(registry, store):
+def server(registry, store, tmp_path):
     def snapshot() -> dict:
         return build_snapshot(
             registry,
@@ -107,7 +108,10 @@ def server(registry, store):
     handler = type(
         "TestDashboardHandler",
         (DashboardHandler,),
-        {"snapshot": staticmethod(snapshot), "store": store, "known_envs": staticmethod(lambda: known)},
+        {"snapshot": staticmethod(snapshot), "store": store,
+         "favicons": FaviconStore({"data.ny.gov"}, tmp_path / "favicons",
+                                  fetcher=lambda host: (b"\x89PNG\r\n\x1a\nicon", "image/png")),
+         "known_envs": staticmethod(lambda: known)},
     )
     httpd = ThreadingHTTPServer(("127.0.0.1", 0), handler)
     thread = threading.Thread(target=httpd.serve_forever, daemon=True)
@@ -244,3 +248,15 @@ def test_credential_write_requires_json(server):
         {"Content-Type": "text/plain", "X-Mouseion-Request": "1"},
     )
     assert status == 400
+
+
+def test_favicon_endpoint_serves_an_allowed_host(server):
+    status, body, content_type = get(server + "/api/favicon?host=data.ny.gov&label=NY")
+    assert status == 200
+    assert content_type == "image/png"
+    assert body.startswith(b"\x89PNG")
+
+
+def test_favicon_endpoint_refuses_an_unknown_host(server):
+    status, _, _ = get(server + "/api/favicon?host=evil.test&label=Evil")
+    assert status == 404

@@ -472,6 +472,12 @@ override is visible. Writes are accepted only from loopback clients, require a
 same-origin JSON request with a custom header, and the server sends
 `X-Frame-Options: DENY`, `nosniff` and a restrictive CSP.
 
+Provider, authority and credential cards show favicons. The dashboard fetches
+them itself — never the browser from a third-party icon service — and caches them
+under `.mouseion/favicons/`. Only hosts named in the registry or
+`jurisdictions.yaml` are allowed, private addresses are refused, and a generated
+monogram stands in when a site has no usable icon.
+
 It is one static page and one JSON endpoint (`/api/snapshot`), served by the
 standard library. No build step, no npm, no second source of truth: the snapshot
 is rebuilt on every request, so editing a manifest and refreshing shows the
@@ -771,7 +777,7 @@ never as an upstream 403.
 
 Five adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`, `cdx`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 427 offline tests and 114 live contract tests.
+eval, MCP server, CLI, GBNF export, 439 offline tests and 114 live contract tests.
 
 Eleven upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -807,7 +813,7 @@ Eleven upstream behaviours the adapter contract had to grow for, all now generic
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 427 offline: fixture replay
+pytest                    # 439 offline: fixture replay
 pytest -m live            # 84 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
