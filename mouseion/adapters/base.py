@@ -8,6 +8,7 @@ means adding a YAML file.
 
 from __future__ import annotations
 
+import html
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
@@ -21,6 +22,12 @@ from ..envelope import ProviderError, Record, dig, utcnow
 from ..manifest import Capability, Manifest
 
 _PATH_PARAM = re.compile(r"{(\w+)(?::([^}]+))?}")
+_TAGS = re.compile(r"<[^>]+>")
+
+
+def _clean_html(text: str) -> str:
+    """Strip tags and entities from a snippet, then collapse the whitespace."""
+    return " ".join(html.unescape(_TAGS.sub("", text)).split())
 
 
 @dataclass(slots=True)
@@ -290,6 +297,11 @@ class Adapter(ABC):
                 ]
             elif isinstance(value, dict):
                 data[field_name] = value.get(sub_key)
+
+        for field_name in capability.strip_html:
+            value = data.get(field_name)
+            if isinstance(value, str):
+                data[field_name] = _clean_html(value)
 
         return data, missing
 

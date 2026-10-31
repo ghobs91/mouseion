@@ -1,0 +1,192 @@
+id: wikipedia
+title: Wikipedia
+category: reference
+domain: reference
+sub_category: encyclopedia
+transport: http
+adapter: rest_json
+base: https://en.wikipedia.org
+regions: []
+description: >-
+  English Wikipedia through the MediaWiki API: search, article summaries, full
+  article text, section lists, outgoing links and coordinates. This is a tertiary
+  reference, not a primary record. Use it for orientation and for the sources it
+  cites; prefer those sources when answering a factual question.
+docs_url: https://www.mediawiki.org/wiki/API:Main_page
+keywords:
+  - wikipedia
+  - encyclopedia
+  - overview
+  - background
+  - biography
+  - definition
+  - who was
+  - what is
+  - history of
+attribution: "Wikipedia, Wikimedia Foundation"
+terms: "Wikipedia text is licensed CC BY-SA 4.0; attribute the article and its cited sources."
+source:
+  is_primary: false
+  originator: "Wikipedia, Wikimedia Foundation"
+  originator_domain: wikipedia.org
+  provenance: aggregator_exception
+  exception_reason: >-
+    Wikipedia is a tertiary reference, not a primary record. It is an orientation
+    aid and a pointer to cited sources, not an originating authority.
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://en.wikipedia.org/wiki/Wikipedia:API
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 60, burst: 10, concurrency: 2}
+cache_ttl: 86400
+capabilities:
+  search:
+    description: >-
+      Search English Wikipedia for articles matching a query. Returns titles,
+      plain-text snippets, page ids and word counts.
+    path: /w/api.php
+    defaults: {action: query, list: search, format: json, srprop: "snippet|timestamp|wordcount"}
+    params:
+      query: {type: string, required: true, description: "search terms"}
+      limit: {type: integer, default: 10}
+    alias: {query: srsearch}
+    pagination: {mode: offset, param: sroffset, limit_param: srlimit, default_limit: 10, max_limit: 50}
+    record_path: query.search
+    id_field: pageid
+    fields:
+      pageid: pageid
+      title: title
+      snippet: snippet
+      size: size
+      wordcount: wordcount
+      updated: timestamp
+    strip_html: [snippet]
+    source_url_template: "https://en.wikipedia.org/?curid={pageid}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - search Wikipedia for an article
+      - find the Wikipedia page about a topic
+      - what does Wikipedia have on this subject
+    example: {query: "Ada Lovelace", limit: 3}
+  summary:
+    description: >-
+      The lead section of an English Wikipedia article, as plain text, with its
+      short description and page id.
+    path: /w/api.php
+    defaults: {action: query, prop: "extracts|description", exintro: 1, explaintext: 1, redirects: 1, format: json, exlimit: 1}
+    params:
+      title: {type: string, required: true, description: "exact article title"}
+    alias: {title: titles}
+    record_path: query.pages
+    map_exclude: ["-1"]
+    id_field: pageid
+    fields:
+      pageid: pageid
+      title: title
+      description: description
+      extract: extract
+    source_url_template: "https://en.wikipedia.org/?curid={pageid}"
+    query_map: {text: title}
+    exemplars:
+      - summarize a Wikipedia article
+      - get the Wikipedia introduction for a topic
+      - short overview of a subject from Wikipedia
+    example: {title: "Ada Lovelace"}
+  article:
+    description: >-
+      The full plain-text body of an English Wikipedia article, without markup.
+      Large articles can be long; use `summary` first when a short answer will do.
+    path: /w/api.php
+    defaults: {action: query, prop: extracts, explaintext: 1, redirects: 1, format: json, exlimit: 1}
+    params:
+      title: {type: string, required: true, description: "exact article title"}
+    alias: {title: titles}
+    record_path: query.pages
+    map_exclude: ["-1"]
+    id_field: pageid
+    fields:
+      pageid: pageid
+      title: title
+      extract: extract
+    source_url_template: "https://en.wikipedia.org/?curid={pageid}"
+    query_map: {text: title}
+    exemplars:
+      - full Wikipedia article text
+      - read the whole Wikipedia page
+      - complete background from Wikipedia
+    example: {title: "Analytical engine"}
+  sections:
+    description: >-
+      The section outline of an English Wikipedia article: level, title, number
+      and anchor. Use it to find the part of a long article worth reading.
+    path: /w/api.php
+    defaults: {action: parse, prop: sections, format: json, redirects: 1}
+    params:
+      title: {type: string, required: true, description: "exact article title"}
+    alias: {title: page}
+    record_path: parse.sections
+    id_template: "{page}:{index}"
+    fields:
+      index: index
+      level: level
+      title: line
+      number: number
+      anchor: anchor
+      byteoffset: byteoffset
+    source_url_template: "https://en.wikipedia.org/wiki/{page}#{anchor}"
+    query_map: {text: title}
+    exemplars:
+      - what sections does a Wikipedia article have
+      - outline of a Wikipedia page
+      - find a section in a Wikipedia article
+    example: {title: "Ada Lovelace"}
+  links:
+    description: >-
+      The article links out of an English Wikipedia page, as titles. Useful for
+      finding the related primary sources and neighbouring topics.
+    path: /w/api.php
+    defaults: {action: query, prop: links, pllimit: max, plnamespace: 0, format: json, redirects: 1}
+    params:
+      title: {type: string, required: true, description: "exact article title"}
+    alias: {title: titles}
+    record_path: query.pages
+    map_exclude: ["-1"]
+    id_field: pageid
+    fields:
+      pageid: pageid
+      title: title
+      links: links
+    pluck: {links: title}
+    source_url_template: "https://en.wikipedia.org/?curid={pageid}"
+    query_map: {text: title}
+    exemplars:
+      - what does a Wikipedia article link to
+      - related Wikipedia pages
+      - topics linked from a Wikipedia article
+    example: {title: "Ada Lovelace"}
+  coordinates:
+    description: >-
+      Coordinates recorded for an English Wikipedia article, e.g. a landmark or
+      a place. Returns latitude, longitude and globe.
+    path: /w/api.php
+    defaults: {action: query, prop: coordinates, format: json, redirects: 1}
+    params:
+      title: {type: string, required: true, description: "exact article title"}
+    alias: {title: titles}
+    record_path: query.pages
+    map_exclude: ["-1"]
+    id_field: pageid
+    fields:
+      pageid: pageid
+      title: title
+      coordinates: coordinates
+    source_url_template: "https://en.wikipedia.org/?curid={pageid}"
+    query_map: {text: title}
+    exemplars:
+      - coordinates of a landmark from Wikipedia
+      - latitude and longitude of a place
+      - where is a Wikipedia article located
+    example: {title: "Eiffel Tower"}

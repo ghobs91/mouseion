@@ -66,6 +66,7 @@ TTL_BOUNDS: dict[str, tuple[float, float]] = {
     "governance_legislative": (60, 604_800),
     "civic_local": (60, 604_800),
     "commerce": (30, 86_400),
+    "reference": (60, 604_800),
 }
 
 Severity = Literal["error", "warning"]

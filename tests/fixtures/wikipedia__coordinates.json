@@ -1,0 +1,1 @@
+{"provider": "wikipedia", "capability": "coordinates", "recorded_at": "2026-10-31T09:09:06+00:00", "params": {"title": "Eiffel Tower"}, "expected_records": 1, "body": {"batchcomplete": "", "query": {"pages": {"9232": {"pageid": 9232, "ns": 0, "title": "Eiffel Tower", "coordinates": [{"lat": 48.85822222, "lon": 2.2945, "primary": "", "globe": "earth"}]}}}}}

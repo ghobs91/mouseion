@@ -395,6 +395,16 @@ member and parses only the rows a page needs — a 68MB CSV never materializes i
 memory. Bulk archives are not committed as fixtures (they are multi-megabyte); the
 adapter has unit tests with synthetic archives and the source has a live contract.
 
+### Wikipedia, and why it is an exception
+
+`wikipedia` covers the data tools of the Wikipedia MCP (search, summary, full
+article, sections, links, coordinates) through the MediaWiki API directly. It is
+marked `aggregator_exception`, `is_primary: false`, because Wikipedia is a
+tertiary reference: it is useful for orientation and for the sources it cites,
+not as an originating authority. The engine therefore does not use it
+automatically; call it explicitly or pass `--allow-aggregators`. Its terms
+(`CC BY-SA 4.0`) travel with every envelope.
+
 Wave 3 adds the table-only path. `el_paso_elected_officials` reads the city
 clerk's roster and `rhode_island_recent_filings` reads the ERTS recent-filings
 table. Tables are selected by their header row rather than position, because
@@ -512,7 +522,7 @@ optional):
 
 | Key | Meaning |
 |---|---|
-| `domain` | one of the nine routing domains: `financial_sovereign`, `academic_scientific`, `developer_infrastructure`, `geo_earth_observation`, `archives_web_state`, `transport_infrastructure`, `governance_legislative`, `civic_local`, `commerce` |
+| `domain` | one of the ten routing domains: `financial_sovereign`, `academic_scientific`, `developer_infrastructure`, `geo_earth_observation`, `archives_web_state`, `transport_infrastructure`, `governance_legislative`, `civic_local`, `commerce`, `reference` |
 | `sub_category` | finer topic within the domain, e.g. `economic_series` |
 | `source` | primary-source policy: `is_primary`, `originator`, `originator_domain`, `provenance`, `tier`, `auth_policy`, `rate_limit`, optional `exception_reason` |
 | `cluster` | failover group. Two capabilities may fail over only when they share a cluster |
@@ -647,7 +657,7 @@ itself. Mouseion's own remote-MCP proxy is for keeping one unified tool surface.
 
 ## What's here
 
-79 providers, 105 capabilities. The contract suite verifies every upstream live except the
+80 providers, 111 capabilities. The contract suite verifies every upstream live except the
 seven that need credentials this machine does not have (FRED, CourtListener, GitHub,
 Congress.gov, GovInfo, Shopify, and SEC's contact User-Agent is set but FRED's key is
 not). Their auth paths are verified.
@@ -713,6 +723,7 @@ not). Their auth paths are verified.
 | Shopify Global Catalog | free client credentials | `tools` (runtime, read-only) |
 | DataSF | none | `police_incidents` |
 | US Treasury Fiscal Data | none | `debt_to_penny`, `avg_interest_rates` |
+| Wikipedia | none | `search`, `summary`, `article`, `sections`, `links`, `coordinates` |
 | Washington Campaign Expenditures | none | `expenditures` |
 | Washington Campaign Finance | none | `contributions` |
 | Austin Campaign Finance | none | `contributions` |
@@ -754,7 +765,7 @@ never as an upstream 403.
 
 Five adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`, `cdx`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 408 offline tests and 103 live contract tests.
+eval, MCP server, CLI, GBNF export, 421 offline tests and 109 live contract tests.
 
 Eleven upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -790,7 +801,7 @@ Eleven upstream behaviours the adapter contract had to grow for, all now generic
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 408 offline: fixture replay
+pytest                    # 421 offline: fixture replay
 pytest -m live            # 84 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
@@ -813,7 +824,7 @@ page token before a user does.
 
 ## What's deliberately not here
 
-- **Coverage.** 79 providers is a spine, not an index. The current gap matrix is in
+- **Coverage.** 80 providers is a spine, not an index. The current gap matrix is in
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
   molecular repositories, transit, and the Cat 1 stretch. Most are keyless or free-key;
   each needs a manifest, a fixture, a live contract, and an audit entry before it counts.

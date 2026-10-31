@@ -28,6 +28,7 @@ Domain = Literal[
     "governance_legislative",
     "civic_local",
     "commerce",
+    "reference",
 ]
 DOMAINS: tuple[str, ...] = get_args(Domain)
 
@@ -245,6 +246,8 @@ class Capability(BaseModel):
     table_headers: list[str] = Field(default_factory=list)
     #: Fallback selection when several tables share a header.
     table_index: int = 0
+    #: Fields to strip HTML tags and entities from, e.g. MediaWiki search snippets.
+    strip_html: list[str] = Field(default_factory=list)
     example: dict[str, Any] | None = None
 
     @field_validator("params", mode="before")

@@ -73,6 +73,7 @@ def test_all_manifests_load(registry):
         "rhode_island_recent_filings",
         "shopify_catalog",
         "wa_campaign_expenditures",
+        "wikipedia",
         "wa_campaign_finance",
         "treasury_fiscal",
         "uk_national_archives",

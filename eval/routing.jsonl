@@ -88,3 +88,5 @@
 {"query": "who is running for city council in Chicago", "expect": null}
 {"query": "who funded a Boston mayoral campaign", "expect": null}
 {"query": "Seattle city council campaign contributions", "expect": "wa_campaign_finance"}
+{"query": "search Wikipedia for Ada Lovelace", "expect": "wikipedia"}
+{"query": "what does Wikipedia say about the Eiffel Tower", "expect": "wikipedia"}

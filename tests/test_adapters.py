@@ -699,3 +699,38 @@ def test_html_table_disambiguates_duplicate_headers_and_short_rows():
 
     result = adapter.parse(manifest, cap, _html(page), prepare(manifest, cap, {}))
     assert result.records[0].data == {"a": "Ada", "b": "A", "c": ""}
+
+
+def test_strip_html_cleans_a_search_snippet():
+    from mouseion.manifest import Manifest
+
+    manifest = Manifest.model_validate(
+        {
+            "id": "example_html_snippet",
+            "title": "Example",
+            "domain": "reference",
+            "sub_category": "encyclopedia",
+            "source": {
+                "originator": "Example",
+                "originator_domain": "example.org",
+                "auth_policy": {"evidence_url": "https://example.org", "verified_at": "2026-10-31"},
+            },
+            "base": "https://example.org",
+            "adapter": "rest_json",
+            "capabilities": {
+                "search": {
+                    "description": "x",
+                    "path": "/search",
+                    "record_path": "results",
+                    "fields": {"snippet": "snippet"},
+                    "strip_html": ["snippet"],
+                }
+            },
+        }
+    )
+    cap = manifest.capabilities["search"]
+    adapter = get_adapter(manifest.adapter)
+    body = {"results": [{"snippet": 'Augusta <span class="searchmatch">Ada</span> &amp; King'}]}
+
+    result = adapter.parse(manifest, cap, body, prepare(manifest, cap, {}))
+    assert result.records[0].data["snippet"] == "Augusta Ada & King"
