@@ -395,6 +395,12 @@ member and parses only the rows a page needs — a 68MB CSV never materializes i
 memory. Bulk archives are not committed as fixtures (they are multi-megabyte); the
 adapter has unit tests with synthetic archives and the source has a live contract.
 
+Wave 3 adds the table-only path. `el_paso_elected_officials` reads the city
+clerk's roster and `rhode_island_recent_filings` reads the ERTS recent-filings
+table. Tables are selected by their header row rather than position, because
+portals put navigation and calendar tables ahead of the data. Rhode Island is
+labelled a rolling window: it is the site's recent-filings list, not the archive.
+
 A jurisdiction becomes a provider only after its surface passes the probe. Until then
 it is a registry row, and an unregistered or non-machine-readable jurisdiction should
 return `web_search_required` rather than an invented record. The `csv` adapter exists
@@ -454,7 +460,7 @@ optional):
 | `query_map` | optional; enables `mouseion lookup`; required when `cluster` is set. Canonical field → source param, e.g. `{text: query, limit: limit}` |
 | `local_filter` | post-parse filter for catalogs with no server-side search: `{field: cveID, param: cve_id}` |
 | `category` | compatibility tag; `domain` is what the router uses |
-| `adapter` | `rest_json` (default), `socrata`, `atom`, `sdmx_json`, `cdx`, or `csv` |
+| `adapter` | `rest_json` (default), `socrata`, `atom`, `sdmx_json`, `cdx`, `csv`, or `html_table` |
 | `path` | path under `base`; `{name}` segments are substituted from params |
 | `params` | name → `{type, description, required, default, enum}`; a bare string is shorthand for the type |
 | `alias` | friendly param name → upstream name (`status` → `filter.overallStatus`). Pagination params are not aliasable |
@@ -582,7 +588,7 @@ itself. Mouseion's own remote-MCP proxy is for keeping one unified tool surface.
 
 ## What's here
 
-77 providers, 102 capabilities. The contract suite verifies every upstream live except the
+79 providers, 105 capabilities. The contract suite verifies every upstream live except the
 seven that need credentials this machine does not have (FRED, CourtListener, GitHub,
 Congress.gov, GovInfo, Shopify, and SEC's contact User-Agent is set but FRED's key is
 not). Their auth paths are verified.
@@ -655,6 +661,8 @@ not). Their auth paths are verified.
 | Fulton County Election Results | none | `results` |
 | King County Election Results | none | `results` (73 elections, 2004–2026) |
 | Colorado Campaign Finance | none | `contributions`, `expenditures` (bulk ZIP) |
+| El Paso Elected Officials | none | `city_council`, `municipal_court` (HTML table) |
+| Rhode Island Recent Filings | none | `recent` (HTML table) |
 | Ramsey County Election Results | none | `results` |
 | UK National Archives | none | `search` |
 | UK Parliament | none | `bills` |
@@ -687,7 +695,7 @@ never as an upstream 403.
 
 Five adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`, `cdx`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 360 offline tests and 100 live contract tests.
+eval, MCP server, CLI, GBNF export, 370 offline tests and 103 live contract tests.
 
 Eleven upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -723,7 +731,7 @@ Eleven upstream behaviours the adapter contract had to grow for, all now generic
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 360 offline: fixture replay
+pytest                    # 370 offline: fixture replay
 pytest -m live            # 84 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
@@ -746,7 +754,7 @@ page token before a user does.
 
 ## What's deliberately not here
 
-- **Coverage.** 77 providers is a spine, not an index. The current gap matrix is in
+- **Coverage.** 79 providers is a spine, not an index. The current gap matrix is in
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
   molecular repositories, transit, and the Cat 1 stretch. Most are keyless or free-key;
   each needs a manifest, a fixture, a live contract, and an audit entry before it counts.

@@ -1,0 +1,58 @@
+id: rhode_island_recent_filings
+title: Rhode Island Recent Campaign Finance Filings
+category: government
+domain: civic_local
+sub_category: campaign_finance
+transport: http
+adapter: html_table
+base: https://ricampaignfinance.com
+regions: [US]
+description: >-
+  The Rhode Island Board of Elections ERTS public site lists its most recent
+  campaign-finance filings as an HTML table: filed date and time, filing type,
+  organization and report. This is a recent-filings window, not the full archive;
+  the complete history is behind the site's report tools.
+docs_url: https://ricampaignfinance.com/
+keywords:
+  - campaign finance
+  - filings
+  - rhode island
+  - recent filings
+  - board of elections
+  - erts
+  - disclosure
+attribution: "Rhode Island Board of Elections"
+source:
+  is_primary: true
+  originator: "Rhode Island Board of Elections"
+  originator_domain: ricampaignfinance.com
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://ricampaignfinance.com/
+    verified_at: 2026-10-30
+  rate_limit: {per_min: 20, burst: 4, concurrency: 2}
+cache_ttl: 3600
+capabilities:
+  recent:
+    description: >-
+      The most recent Rhode Island campaign-finance filings: filed date and time,
+      filing type, organization and report. A rolling window, not the archive.
+    path: /
+    table_headers: ["Filed Date", "Filed Time", "Filing", "Organization Name"]
+    fields:
+      filed_date: filed_date
+      filed_time: filed_time
+      filing: filing
+      organization: organization_name
+      report: filed_report
+    id_template: "{filed_date}:{filed_time}:{organization}"
+    source_url_template: "https://ricampaignfinance.com/"
+    exemplars:
+      - recent Rhode Island campaign finance filings
+      - who filed a campaign report in Rhode Island today
+      - Rhode Island ERTS filings
+    example: {}

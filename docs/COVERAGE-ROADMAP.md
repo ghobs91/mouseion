@@ -189,7 +189,9 @@ Remaining work is promotion, not seeding:
      Colorado TRACER's annual ZIP archives (2023-2026). The CSV adapter now reads a
      ZIP member and stops parsing at the last row a page needs, so a 68MB export
      costs one page of memory.
-   - wave 3: HTML tables where no machine-readable surface exists
+   - **wave 3: HTML tables — started.** `el_paso_elected_officials` (council and
+     municipal court rosters) and `rhode_island_recent_filings` (ERTS recent
+     filings). Tables are selected by header row, not position.
 5. Every promoted source still gets a manifest, fixture, live contract, audit
    entry, and eval cases.
 

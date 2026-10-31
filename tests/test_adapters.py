@@ -584,3 +584,118 @@ def test_csv_adapter_pages_a_bulk_file_without_reading_it_all():
     )
     assert past_end.records == []
     assert past_end.next_cursor is None
+
+
+# -- HTML tables ----------------------------------------------------------
+
+
+def _table_manifest(headers=("NAME", "OFFICE"), index=0):
+    from mouseion.manifest import Manifest
+
+    return Manifest.model_validate(
+        {
+            "id": "example_table",
+            "title": "Example Roster",
+            "domain": "civic_local",
+            "sub_category": "elected_officials",
+            "source": {
+                "originator": "Example City",
+                "originator_domain": "example.gov",
+                "auth_policy": {
+                    "evidence_url": "https://example.gov",
+                    "verified_at": "2026-10-30",
+                },
+            },
+            "base": "https://example.gov",
+            "adapter": "html_table",
+            "capabilities": {
+                "roster": {
+                    "description": "Current officials",
+                    "path": "/officials",
+                    "table_headers": list(headers),
+                    "table_index": index,
+                    "fields": {"name": "name", "office": "office"},
+                }
+            },
+        }
+    )
+
+
+def _html(body: str) -> dict[str, str]:
+    return {"_raw_text": body}
+
+
+def test_html_table_skips_navigation_tables_by_header():
+    manifest = _table_manifest()
+    cap = manifest.capabilities["roster"]
+    adapter = get_adapter(manifest.adapter)
+    page = """
+    <html><body>
+      <table><tr><th>Menu</th><th>Link</th></tr><tr><td>Home</td><td>/</td></tr></table>
+      <table><tr><th>NAME</th><th>OFFICE</th></tr>
+             <tr><td>Ada</td><td>Mayor</td></tr></table>
+    </body></html>
+    """
+
+    result = adapter.parse(manifest, cap, _html(page), prepare(manifest, cap, {}))
+    assert result.records[0].data == {"name": "Ada", "office": "Mayor"}
+
+
+def test_html_table_index_selects_among_matching_tables():
+    manifest = _table_manifest(index=1)
+    cap = manifest.capabilities["roster"]
+    adapter = get_adapter(manifest.adapter)
+    page = """
+    <table><tr><th>NAME</th><th>OFFICE</th></tr><tr><td>Ada</td><td>Mayor</td></tr></table>
+    <table><tr><th>NAME</th><th>OFFICE</th></tr><tr><td>Grace</td><td>Judge</td></tr></table>
+    """
+
+    result = adapter.parse(manifest, cap, _html(page), prepare(manifest, cap, {}))
+    assert result.records[0].data["name"] == "Grace"
+
+
+def test_html_table_reports_missing_headers():
+    from mouseion.envelope import ProviderError
+
+    manifest = _table_manifest(headers=("CANDIDATE", "PARTY"))
+    cap = manifest.capabilities["roster"]
+    adapter = get_adapter(manifest.adapter)
+    page = "<table><tr><th>NAME</th><th>OFFICE</th></tr><tr><td>A</td><td>B</td></tr></table>"
+
+    with pytest.raises(ProviderError) as exc:
+        adapter.parse(manifest, cap, _html(page), prepare(manifest, cap, {}))
+    assert "CANDIDATE" in str(exc.value)
+
+
+def test_html_table_disambiguates_duplicate_headers_and_short_rows():
+    from mouseion.manifest import Manifest
+
+    manifest = Manifest.model_validate(
+        {
+            "id": "dup",
+            "title": "Dup",
+            "domain": "civic_local",
+            "sub_category": "elected_officials",
+            "source": {
+                "originator": "X",
+                "originator_domain": "x.gov",
+                "auth_policy": {"evidence_url": "https://x.gov", "verified_at": "2026-10-30"},
+            },
+            "base": "https://x.gov",
+            "adapter": "html_table",
+            "capabilities": {
+                "roster": {
+                    "description": "x",
+                    "path": "/x",
+                    "table_index": 0,
+                    "fields": {"a": "name", "b": "name_2", "c": "office"},
+                }
+            },
+        }
+    )
+    cap = manifest.capabilities["roster"]
+    adapter = get_adapter(manifest.adapter)
+    page = "<table><tr><th>Name</th><th>Name</th><th>Office</th></tr><tr><td>Ada</td><td>A</td></tr></table>"
+
+    result = adapter.parse(manifest, cap, _html(page), prepare(manifest, cap, {}))
+    assert result.records[0].data == {"a": "Ada", "b": "A", "c": ""}

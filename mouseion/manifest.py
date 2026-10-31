@@ -238,6 +238,10 @@ class Capability(BaseModel):
     transpose: bool = False
     #: For a ZIP bulk download: the CSV member to read. Empty means the first .csv.
     zip_member: str | None = None
+    #: For HTML tables: select the table whose header row contains these strings.
+    table_headers: list[str] = Field(default_factory=list)
+    #: Fallback selection when several tables share a header.
+    table_index: int = 0
     example: dict[str, Any] | None = None
 
     @field_validator("params", mode="before")

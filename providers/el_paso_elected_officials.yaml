@@ -1,0 +1,74 @@
+id: el_paso_elected_officials
+title: El Paso Elected Officials
+category: government
+domain: civic_local
+sub_category: elected_officials
+transport: http
+adapter: html_table
+base: https://www.elpasotexas.gov
+regions: [US]
+description: >-
+  The current elected officials of the City of El Paso, published by the City
+  Clerk as an HTML table: city council members by district with the end of their
+  term, and municipal court judges. Table-only source; there is no CSV or API.
+docs_url: https://www.elpasotexas.gov/city-clerk/
+keywords:
+  - elected officials
+  - city council
+  - mayor
+  - el paso
+  - texas
+  - municipal court
+  - who represents
+  - term ends
+attribution: "City of El Paso"
+source:
+  is_primary: true
+  originator: "City of El Paso"
+  originator_domain: elpasotexas.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.elpasotexas.gov/city-clerk/
+    verified_at: 2026-10-30
+  rate_limit: {per_min: 20, burst: 4, concurrency: 2}
+cache_ttl: 86400
+capabilities:
+  city_council:
+    description: >-
+      The current El Paso city council: elected official, office or district, and
+      the month and year the term ends.
+    path: /city-clerk/
+    table_headers: ["ELECTED OFFICIAL", "OFFICE", "TERM ENDS"]
+    table_index: 0
+    id_template: "{office}:{official}"
+    fields:
+      official: elected_official
+      office: office
+      term_ends: term_ends
+    source_url_template: "https://www.elpasotexas.gov/city-clerk/"
+    exemplars:
+      - who is the mayor of El Paso
+      - El Paso city council members by district
+      - when does an El Paso council term end
+    example: {}
+  municipal_court:
+    description: >-
+      The current El Paso municipal court judges: judge, court number, and the
+      month and year the term ends.
+    path: /city-clerk/
+    table_headers: ["ELECTED OFFICIAL", "OFFICE", "TERM ENDS"]
+    table_index: 1
+    id_template: "{office}:{official}"
+    fields:
+      official: elected_official
+      office: office
+      term_ends: term_ends
+    source_url_template: "https://www.elpasotexas.gov/city-clerk/"
+    exemplars:
+      - who are the El Paso municipal court judges
+      - El Paso judge term ends
+    example: {}

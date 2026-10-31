@@ -16,7 +16,7 @@ Global Catalog is live. The local-election track now has a jurisdiction registry
 catalog search that promoted five campaign-finance providers in wave 1. IMF, BoJ, OECD, BIS, and on-chain nodes remain
 as Cat 1 stretch.
 **Basis:** the 2026-10-29 specification plus the repository as it actually stands:
-77 providers, 102 capabilities, 360 passing offline tests, 100 live contract tests.
+79 providers, 105 capabilities, 370 passing offline tests, 103 live contract tests.
 
 ---
 
@@ -403,7 +403,7 @@ spec's own examples plus the obvious adjacent authorities.
 | `transport_infrastructure` | 1 | 8 | 5–8 transit agencies with GTFS/GTFS-RT; State Dept travel; ISBN via OpenLibrary (exception) | P3 |
 | `governance_legislative` | 11 | 10 | Target met: Congress.gov, GovInfo, UK Parliament, CourtListener MCP (OAuth); existing CMS, CourtListener REST, data.gov.au, Federal Register, GOV.UK, Grants.gov, openFDA | P2 |
 | `commerce` | 1 | 1 | Shopify Global Catalog (read-only UCP MCP) | P2 |
-| `civic_local` | 15 | 50 states + DC + major cities | Registry + discovery built: 96 jurisdictions, 182 authority URLs probed. Wave 1 promoted 14 Socrata providers across 11 jurisdictions, including a consolidated King County results provider spanning 73 elections and a ZIP bulk provider for Colorado; 89 candidate datasets catalogued | P2 |
+| `civic_local` | 17 | 50 states + DC + major cities | Registry + discovery built: 96 jurisdictions, 182 authority URLs probed. Wave 1 promoted 14 Socrata providers across 11 jurisdictions, including a consolidated King County results provider spanning 73 elections and a ZIP bulk provider for Colorado; 89 candidate datasets catalogued | P2 |
 
 Notes on specific targets:
 

@@ -81,3 +81,6 @@
 {"query": "Seattle precinct vote counts", "expect": "king_county_election_results"}
 {"query": "Colorado campaign contributions by committee", "expect": "colorado_campaign_finance"}
 {"query": "what did a Colorado campaign spend money on", "expect": "colorado_campaign_finance"}
+{"query": "who is the mayor of El Paso", "expect": "el_paso_elected_officials"}
+{"query": "El Paso city council members by district", "expect": "el_paso_elected_officials"}
+{"query": "recent Rhode Island campaign finance filings", "expect": "rhode_island_recent_filings"}
