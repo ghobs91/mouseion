@@ -689,6 +689,13 @@ class Engine:
         if "terminal" in outcomes:
             return "parameter_error"
         if "unmapped_query" in outcomes and len(outcomes) == 1:
+            # Distinguish "this query cannot be mapped" from "this source needs a
+            # parameter the query does not carry", which is actionable.
+            if all(
+                "missing required param" in (attempt.error or "")
+                for attempt in attempts
+            ):
+                return "missing_required_param"
             return "unmapped_query"
         if "missing_credential" in outcomes and len(outcomes) == 1:
             return "missing_credential"

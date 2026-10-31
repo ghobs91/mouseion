@@ -317,7 +317,7 @@ def test_no_candidates_returns_a_clean_signal():
     assert client.calls == []
 
 
-def test_unmapped_query_is_reported_without_calling():
+def test_missing_required_param_is_reported_without_calling():
     alpha = manifest(
         "alpha",
         params={"required_thing": {"type": "string", "required": True}},
@@ -331,7 +331,7 @@ def test_unmapped_query_is_reported_without_calling():
     result = run(engine.lookup("anything"))
 
     assert result.web_search_required is True
-    assert result.reason == "unmapped_query"
+    assert result.reason == "missing_required_param"
     assert result.attempts[0].outcome == "unmapped_query"
     assert client.calls == []
 
