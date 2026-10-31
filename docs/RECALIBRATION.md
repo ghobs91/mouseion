@@ -16,7 +16,7 @@ Global Catalog is live. The local-election track now has a jurisdiction registry
 catalog search that promoted five campaign-finance providers in wave 1. IMF, BoJ, OECD, BIS, and on-chain nodes remain
 as Cat 1 stretch.
 **Basis:** the 2026-10-29 specification plus the repository as it actually stands:
-80 providers, 111 capabilities, 423 passing offline tests, 109 live contract tests.
+84 providers, 116 capabilities, 427 passing offline tests, 114 live contract tests.
 
 ---
 
@@ -395,14 +395,14 @@ spec's own examples plus the obvious adjacent authorities.
 
 | Domain | Current | Target | Named gaps | Priority |
 |---|---:|---:|---|---|
-| `financial_sovereign` | 10 | 10 | Target met: ECB; existing BLS, CFTC, FRED, GLEIF, openFEC, SEC, Treasury, USAspending, World Bank. Stretch: IMF, BoJ, OECD, BIS, on-chain nodes | P1 |
+| `financial_sovereign` | 11 | 10 | Target met: ECB; existing BLS, CFTC, FRED, GLEIF, openFEC, SEC, Treasury, USAspending, World Bank. Stretch: IMF, BoJ, OECD, BIS, on-chain nodes | P1 |
 | `academic_scientific` | 14 | 14 | Complete: arXiv, PMC, PubChem, UniProt, Wikidata; existing Crossref, DataCite, OpenAlex, ROR, Zenodo, PubMed, ClinicalTrials, NIH RePORTER, GBIF | P1 |
-| `developer_infrastructure` | 8 | 8 | Complete: npm, PyPI, crates.io, Go proxy, Maven Central, CISA KEV, GitHub REST | P1 |
-| `geo_earth_observation` | 12 | 12 | Complete: Nominatim, Overpass, NASA EONET, NOAA Tides; existing Census, NHC, NWS, NYC Open Data, OpenFEMA, DataSF, USGS earthquakes, USGS water | P2 |
+| `developer_infrastructure` | 9 | 8 | Complete: npm, PyPI, crates.io, Go proxy, Maven Central, CISA KEV, GitHub REST | P1 |
+| `geo_earth_observation` | 13 | 12 | Complete: Nominatim, Overpass, NASA EONET, NOAA Tides; existing Census, NHC, NWS, NYC Open Data, OpenFEMA, DataSF, USGS earthquakes, USGS water | P2 |
 | `archives_web_state` | 5 | 5 | Complete: Internet Archive, Wayback, Library of Congress, UK National Archives; existing OpenLibrary | P2 |
 | `transport_infrastructure` | 1 | 8 | 5–8 transit agencies with GTFS/GTFS-RT; State Dept travel; ISBN via OpenLibrary (exception) | P3 |
 | `governance_legislative` | 11 | 10 | Target met: Congress.gov, GovInfo, UK Parliament, CourtListener MCP (OAuth); existing CMS, CourtListener REST, data.gov.au, Federal Register, GOV.UK, Grants.gov, openFDA | P2 |
-| `commerce` | 1 | 1 | Shopify Global Catalog (read-only UCP MCP) | P2 |
+| `commerce` | 2 | 1 | Shopify Global Catalog (read-only UCP MCP) | P2 |
 | `reference` | 1 | general | Wikipedia (tertiary; aggregator exception, not used in automatic failover) | P2 |
 | `civic_local` | 17 | 50 states + DC + major cities | Registry + discovery built: 101 jurisdictions, 182 authority URLs probed; routing is jurisdiction-aware and abstains when uncovered. Wave 1 promoted 14 Socrata providers across 11 jurisdictions, including a consolidated King County results provider spanning 73 elections and a ZIP bulk provider for Colorado; 89 candidate datasets catalogued | P2 |
 

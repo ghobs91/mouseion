@@ -94,8 +94,8 @@ def test_tier_two_sources_are_free_and_cardless():
     for manifest in registry.manifests.values():
         if manifest.source.tier != 2:
             continue
-        assert manifest.auth.type in {"api_key", "oauth", "client_credentials"}
-        if manifest.auth.type == "api_key":
+        assert manifest.auth.type in {"api_key", "basic", "oauth", "client_credentials"}
+        if manifest.auth.type in {"api_key", "basic"}:
             assert manifest.auth.env
         elif manifest.auth.type == "oauth":
             assert manifest.auth.scopes

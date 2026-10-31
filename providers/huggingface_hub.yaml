@@ -1,0 +1,68 @@
+id: huggingface_hub
+title: Hugging Face Hub
+category: developer
+domain: developer_infrastructure
+sub_category: ai_models
+transport: http
+adapter: rest_json
+base: https://huggingface.co
+regions: []
+description: >-
+  Search public models on the Hugging Face Hub: model id, task, library,
+  downloads, likes and tags. The hub is the originating registry for the models
+  it hosts. Keyless; rate limits apply.
+docs_url: https://huggingface.co/docs/hub/api
+keywords:
+  - hugging face
+  - model
+  - llm
+  - machine learning
+  - transformer
+  - checkpoint
+  - weights
+  - ai model
+  - dataset
+attribution: "Hugging Face"
+source:
+  is_primary: true
+  originator: "Hugging Face"
+  originator_domain: huggingface.co
+  provenance: registry
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://huggingface.co/docs/hub/api
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 30, burst: 8, concurrency: 2}
+cache_ttl: 3600
+capabilities:
+  search_models:
+    description: >-
+      Search Hugging Face models by name or task. Returns the model id, task,
+      library, downloads, likes and tags, sorted by downloads by default.
+    path: /api/models
+    defaults: {sort: downloads, direction: -1}
+    params:
+      query: {type: string, description: "model name or keyword"}
+      task: {type: string, description: "pipeline tag, e.g. text-generation"}
+      limit: {type: integer, default: 10}
+    alias: {query: search, task: filter}
+    id_field: id
+    fields:
+      id: id
+      downloads: downloads
+      likes: likes
+      task: pipeline_tag
+      library: library_name
+      tags: tags
+      created: createdAt
+      modified: lastModified
+    source_url_template: "https://huggingface.co/{id}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - find a Hugging Face model for text generation
+      - search open language models
+      - which model has the most downloads
+    example: {query: "bert", limit: 3}

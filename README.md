@@ -659,7 +659,7 @@ itself. Mouseion's own remote-MCP proxy is for keeping one unified tool surface.
 
 ## What's here
 
-80 providers, 111 capabilities. The contract suite verifies every upstream live except the
+84 providers, 116 capabilities. The contract suite verifies every upstream live except the
 seven that need credentials this machine does not have (FRED, CourtListener, GitHub,
 Congress.gov, GovInfo, Shopify, and SEC's contact User-Agent is set but FRED's key is
 not). Their auth paths are verified.
@@ -688,6 +688,10 @@ not). Their auth paths are verified.
 | GitHub | free token | `search_repositories`, `repository`, `releases`, `commits` |
 | Internet Archive | none | `search`, `metadata` |
 | Library of Congress | none | `search` |
+| Companies House | free key (Basic) | `search`, `company` |
+| GeoNames | free username | `search` |
+| Hugging Face Hub | none | `search_models` |
+| Open Food Facts | none | `search_products` |
 | Maryland Lobbyist Contributions | none | `contributions` |
 | Oakland Campaign Finance | none | `contributions` |
 | Los Angeles Campaign Finance | none | `contributions` |
@@ -767,7 +771,7 @@ never as an upstream 403.
 
 Five adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`, `cdx`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 423 offline tests and 109 live contract tests.
+eval, MCP server, CLI, GBNF export, 427 offline tests and 114 live contract tests.
 
 Eleven upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -803,7 +807,7 @@ Eleven upstream behaviours the adapter contract had to grow for, all now generic
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 423 offline: fixture replay
+pytest                    # 427 offline: fixture replay
 pytest -m live            # 84 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```
@@ -826,7 +830,7 @@ page token before a user does.
 
 ## What's deliberately not here
 
-- **Coverage.** 80 providers is a spine, not an index. The current gap matrix is in
+- **Coverage.** 84 providers is a spine, not an index. The current gap matrix is in
   `docs/RECALIBRATION.md` §8: central banks and fiscal authorities, preprint and
   molecular repositories, transit, and the Cat 1 stretch. Most are keyless or free-key;
   each needs a manifest, a fixture, a live contract, and an audit entry before it counts.
@@ -836,6 +840,21 @@ page token before a user does.
   See `docs/COVERAGE-ROADMAP.md` and `eval/coverage-gaps.jsonl`.
 - **Write paths.** Everything here reads. No filings, no comments, no purchases. Cart
   and checkout are a separate product decision, not a provider manifest.
+
+## Coverage targets
+
+Firecrawl's [Alexandria](https://www.firecrawl.dev/alexandria) is the reference
+point for what agents are asked about: 428 providers across 25 demand-shaped
+categories. The full gap matrix, primary-source alternatives and priority waves
+are in [`docs/PROVIDER-TARGETS.md`](docs/PROVIDER-TARGETS.md).
+
+The short version: public records is depth work (Alexandria lists 199, and
+civic/government is already the largest part of this registry). The categories
+this registry was missing were **Company**, **Retail**, **Places** and **AI
+models**; this batch adds Companies House, Open Food Facts, GeoNames and Hugging
+Face Hub. Next are Jobs, Sports, Entertainment, Travel and Real estate, then the
+IMF/OECD/BIS finance stretch. Marketing, apps, social and web analytics are
+deliberately not targeted: they are commercial platforms or have no official API.
 
 ## Honest ceiling
 

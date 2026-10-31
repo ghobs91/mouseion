@@ -1,0 +1,77 @@
+id: geonames
+title: GeoNames
+category: places
+domain: geo_earth_observation
+sub_category: gazetteer
+transport: http
+adapter: rest_json
+base: https://secure.geonames.org
+regions: []
+description: >-
+  The GeoNames gazetteer: populated places, administrative divisions, features,
+  coordinates, population and timezone. A free account is required and the
+  username is sent with every request.
+docs_url: https://www.geonames.org/export/web-services.html
+keywords:
+  - place
+  - gazetteer
+  - city
+  - town
+  - coordinates
+  - latitude
+  - longitude
+  - timezone
+  - population
+attribution: "GeoNames"
+source:
+  is_primary: true
+  originator: "GeoNames"
+  originator_domain: geonames.org
+  provenance: registry
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.geonames.org/export/web-services.html
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 60, burst: 10, concurrency: 2}
+cache_ttl: 604800
+auth:
+  type: api_key
+  env: GEONAMES_USERNAME
+  param: username
+  location: query
+  signup_url: https://www.geonames.org/login
+capabilities:
+  search:
+    description: >-
+      Search places by name, optionally within a country. Returns the geoname
+      id, name, country, coordinates, population, feature class, admin area and
+      timezone.
+    path: /searchJSON
+    params:
+      query: {type: string, required: true, description: "place name"}
+      country: {type: string, description: "ISO country code, e.g. FR"}
+      limit: {type: integer, default: 10}
+    alias: {query: q, limit: maxRows}
+    record_path: geonames
+    id_field: geoname_id
+    fields:
+      geoname_id: geonameId
+      name: name
+      country: countryName
+      country_code: countryCode
+      latitude: lat
+      longitude: lng
+      population: population
+      feature: fcodeName
+      admin1: adminName1
+      timezone: timezone.timeZoneId
+    source_url_template: "https://www.geonames.org/{geoname_id}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - find a city and its coordinates
+      - what timezone is a town in
+      - population of a place
+    example: {query: "Paris", limit: 3}

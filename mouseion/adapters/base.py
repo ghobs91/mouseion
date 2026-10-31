@@ -8,6 +8,7 @@ means adding a YAML file.
 
 from __future__ import annotations
 
+import base64
 import html
 import re
 from abc import ABC, abstractmethod
@@ -126,6 +127,17 @@ class Adapter(ABC):
                     hint=f"set {auth.env or 'MOUSEION_UA'} to 'Your Name you@example.com'",
                 )
             headers["User-Agent"] = value
+            return
+        if auth.type == "basic":
+            # Companies House style: the key is the username, the password is blank.
+            key = resolve(auth.env)
+            if not key:
+                raise ProviderError(
+                    f"missing credential for provider '{manifest.id}'",
+                    hint=f"set {auth.env} in the environment or save it in the dashboard",
+                )
+            token = base64.b64encode(f"{key}:".encode()).decode()
+            headers["Authorization"] = f"Basic {token}"
             return
         if auth.type != "api_key":
             return

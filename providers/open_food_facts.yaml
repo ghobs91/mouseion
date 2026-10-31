@@ -1,0 +1,68 @@
+id: open_food_facts
+title: Open Food Facts
+category: commerce
+domain: commerce
+sub_category: product_catalog
+transport: http
+adapter: rest_json
+base: https://world.openfoodfacts.org
+regions: []
+description: >-
+  Search the Open Food Facts product database: barcode, product name, brands,
+  categories, Nutri-Score and countries. A collaborative open database, not a
+  retailer catalogue; useful for packaged food and nutrition questions.
+docs_url: https://openfoodfacts.github.io/openfoodfacts-server/api/
+keywords:
+  - food
+  - product
+  - barcode
+  - nutrition
+  - ingredients
+  - nutriscore
+  - grocery
+  - brand
+attribution: "Open Food Facts"
+source:
+  is_primary: true
+  originator: "Open Food Facts"
+  originator_domain: openfoodfacts.org
+  provenance: registry
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://world.openfoodfacts.org/data
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 30, burst: 8, concurrency: 2}
+cache_ttl: 86400
+capabilities:
+  search_products:
+    description: >-
+      Search packaged food products by name or brand. Returns barcode, product
+      name, brands, categories, Nutri-Score, quantity and countries.
+    path: /api/v2/search
+    defaults:
+      fields: "code,product_name,brands,categories,nutriscore_grade,countries_tags,quantity"
+    params:
+      query: {type: string, required: true, description: "product or brand"}
+      limit: {type: integer, default: 20}
+    alias: {query: search_terms}
+    pagination: {mode: page, param: page, limit_param: page_size, default_limit: 20, max_limit: 100, start: 1}
+    record_path: products
+    id_field: code
+    fields:
+      code: code
+      name: product_name
+      brands: brands
+      categories: categories
+      nutriscore: nutriscore_grade
+      quantity: quantity
+      countries: countries_tags
+    source_url_template: "https://world.openfoodfacts.org/product/{code}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - find a packaged food product by barcode or name
+      - what is the Nutri-Score of a product
+      - ingredients and nutrition for a grocery item
+    example: {query: "nutella", limit: 3}

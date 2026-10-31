@@ -1,0 +1,92 @@
+id: companies_house
+title: Companies House
+category: company
+domain: financial_sovereign
+sub_category: company_registry
+transport: http
+adapter: rest_json
+base: https://api.company-information.service.gov.uk
+regions: [GB]
+description: >-
+  The UK company register: search companies by name and read a company record
+  (number, status, type, incorporation date, registered office, SIC codes).
+  Free developer key, HTTP Basic authentication with the key as username.
+docs_url: https://developer.company-information.service.gov.uk/
+keywords:
+  - company
+  - companies house
+  - uk
+  - business
+  - registration
+  - incorporated
+  - directors
+  - sic
+attribution: "Companies House, UK Government"
+source:
+  is_primary: true
+  originator: "Companies House"
+  originator_domain: company-information.service.gov.uk
+  provenance: official
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://developer.company-information.service.gov.uk/
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 60, burst: 10, concurrency: 2}
+cache_ttl: 86400
+auth:
+  type: basic
+  env: COMPANIES_HOUSE_API_KEY
+  signup_url: https://developer.company-information.service.gov.uk/
+capabilities:
+  search:
+    description: >-
+      Search UK companies by name. Returns company number, name, status, type,
+      incorporation date and a registered-address snippet.
+    path: /search/companies
+    params:
+      query: {type: string, required: true, description: "company name"}
+      limit: {type: integer, default: 20}
+    alias: {query: q}
+    pagination: {mode: offset, param: start_index, limit_param: items_per_page, default_limit: 20, max_limit: 100}
+    record_path: items
+    id_field: company_number
+    fields:
+      company_number: company_number
+      title: title
+      status: company_status
+      type: company_type
+      created: date_of_creation
+      address: address_snippet
+      jurisdiction: jurisdiction
+    source_url_template: "https://find-and-update.company-information.service.gov.uk/company/{company_number}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - look up a UK company by name
+      - is a company registered in the UK
+      - when was a UK company incorporated
+    example: {query: "tesco", limit: 3}
+  company:
+    description: >-
+      Read one UK company record by company number: name, status, type,
+      incorporation date, jurisdiction, registered office and SIC codes.
+    path: /company/{company_number}
+    params:
+      company_number: {type: string, required: true, description: "e.g. 00445790"}
+    id_field: company_number
+    fields:
+      company_number: company_number
+      name: company_name
+      status: company_status
+      type: company_type
+      created: date_of_creation
+      jurisdiction: jurisdiction
+      address: registered_office_address
+      sic_codes: sic_codes
+    source_url_template: "https://find-and-update.company-information.service.gov.uk/company/{company_number}"
+    exemplars:
+      - company record for a UK company number
+      - registered office of a UK company
+    example: {company_number: "00445790"}

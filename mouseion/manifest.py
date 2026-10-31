@@ -93,7 +93,7 @@ class Pagination(BaseModel):
 class Auth(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    type: Literal["none", "api_key", "user_agent", "oauth", "client_credentials"] = "none"
+    type: Literal["none", "api_key", "user_agent", "basic", "oauth", "client_credentials"] = "none"
     #: Environment variable holding the credential (api_key/user_agent).
     env: str | None = None
     #: Query param or header name receiving the credential.
@@ -405,7 +405,7 @@ class Manifest(BaseModel):
 
     @property
     def requires_key(self) -> bool:
-        return self.auth.type == "api_key"
+        return self.auth.type in {"api_key", "basic"}
 
     @property
     def requires_oauth(self) -> bool:

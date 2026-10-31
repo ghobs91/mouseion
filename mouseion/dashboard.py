@@ -185,7 +185,7 @@ def _credentials(manifest: Any, store: CredentialStore) -> list[dict[str, Any]]:
         ]
 
     fields: list[tuple[str | None, str]] = []
-    if auth.type == "api_key":
+    if auth.type in {"api_key", "basic"}:
         fields.append((auth.env, "API key"))
     elif auth.type == "user_agent":
         fields.append((auth.env, "contact address"))

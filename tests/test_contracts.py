@@ -105,7 +105,7 @@ def test_live_contract(provider, capability, config):
     manifest = registry.get(provider)
     cap = manifest.capabilities[capability]
 
-    if manifest.auth.type in {"api_key", "user_agent"}:
+    if manifest.auth.type in {"api_key", "user_agent", "basic"}:
         env = manifest.auth.env or ""
         if not os.getenv(env):
             pytest.skip(f"needs {env}")

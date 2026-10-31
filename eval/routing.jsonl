@@ -90,3 +90,7 @@
 {"query": "Seattle city council campaign contributions", "expect": "wa_campaign_finance"}
 {"query": "search Wikipedia for Ada Lovelace", "expect": "wikipedia"}
 {"query": "what does Wikipedia say about the Eiffel Tower", "expect": "wikipedia"}
+{"query": "find a Hugging Face model for text generation", "expect": "huggingface_hub"}
+{"query": "Nutri-Score of a packaged food product", "expect": "open_food_facts"}
+{"query": "look up a UK company by name", "expect": "companies_house"}
+{"query": "GeoNames timezone and population for a town", "expect": "geonames"}
