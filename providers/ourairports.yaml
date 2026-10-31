@@ -1,0 +1,74 @@
+id: ourairports
+title: OurAirports
+category: places
+domain: transport_infrastructure
+sub_category: airports
+transport: http
+adapter: csv
+base: https://ourairports.com
+regions: []
+description: >-
+  OurAirports' public-domain airport dataset: identifiers, type, coordinates,
+  elevation, country, region and municipality for airports and airfields
+  worldwide. A bulk CSV, not a search API; pick a page.
+docs_url: https://ourairports.com/data/
+keywords:
+  - airport
+  - airfield
+  - iata
+  - icao
+  - runway
+  - aviation
+  - flight
+  - coordinates
+attribution: "OurAirports (public domain)"
+source:
+  is_primary: true
+  originator: "OurAirports"
+  originator_domain: ourairports.com
+  provenance: registry
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://ourairports.com/data/
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 6, burst: 2, concurrency: 1}
+cache_ttl: 604800
+max_body_bytes: 20000000
+timeout_s: 120
+capabilities:
+  airports:
+    description: >-
+      Page the global airport list. Returns id, ident, name, type, coordinates,
+      elevation, country, region, municipality and IATA/ICAO codes. Filtering is
+      client-side after the page is read.
+    path: /data/airports.csv
+    params:
+      limit: {type: integer, default: 25}
+    local_window: true
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 1000}
+    id_field: id
+    fields:
+      id: id
+      ident: ident
+      name: name
+      type: type
+      latitude: latitude_deg
+      longitude: longitude_deg
+      elevation_ft: elevation_ft
+      country: iso_country
+      region: iso_region
+      municipality: municipality
+      scheduled_service: scheduled_service
+      iata: iata_code
+      icao: gps_code
+      home_link: home_link
+      wikipedia: wikipedia_link
+    source_url_template: "https://ourairports.com/airports/{ident}/"
+    exemplars:
+      - find an airport by IATA code
+      - list airports in a country
+      - airport coordinates and elevation
+    example: {limit: 3}

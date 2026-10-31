@@ -1,0 +1,108 @@
+id: mlb_stats
+title: MLB StatsAPI
+category: sports
+domain: reference
+sub_category: sports
+transport: http
+adapter: rest_json
+base: https://statsapi.mlb.com
+regions: [US]
+description: >-
+  Major League Baseball's official StatsAPI: teams, the game schedule and
+  standings. Keyless and read-only. Covers MLB; other leagues are not included.
+docs_url: https://statsapi.mlb.com/docs/
+keywords:
+  - baseball
+  - mlb
+  - team
+  - schedule
+  - standings
+  - game
+  - score
+  - sports
+attribution: "Major League Baseball"
+source:
+  is_primary: true
+  originator: "Major League Baseball"
+  originator_domain: mlb.com
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://statsapi.mlb.com/docs/
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 30, burst: 8, concurrency: 2}
+cache_ttl: 3600
+capabilities:
+  teams:
+    description: >-
+      MLB teams for a season: id, name, abbreviation, league, division and home
+      venue.
+    path: /api/v1/teams
+    defaults: {sportId: 1}
+    params:
+      season: {type: integer, description: "e.g. 2024"}
+      sport_id: {type: integer, default: 1, description: "1 is MLB"}
+    alias: {sport_id: sportId}
+    record_path: teams
+    id_field: id
+    fields:
+      id: id
+      name: name
+      abbreviation: abbreviation
+      team_name: teamName
+      location: locationName
+      league: league.name
+      division: division.name
+      venue: venue.name
+    source_url_template: "https://statsapi.mlb.com/api/v1/teams/{id}"
+    exemplars:
+      - list MLB teams
+      - what division is a baseball team in
+      - MLB team abbreviation
+    example: {season: 2024}
+  schedule:
+    description: >-
+      The MLB schedule for one date: games with teams, venue, status and score.
+    path: /api/v1/schedule
+    defaults: {sportId: 1}
+    params:
+      date: {type: string, required: true, description: "YYYY-MM-DD"}
+      sport_id: {type: integer, default: 1}
+    alias: {sport_id: sportId}
+    record_path: dates
+    fields:
+      date: date
+      total_games: totalGames
+      total_items: totalItems
+      games: games
+    source_url_template: "https://www.mlb.com/schedule/{date}"
+    exemplars:
+      - MLB games on a date
+      - baseball scores for today
+      - what games are scheduled
+    example: {date: "2024-06-01"}
+  standings:
+    description: >-
+      MLB standings for a season, grouped by league and division. Includes each
+      team's record.
+    path: /api/v1/standings
+    defaults: {leagueId: "103,104"}
+    params:
+      season: {type: integer, required: true, description: "e.g. 2024"}
+      league_id: {type: string, default: "103,104"}
+    alias: {league_id: leagueId}
+    record_path: records
+    fields:
+      standings_type: standingsType
+      league: league.name
+      division: division.name
+      teams: teamRecords
+    source_url_template: "https://www.mlb.com/standings/{season}"
+    exemplars:
+      - MLB standings
+      - baseball division standings
+      - team win loss record
+    example: {season: 2024}

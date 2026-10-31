@@ -379,6 +379,9 @@ class Manifest(BaseModel):
     #: Per-provider response size cap; bulk downloads need a higher ceiling.
     max_body_bytes: int | None = None
     headers: dict[str, str] = Field(default_factory=dict)
+    #: Header name -> environment variable. Used where an API wants a contact
+    #: header alongside a key (USAJobs wants the registered email as User-Agent).
+    headers_env: dict[str, str] = Field(default_factory=dict)
     limits: dict[str, Any] = Field(default_factory=dict)
     capabilities: dict[str, Capability]
 

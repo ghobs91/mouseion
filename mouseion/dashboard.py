@@ -196,6 +196,9 @@ def _credentials(manifest: Any, store: CredentialStore) -> list[dict[str, Any]]:
         fields.append((auth.client_id_env, "client ID"))
         fields.append((auth.client_secret_env, "client secret"))
 
+    for header, env in manifest.headers_env.items():
+        fields.append((env, header))
+
     out: list[dict[str, Any]] = []
     for env, label in fields:
         if not env:
@@ -550,6 +553,7 @@ def serve(
                 manifest.auth.env,
                 manifest.auth.client_id_env,
                 manifest.auth.client_secret_env,
+                *manifest.headers_env.values(),
             )
             if name
         )

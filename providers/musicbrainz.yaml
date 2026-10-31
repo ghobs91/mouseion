@@ -1,0 +1,114 @@
+id: musicbrainz
+title: MusicBrainz
+category: entertainment
+domain: reference
+sub_category: music
+transport: http
+adapter: rest_json
+base: https://musicbrainz.org
+regions: []
+description: >-
+  MusicBrainz, the open music encyclopedia: search artists and releases, and
+  read an artist by MusicBrainz id. Keyless; the API asks for one request per
+  second and a descriptive User-Agent.
+docs_url: https://musicbrainz.org/doc/MusicBrainz_API
+keywords:
+  - music
+  - artist
+  - band
+  - album
+  - release
+  - discography
+  - song
+  - musicbrainz
+attribution: "MusicBrainz, MetaBrainz Foundation"
+source:
+  is_primary: true
+  originator: "MusicBrainz"
+  originator_domain: musicbrainz.org
+  provenance: registry
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://musicbrainz.org/doc/MusicBrainz_API
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 60, burst: 1, concurrency: 1}
+cache_ttl: 86400
+capabilities:
+  search_artists:
+    description: >-
+      Search MusicBrainz artists by name. Returns the MusicBrainz id, name,
+      type, country and a relevance score.
+    path: /ws/2/artist
+    defaults: {fmt: json}
+    params:
+      query: {type: string, required: true, description: "artist name"}
+      limit: {type: integer, default: 10}
+    record_path: artists
+    id_field: id
+    fields:
+      id: id
+      name: name
+      type: type
+      country: country
+      score: score
+      disambiguation: disambiguation
+      begin: life-span.begin
+    source_url_template: "https://musicbrainz.org/artist/{id}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - find a band on MusicBrainz
+      - search for a musician
+      - MusicBrainz artist id
+    example: {query: "radiohead", limit: 3}
+  search_releases:
+    description: >-
+      Search MusicBrainz releases (albums, singles, EPs) by title or artist.
+      Returns the release id, title, date, country and artist credit.
+    path: /ws/2/release
+    defaults: {fmt: json}
+    params:
+      query: {type: string, required: true, description: "release or artist"}
+      limit: {type: integer, default: 10}
+    record_path: releases
+    id_field: id
+    fields:
+      id: id
+      title: title
+      date: date
+      country: country
+      status: status
+      artist: artist-credit
+    pluck: {artist: name}
+    source_url_template: "https://musicbrainz.org/release/{id}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - find an album on MusicBrainz
+      - discography for a band
+      - release date of an album
+    example: {query: "OK Computer", limit: 3}
+  artist:
+    description: >-
+      Read one MusicBrainz artist by id: name, type, country, area, begin and
+      end dates.
+    path: /ws/2/artist/{mbid}
+    defaults: {fmt: json}
+    params:
+      mbid: {type: string, required: true, description: "MusicBrainz artist id"}
+    id_field: id
+    fields:
+      id: id
+      name: name
+      type: type
+      country: country
+      disambiguation: disambiguation
+      begin: life-span.begin
+      end: life-span.end
+      area: area.name
+    source_url_template: "https://musicbrainz.org/artist/{id}"
+    exemplars:
+      - MusicBrainz artist details
+      - when was a band formed
+    example: {mbid: "a74b1b7f-71a5-4011-9441-d0b5e4122711"}

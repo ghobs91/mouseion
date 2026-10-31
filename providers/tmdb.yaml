@@ -1,0 +1,97 @@
+id: tmdb
+title: TMDB
+category: entertainment
+domain: reference
+sub_category: film
+transport: http
+adapter: rest_json
+base: https://api.themoviedb.org
+regions: []
+description: >-
+  The Movie Database: search films and read a film record (title, release date,
+  overview, runtime, rating, genres, IMDb id). Free API key, no card.
+docs_url: https://developer.themoviedb.org/docs
+keywords:
+  - movie
+  - film
+  - cinema
+  - director
+  - cast
+  - release date
+  - tmdb
+  - imdb
+attribution: "TMDB"
+source:
+  is_primary: true
+  originator: "The Movie Database"
+  originator_domain: themoviedb.org
+  provenance: registry
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://developer.themoviedb.org/docs
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 60, burst: 10, concurrency: 2}
+cache_ttl: 86400
+auth:
+  type: api_key
+  env: TMDB_API_KEY
+  param: api_key
+  location: query
+  signup_url: https://www.themoviedb.org/settings/api
+capabilities:
+  search_movies:
+    description: >-
+      Search films by title. Returns TMDB id, title, release date, overview,
+      rating, vote count and original language.
+    path: /3/search/movie
+    defaults: {include_adult: "false", language: en-US}
+    params:
+      query: {type: string, required: true, description: "film title"}
+    pagination: {mode: page, param: page, default_limit: 20, max_limit: 20, start: 1, total_pages_field: total_pages}
+    record_path: results
+    id_field: id
+    fields:
+      id: id
+      title: title
+      release_date: release_date
+      overview: overview
+      rating: vote_average
+      votes: vote_count
+      language: original_language
+      popularity: popularity
+    source_url_template: "https://www.themoviedb.org/movie/{id}"
+    query_map: {text: query}
+    exemplars:
+      - find a film on TMDB
+      - movie release date and rating
+      - search for a movie title
+    example: {query: "blade runner"}
+  movie:
+    description: >-
+      Read one film by TMDB id: title, overview, release date, runtime, status,
+      rating, genres, homepage and IMDb id.
+    path: /3/movie/{movie_id}
+    params:
+      movie_id: {type: integer, required: true, description: "TMDB movie id"}
+    id_field: id
+    fields:
+      id: id
+      title: title
+      overview: overview
+      release_date: release_date
+      runtime: runtime
+      status: status
+      rating: vote_average
+      votes: vote_count
+      genres: genres
+      homepage: homepage
+      imdb_id: imdb_id
+    pluck: {genres: name}
+    source_url_template: "https://www.themoviedb.org/movie/{id}"
+    exemplars:
+      - TMDB film details
+      - how long is a movie
+    example: {movie_id: 78}

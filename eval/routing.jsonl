@@ -94,3 +94,9 @@
 {"query": "Nutri-Score of a packaged food product", "expect": "open_food_facts"}
 {"query": "look up a UK company by name", "expect": "companies_house"}
 {"query": "GeoNames timezone and population for a town", "expect": "geonames"}
+{"query": "MLB standings", "expect": "mlb_stats"}
+{"query": "Radiohead albums on MusicBrainz", "expect": "musicbrainz"}
+{"query": "FEMA flood zone for a coordinate", "expect": "fema_flood"}
+{"query": "airports in France", "expect": "ourairports"}
+{"query": "search TMDB for a movie", "expect": "tmdb"}
+{"query": "federal data scientist jobs", "expect": "usajobs"}

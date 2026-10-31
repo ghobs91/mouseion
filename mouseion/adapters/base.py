@@ -111,6 +111,10 @@ class Adapter(ABC):
         cfg = config or default_settings
         headers = {"User-Agent": cfg.user_agent, "Accept": "application/json"}
         headers.update(manifest.headers)
+        for header, env in manifest.headers_env.items():
+            value = resolve(env)
+            if value:
+                headers[header] = value
         return headers
 
     def apply_auth(

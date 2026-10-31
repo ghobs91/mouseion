@@ -40,21 +40,21 @@ Captured 2026-10-31 from the Alexandria directory page.
 
 ## Where mouseion stands
 
-84 providers across ten routing domains. The counts below are providers, not
+90 providers across ten routing domains. The counts below are providers, not
 capabilities; one provider often covers several capabilities.
 
 | Domain | Providers | What is already strong |
 |---|---|---|
 | `civic_local` | 17 | campaign finance and election results across 11 jurisdictions |
 | `academic_scientific` | 14 | arXiv, Crossref, OpenAlex, DataCite, PMC, PubMed, UniProt, GBIF |
-| `geo_earth_observation` | 13 | Nominatim, Overpass, USGS, NOAA, NWS, EONET, GeoNames |
+| `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS, EONET, GeoNames |
 | `governance_legislative` | 11 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener |
 | `financial_sovereign` | 11 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF |
 | `developer_infrastructure` | 9 | npm, PyPI, crates, Go, Maven, GitHub, NVD, Hugging Face |
 | `archives_web_state` | 5 | Wayback, Internet Archive, LoC, UK National Archives |
 | `commerce` | 2 | Shopify catalog, Open Food Facts |
-| `transport_infrastructure` | 1 | thin; the largest structural gap |
-| `reference` | 1 | Wikipedia (tertiary, aggregator exception) |
+| `transport_infrastructure` | 2 | OurAirports |
+| `reference` | 5 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs |
 
 ## Gap matrix
 
@@ -68,20 +68,20 @@ card.
 | Company (90) | SEC, GLEIF, ROR, Companies House | UK/EU registries, sanctions, US federal awards | **Companies House** ✅, OpenSanctions, SAM.gov, state business registries | 2 / 1 |
 | Retail (66) | Shopify, Open Food Facts | barcodes, recalls, non-food products | **Open Food Facts** ✅, Open Products Facts, openFDA recalls ✅, GS1 (paid) | 1 |
 | Finance (39) | 11 providers | IMF, OECD, BIS, exchange data | IMF SDMX, OECD SDMX, BIS SDMX, Nasdaq (commercial) | 1 |
-| Real estate (34) | Census, Nominatim, Overpass, city parcels | flood, housing, assessors | FEMA NFHL (ArcGIS), HUD, county assessor portals | 1 / 2 |
+| Real estate (34) | Census, Nominatim, Overpass, city parcels, **FEMA NFHL** | housing, assessors | **FEMA NFHL** ✅, HUD, county assessor portals | 1 / 2 |
 | Health (32) | openFDA, CMS, ClinicalTrials, NIH, PubMed | WHO, NHS, state health | WHO GHO (OData), NHS Digital, state health Socrata | 1 |
 | Life sciences (31) | UniProt, PubChem, PMC, GBIF | structures, genomes | RCSB PDB, Ensembl, bioRxiv, KEGG (academic) | 1 |
 | Places (23) | Nominatim, Overpass, USGS, **GeoNames** | hierarchy, timezone, population | **GeoNames** ✅, Who's On First, USGS GNIS | 2 / 1 |
 | Developer (21) | 9 providers | package registries, Q&A | **Hugging Face** ✅, Docker Hub, Stack Exchange | 1 |
-| Travel (21) | weather only | airports, routes, rail | OurAirports (public domain), OpenFlights, FAA NASR | 1 |
+| Travel (21) | OurAirports | routes, rail | **OurAirports** ✅, OpenFlights, FAA NASR | 1 |
 | News (16) | official registers only | global news index | GDELT (aggregator exception), Media Cloud, official press rooms | 1 / 2 |
 | Research (16) | 14 providers | citation graph, preprints | Semantic Scholar, CORE, bioRxiv/medRxiv | 2 / 1 |
-| Sports (14) | none | schedules, stats | MLB StatsAPI (official), football-data.org | 1 / 2 |
-| Jobs (13) | none | vacancies, occupations | USAJobs, O*NET, Arbeitnow | 2 / 1 |
+| Sports (14) | MLB StatsAPI | other leagues | **MLB StatsAPI** ✅, football-data.org | 1 / 2 |
+| Jobs (13) | USAJobs | occupations | **USAJobs** ✅, O*NET, Arbeitnow | 2 / 1 |
 | AI models (12) | **Hugging Face** | model catalogues | **Hugging Face** ✅, OpenRouter (commercial) | 1 |
 | People (12) | Wikidata, GLEIF, SEC insiders | sanctions, officers | OpenSanctions, Companies House officers | 2 |
 | Restaurant (10) | Overpass (OSM) | inspections, menus | city health-inspection Socrata datasets | 1 |
-| Entertainment (8) | OpenLibrary, LoC | music, film, podcasts | MusicBrainz, TMDB, Podcast Index | 1 / 2 |
+| Entertainment (8) | MusicBrainz, TMDB | podcasts | **MusicBrainz** ✅, **TMDB** ✅, Podcast Index | 1 / 2 |
 | Marketing (8) | none | — | **do not target**: commercial only | — |
 | Apps (6) | none | — | **do not target**: no official store API | — |
 | Social (6) | none | — | **do not target**: commercial platforms | — |
@@ -100,13 +100,14 @@ card.
 3. **AI models**: Hugging Face Hub. The originating registry for open models.
 4. **Retail**: Open Food Facts. Barcodes and nutrition, keyless.
 
-**P1 — one provider each, high demand, low effort:**
+**P1 — shipped:**
 
-5. **Jobs**: USAJobs (free key) plus O*NET (keyless).
-6. **Sports**: MLB StatsAPI (official, keyless).
-7. **Entertainment**: MusicBrainz (keyless) and TMDB (free key).
-8. **Travel**: OurAirports (public-domain CSV; the `csv` adapter already exists).
-9. **Real estate**: FEMA NFHL via ArcGIS REST (keyless).
+5. **Jobs**: USAJobs (free key plus the registered email header) ✅. O*NET
+   still needs a key or its bulk database; it is the remaining P1 item.
+6. **Sports**: MLB StatsAPI (official, keyless) ✅.
+7. **Entertainment**: MusicBrainz (keyless) and TMDB (free key) ✅.
+8. **Travel**: OurAirports (public-domain CSV) ✅.
+9. **Real estate**: FEMA NFHL via ArcGIS REST (keyless) ✅.
 
 **P2 — depth and long tail:**
 

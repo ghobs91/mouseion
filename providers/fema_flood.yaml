@@ -1,0 +1,72 @@
+id: fema_flood
+title: FEMA Flood Hazard Zones
+category: places
+domain: geo_earth_observation
+sub_category: hazards
+transport: http
+adapter: rest_json
+base: https://hazards.fema.gov
+regions: [US]
+description: >-
+  The National Flood Hazard Layer: the flood zone at a coordinate, with the
+  zone code, zone subtype, special-hazard flag, base flood elevation and FIRM
+  panel. Keyless ArcGIS REST query against FEMA's public service.
+docs_url: https://hazards.fema.gov/femaportal/wps/portal
+keywords:
+  - flood
+  - flood zone
+  - fema
+  - nfhl
+  - hazard
+  - base flood elevation
+  - property
+  - insurance
+  - risk
+attribution: "Federal Emergency Management Agency"
+source:
+  is_primary: true
+  originator: "Federal Emergency Management Agency"
+  originator_domain: fema.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://hazards.fema.gov/femaportal/wps/portal
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 30, burst: 8, concurrency: 2}
+cache_ttl: 604800
+capabilities:
+  flood_zone:
+    description: >-
+      The FEMA flood zone at a latitude and longitude. Returns the zone code
+      (e.g. AE, X), subtype, SFHA flag, base flood elevation, depth and FIRM
+      panel.
+    path: /arcgis/rest/services/public/NFHL/MapServer/28/query
+    params:
+      latitude: {type: number, required: true, description: "WGS84 latitude"}
+      longitude: {type: number, required: true, description: "WGS84 longitude"}
+    query_template:
+      geometry: "{longitude},{latitude}"
+      geometryType: esriGeometryPoint
+      inSR: 4326
+      spatialRel: esriSpatialRelIntersects
+      outFields: "FLD_ZONE,ZONE_SUBTY,SFHA_TF,STATIC_BFE,DEPTH,DFIRM_ID"
+      returnGeometry: "false"
+      f: json
+    record_path: features
+    id_template: "{latitude}:{longitude}:{flood_zone}"
+    fields:
+      flood_zone: attributes.FLD_ZONE
+      zone_subtype: attributes.ZONE_SUBTY
+      special_flood_hazard: attributes.SFHA_TF
+      base_flood_elevation: attributes.STATIC_BFE
+      depth: attributes.DEPTH
+      firm_panel: attributes.DFIRM_ID
+    source_url_template: "https://msc.fema.gov/portal/search?AddressQuery={latitude},{longitude}"
+    exemplars:
+      - is a property in a FEMA flood zone
+      - flood zone for a coordinate
+      - base flood elevation at an address
+    example: {latitude: 29.95, longitude: -90.07}

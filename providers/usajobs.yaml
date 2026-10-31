@@ -1,0 +1,77 @@
+id: usajobs
+title: USAJobs
+category: jobs
+domain: reference
+sub_category: jobs
+transport: http
+adapter: rest_json
+base: https://data.usajobs.gov
+regions: [US]
+description: >-
+  The official US federal job board: search vacancies by keyword and read the
+  position title, agency, location, pay, opening and closing dates. Free API key
+  plus the registered email address as the User-Agent.
+docs_url: https://developer.usajobs.gov/apirequest/
+keywords:
+  - job
+  - vacancy
+  - federal job
+  - hiring
+  - employment
+  - position
+  - usajobs
+  - salary
+attribution: "U.S. Office of Personnel Management"
+source:
+  is_primary: true
+  originator: "U.S. Office of Personnel Management"
+  originator_domain: usajobs.gov
+  provenance: official
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://developer.usajobs.gov/apirequest/
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 60, burst: 10, concurrency: 2}
+cache_ttl: 3600
+auth:
+  type: api_key
+  env: USAJOBS_API_KEY
+  param: Authorization-Key
+  location: header
+  signup_url: https://developer.usajobs.gov/apirequest/
+headers_env:
+  User-Agent: USAJOBS_EMAIL
+capabilities:
+  search:
+    description: >-
+      Search federal vacancies by keyword. Returns position id, title, agency,
+      department, location, pay, opening and closing dates and the posting URL.
+    path: /api/search
+    params:
+      query: {type: string, required: true, description: "job title or keyword"}
+      limit: {type: integer, default: 20}
+    alias: {query: Keyword}
+    pagination: {mode: page, param: Page, limit_param: ResultsPerPage, default_limit: 20, max_limit: 500, start: 1}
+    record_path: SearchResult.SearchResultItems
+    id_field: position_id
+    fields:
+      position_id: MatchedObjectDescriptor.PositionID
+      title: MatchedObjectDescriptor.PositionTitle
+      organization: MatchedObjectDescriptor.OrganizationName
+      department: MatchedObjectDescriptor.DepartmentName
+      location: MatchedObjectDescriptor.PositionLocationDisplay
+      url: MatchedObjectDescriptor.PositionURI
+      open_date: MatchedObjectDescriptor.PublicationStartDate
+      close_date: MatchedObjectDescriptor.ApplicationCloseDate
+      summary: MatchedObjectDescriptor.QualificationSummary
+      remuneration: MatchedObjectDescriptor.PositionRemuneration
+    source_url_template: "{url}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - federal job openings for a role
+      - USAJobs search
+      - government vacancy closing date
+    example: {query: "data scientist", limit: 3}
