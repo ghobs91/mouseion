@@ -8,6 +8,7 @@ import pytest
 from mouseion.civic import (
     Authority,
     Jurisdiction,
+    JurisdictionIndex,
     datasets,
     discover,
     load_jurisdictions,
@@ -30,7 +31,9 @@ def test_registry_covers_states_territories_and_cities():
 
     assert levels.count("state") == 51  # 50 states + DC
     assert levels.count("territory") == 5
+    assert levels.count("county") == 3
     assert levels.count("city") >= 40
+    assert len(jurisdictions) == 101
     assert len({j.id for j in jurisdictions}) == len(jurisdictions)
 
 
@@ -266,3 +269,41 @@ def test_datasets_ranks_official_catalogs_by_row_count():
         "https://data.ny.gov/resource/aaaa-1111.json"
     )
     assert report["by_domain"] == {"data.ny.gov": 1}
+
+
+# -- jurisdiction matching ----------------------------------------------
+
+
+def _index() -> JurisdictionIndex:
+    return JurisdictionIndex(load_jurisdictions(ROOT / "jurisdictions.yaml"))
+
+
+def test_index_prefers_the_longest_place_name():
+    index = _index()
+    assert index.detect("Kansas City election") == {"US-MO-KANSAS-CITY"}
+    assert index.detect("New York City Council race") == {"US-NY-NEW-YORK"}
+    assert index.detect("New York state senate") == {"US-NY"}
+    assert index.detect("washington dc mayor") == {"US-DC"}
+    assert index.detect("nyc campaign finance") == {"US-NY-NEW-YORK"}
+
+
+def test_state_codes_only_match_in_uppercase():
+    index = _index()
+    assert index.detect("voters in OR") == {"US-OR"}
+    assert index.detect("either this or that") == set()
+
+
+def test_index_finds_nothing_for_an_unknown_place():
+    assert _index().detect("who won the election") == set()
+
+
+def test_state_coverage_includes_children_but_not_parents():
+    index = _index()
+    assert index.covers(["US-CA"], {"US-CA-LOS-ANGELES"})
+    assert not index.covers(["US-CA-LOS-ANGELES"], {"US-CA"})
+
+
+def test_county_coverage_lists_its_cities_explicitly():
+    index = _index()
+    assert index.covers(["US-WA-KING", "US-WA-SEATTLE"], {"US-WA-SEATTLE"})
+    assert not index.covers(["US-WA-KING"], {"US-WA-SEATTLE"})

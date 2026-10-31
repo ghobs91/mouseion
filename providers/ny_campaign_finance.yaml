@@ -7,6 +7,7 @@ transport: http
 adapter: socrata
 base: https://data.ny.gov
 regions: [US]
+jurisdictions: [US-NY]
 description: >-
   Itemized receipts and disbursements filed by New York state and local campaign
   committees with the State Board of Elections, beginning 1999. One row per

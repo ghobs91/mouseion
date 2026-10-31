@@ -7,6 +7,7 @@ transport: http
 adapter: socrata
 base: https://hicscdata.hawaii.gov
 regions: [US]
+jurisdictions: [US-HI]
 description: >-
   Campaign spending reported to the Hawaii Campaign Spending Commission: one row
   per expenditure or receipt, with candidate, payee, amount, category, office,

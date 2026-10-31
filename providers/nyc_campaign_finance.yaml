@@ -7,6 +7,7 @@ transport: http
 adapter: socrata
 base: https://data.cityofnewyork.us
 regions: [US]
+jurisdictions: [US-NY-NEW-YORK]
 description: >-
   Contributions reported to the New York City Campaign Finance Board, including
   the matching-funds program. One row per contribution, with recipient,

@@ -7,6 +7,7 @@ transport: http
 adapter: socrata
 base: https://data.fultoncountyga.gov
 regions: [US]
+jurisdictions: [US-GA-FULTON, US-GA-ATLANTA]
 description: >-
   Election results for Fulton County, Georgia, by race, candidate and precinct,
   with election-day, absentee, advance and provisional vote counts, plus

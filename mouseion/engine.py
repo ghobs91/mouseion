@@ -135,6 +135,8 @@ class LookupResult:
     web_search_required: bool
     reason: str | None = None
     aggregator_available: bool = False
+    #: Jurisdictions named in the query that no provider covers.
+    jurisdictions: tuple[str, ...] = ()
 
     def to_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {
@@ -148,6 +150,8 @@ class LookupResult:
             out["reason"] = self.reason
         if self.aggregator_available:
             out["aggregator_available"] = True
+        if self.jurisdictions:
+            out["uncovered_jurisdictions"] = list(self.jurisdictions)
         return out
 
 
@@ -331,13 +335,20 @@ class Engine:
             allow_aggregators=allow,
         )
         if not candidates:
+            uncovered = self._uncovered_jurisdictions(canonical.text)
+            reason = (
+                "no_jurisdiction_coverage"
+                if uncovered
+                else ("no_primary_candidates" if aggregator_available else "no_candidates")
+            )
             return LookupResult(
                 canonical,
                 None,
                 [],
                 True,
-                reason="no_primary_candidates" if aggregator_available else "no_candidates",
+                reason=reason,
                 aggregator_available=aggregator_available,
+                jurisdictions=uncovered,
             )
 
         attempts: list[Attempt] = []
@@ -371,6 +382,21 @@ class Engine:
         )
 
     # -- candidate selection --------------------------------------------
+
+    def _uncovered_jurisdictions(self, text: str) -> tuple[str, ...]:
+        """Jurisdictions the query names that no provider claims to cover."""
+        index = getattr(self.router, "jurisdictions", None)
+        if index is None:
+            return ()
+        detected = index.detect(text)
+        if not detected:
+            return ()
+        covered = any(
+            index.covers(manifest.jurisdictions, detected)
+            for manifest in self.registry.manifests.values()
+            if manifest.jurisdictions
+        )
+        return () if covered else tuple(sorted(detected))
 
     def _index_clusters(self) -> dict[str, list[tuple[str, str]]]:
         clusters: dict[str, list[tuple[str, str]]] = {}
@@ -514,15 +540,19 @@ class Engine:
                 None,
             )
 
-        call_params = dict(params) if params is not None else self._params_for(cap, query)
+        call_params: dict[str, Any] | None
+        missing: list[str] = []
+        if params is not None:
+            call_params = dict(params)
+        else:
+            call_params, missing = self._params_for(cap, query)
         if call_params is None:
-            return (
-                result(
-                    "unmapped_query",
-                    error="no query_map or free-text param can carry this query",
-                ),
-                None,
+            detail = (
+                f"missing required param(s): {', '.join(missing)}"
+                if missing
+                else "no query_map or free-text param can carry this query"
             )
+            return (result("unmapped_query", error=detail), None)
 
         bucket = self._bucket(manifest)
         waited = await bucket.acquire()
@@ -580,7 +610,9 @@ class Engine:
         self._negative.pop((provider, candidate.capability), None)
         return result("ok", ms), envelope
 
-    def _params_for(self, cap: Capability, query: CanonicalQuery) -> dict[str, Any] | None:
+    def _params_for(
+        self, cap: Capability, query: CanonicalQuery
+    ) -> tuple[dict[str, Any] | None, list[str]]:
         params: dict[str, Any] = {}
         if cap.query_map:
             for canonical, source_param in cap.query_map.items():
@@ -606,7 +638,7 @@ class Engine:
             for name in cap.required_params()
             if params.get(name) in (None, "", [])
         ]
-        return None if missing else params
+        return (None, missing) if missing else (params, [])
 
     def _bucket(self, manifest: Manifest) -> TokenBucket:
         bucket = self._buckets.get(manifest.id)

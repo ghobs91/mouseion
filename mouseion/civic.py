@@ -25,12 +25,28 @@ from urllib.parse import urljoin, urlparse
 
 import httpx
 import yaml
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
-Level = Literal["state", "territory", "city"]
+Level = Literal["state", "territory", "county", "city"]
 Kind = Literal["election", "campaign_finance"]
 
 MACHINE_READABLE = {"json", "csv"}
+
+#: Offices that only exist below the federal level. A query naming one of these
+#: and an uncovered jurisdiction should abstain rather than reach a federal source.
+_LOCAL_OFFICE = re.compile(
+    r"\b("
+    r"mayor|mayoral|city council|town council|village council|"
+    r"alderman|alderwoman|school board|sheriff|district attorney|"
+    r"city clerk|county clerk|ballot measure|referendum|"
+    r"selectman|selectwoman|supervisor|comptroller"
+    r")\b",
+    re.IGNORECASE,
+)
+
+
+def mentions_local_office(text: str) -> bool:
+    return bool(_LOCAL_OFFICE.search(text))
 
 #: The registry lives beside `providers/`, not inside the package: operators edit
 #: it the same way they edit manifests.
@@ -67,6 +83,8 @@ class Jurisdiction(BaseModel):
     level: Level
     #: Two-letter state code. Required for cities, equals the id suffix for states.
     state: str | None = None
+    #: Extra names people actually type: "nyc", "washington dc", "st. paul".
+    aliases: list[str] = Field(default_factory=list)
     election: Authority | None = None
     campaign_finance: Authority | None = None
     notes: str = ""
@@ -136,6 +154,70 @@ def load_jurisdictions(path: Path | str = DEFAULT_PATH) -> list[Jurisdiction]:
         seen.add(jurisdiction.id)
         out.append(jurisdiction)
     return out
+
+
+# -- jurisdiction matching ----------------------------------------------
+
+
+class JurisdictionIndex:
+    """Resolve place names in a query to registry ids.
+
+    Two rules keep this from over-matching:
+
+    * Longest phrase wins, so "Kansas City" is not Kansas and "New York City" is
+      not just New York.
+    * Two-letter state codes only match in uppercase, because "in", "or", "me"
+      and "ok" are English words.
+    """
+
+    def __init__(self, jurisdictions: list[Jurisdiction]):
+        self.by_id = {jurisdiction.id: jurisdiction for jurisdiction in jurisdictions}
+        aliases: dict[str, set[str]] = {}
+        codes: dict[str, set[str]] = {}
+        for jurisdiction in jurisdictions:
+            for phrase in _phrases(jurisdiction):
+                aliases.setdefault(phrase, set()).add(jurisdiction.id)
+            if jurisdiction.state and jurisdiction.level in {"state", "territory"}:
+                codes.setdefault(jurisdiction.state.upper(), set()).add(jurisdiction.id)
+
+        self._aliases = aliases
+        self._codes = codes
+        ordered = sorted(aliases, key=len, reverse=True)
+        self._pattern = (
+            re.compile(r"\b(" + "|".join(re.escape(p) for p in ordered) + r")\b", re.IGNORECASE)
+            if ordered
+            else None
+        )
+
+    def detect(self, text: str) -> set[str]:
+        found: set[str] = set()
+        if self._pattern is not None:
+            for match in self._pattern.finditer(text):
+                found |= self._aliases.get(match.group(1).lower(), set())
+        for code in re.findall(r"\b[A-Z]{2}\b", text):
+            found |= self._codes.get(code, set())
+        return found
+
+    @staticmethod
+    def covers(provider_ids: list[str], query_ids: set[str]) -> bool:
+        """True when a provider's declared coverage includes a named jurisdiction.
+
+        A state id covers its children (`US-CA` covers `US-CA-LOS-ANGELES`). A
+        county that lists its cities explicitly matches them by id, because the
+        id hierarchy does not encode county membership.
+        """
+        if not provider_ids or not query_ids:
+            return True
+        for provider in provider_ids:
+            for query in query_ids:
+                if query == provider or query.startswith(provider + "-"):
+                    return True
+        return False
+
+
+def _phrases(jurisdiction: Jurisdiction) -> list[str]:
+    phrases = [jurisdiction.name.lower(), *(alias.lower() for alias in jurisdiction.aliases)]
+    return [phrase for phrase in phrases if phrase]
 
 
 # -- probing ------------------------------------------------------------

@@ -107,6 +107,7 @@ jurisdictions:
     name: District of Columbia
     level: state
     state: DC
+    aliases: ["washington dc", "washington, dc"]
     election:
       name: DC Board of Elections
       url: https://dcboe.org/
@@ -622,6 +623,35 @@ jurisdictions:
       name: Northern Mariana Islands Election Commission
       url: https://www.votecnmi.gov.mp/
 
+  # -- counties --------------------------------------------------------
+  # County election authorities are included because several publish the only
+  # machine-readable results for the cities inside them.
+
+  - id: US-WA-KING
+    name: King County
+    level: county
+    state: WA
+    election:
+      name: King County Elections
+      url: https://kingcounty.gov/en/dept/elections
+    notes: Campaign finance for county races is filed with the Washington PDC.
+
+  - id: US-GA-FULTON
+    name: Fulton County
+    level: county
+    state: GA
+    election:
+      name: Fulton County Registration and Elections
+      url: https://www.fultoncountyga.gov/inside-fulton-county/fulton-county-departments/registration-and-elections
+
+  - id: US-MN-RAMSEY
+    name: Ramsey County
+    level: county
+    state: MN
+    election:
+      name: Ramsey County Elections
+      url: https://www.ramseycounty.us/residents/elections-voting
+
   # -- major cities ----------------------------------------------------
   # City races are usually administered by the county, so `election` names the
   # county authority and the note says so. `campaign_finance` is the municipal
@@ -632,6 +662,7 @@ jurisdictions:
     name: New York City
     level: city
     state: NY
+    aliases: ["nyc"]
     election:
       name: New York City Board of Elections
       url: https://vote.nyc/
@@ -1090,3 +1121,28 @@ jurisdictions:
       name: Virginia Department of Elections
       url: https://www.elections.virginia.gov/
       note: State agency covers local filings.
+
+  - id: US-CA-OAKLAND
+    name: Oakland
+    level: city
+    state: CA
+    election:
+      name: Alameda County Registrar of Voters
+      url: https://www.acgov.org/rov/
+      note: County administers city elections.
+    campaign_finance:
+      name: Oakland Public Ethics Commission
+      url: https://www.oaklandca.gov/departments/public-ethics-commission
+
+  - id: US-MN-SAINT-PAUL
+    name: Saint Paul
+    level: city
+    state: MN
+    aliases: ["st. paul", "st paul"]
+    election:
+      name: Ramsey County Elections
+      url: https://www.ramseycounty.us/residents/elections-voting
+      note: County administers city elections.
+    campaign_finance:
+      name: Saint Paul City Clerk
+      url: https://www.stpaul.gov/departments/city-clerk

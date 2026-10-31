@@ -7,6 +7,7 @@ transport: http
 adapter: socrata
 base: https://data.oaklandca.gov
 regions: [US]
+jurisdictions: [US-CA-OAKLAND]
 description: >-
   Monetary contributions reported on California FPPC Form 460 Schedule A by
   Oakland city candidates and committees. One row per contribution, with filer,

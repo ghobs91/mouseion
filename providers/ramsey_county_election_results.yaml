@@ -7,6 +7,7 @@ transport: http
 adapter: socrata
 base: https://data.ramseycountymn.gov
 regions: [US]
+jurisdictions: [US-MN-RAMSEY, US-MN-SAINT-PAUL]
 description: >-
   General election results for Ramsey County, Minnesota, by precinct, office and
   candidate, with party, votes and share of the office total.

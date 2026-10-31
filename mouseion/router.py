@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from .cache import Cache, vector_key
+from .civic import JurisdictionIndex, mentions_local_office
 from .embedders import Embedder, EmbeddingError
 from .envelope import ProviderError
 from .regions import detect_regions, region_conflict
@@ -80,10 +81,12 @@ class Router:
         lex_floor: float = LEX_FLOOR,
         query_prefix: str = "",
         doc_prefix: str = "",
+        jurisdictions: JurisdictionIndex | None = None,
     ):
         self.registry = registry
         self.cache = cache
         self.embedder = embedder
+        self.jurisdictions = jurisdictions
         self.docs = registry.documents()
         self.degraded: str | None = None
         self._vectors: dict[str, list[float]] = {}
@@ -140,7 +143,31 @@ class Router:
                     self.registry.manifests[candidate.provider].regions, query_regions
                 )
             ]
+        if self.jurisdictions is not None:
+            query_jurisdictions = self.jurisdictions.detect(query)
+            if query_jurisdictions:
+                if self._uncovered(query_jurisdictions) and mentions_local_office(query):
+                    # We know we have no source for this place, and the office is
+                    # local, so a federal or other-state register would be a wrong
+                    # answer rather than a partial one.
+                    return []
+                ordered = [
+                    candidate
+                    for candidate in ordered
+                    if self.jurisdictions.covers(
+                        self.registry.manifests[candidate.provider].jurisdictions,
+                        query_jurisdictions,
+                    )
+                ]
         return ordered[:limit]
+
+    def _uncovered(self, query_jurisdictions: set[str]) -> bool:
+        assert self.jurisdictions is not None
+        return not any(
+            self.jurisdictions.covers(manifest.jurisdictions, query_jurisdictions)
+            for manifest in self.registry.manifests.values()
+            if manifest.jurisdictions
+        )
 
     async def search(
         self, query: str, category: str | None = None, limit: int = 8
@@ -168,6 +195,7 @@ class Router:
         return {
             "documents": len(self.docs),
             "providers": len(self.registry.manifests),
+            "jurisdictions": len(self.jurisdictions.by_id) if self.jurisdictions else 0,
             "embedder": self.embedder.identity if self.embedder else None,
             "vectors_cached": self.cache.vector_count(self.embedder.identity)
             if self.embedder

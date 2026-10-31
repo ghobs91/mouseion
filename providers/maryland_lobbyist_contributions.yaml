@@ -7,6 +7,7 @@ transport: http
 adapter: socrata
 base: https://opendata.maryland.gov
 regions: [US]
+jurisdictions: [US-MD]
 description: >-
   Campaign contributions reported by registered lobbyists in Maryland, from the
   state Lobbying Reporting System: lobbyist, reporting period, recipient and

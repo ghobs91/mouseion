@@ -84,3 +84,7 @@
 {"query": "who is the mayor of El Paso", "expect": "el_paso_elected_officials"}
 {"query": "El Paso city council members by district", "expect": "el_paso_elected_officials"}
 {"query": "recent Rhode Island campaign finance filings", "expect": "rhode_island_recent_filings"}
+{"query": "who funded a Chicago mayoral campaign", "expect": null}
+{"query": "who is running for city council in Chicago", "expect": null}
+{"query": "who funded a Boston mayoral campaign", "expect": null}
+{"query": "Seattle city council campaign contributions", "expect": "wa_campaign_finance"}

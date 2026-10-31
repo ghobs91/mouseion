@@ -6,6 +6,7 @@ bespoke upstreams (ASP.NET session dances, JS-rendered portals) need Python.
 
 from __future__ import annotations
 
+import re
 from datetime import date
 from pathlib import Path
 from typing import Any, Literal, get_args
@@ -358,6 +359,10 @@ class Manifest(BaseModel):
     #: Geographic coverage as ISO-ish codes ("US", "GB", "AU"). Empty means global
     #: and is never filtered. Used only to reject provably impossible matches.
     regions: list[str] = Field(default_factory=list)
+    #: Jurisdiction ids this provider actually covers, from `jurisdictions.yaml`
+    #: (e.g. `US-WA-KING`). A state id covers its children; a county listing its
+    #: cities is explicit. Empty means the provider is not jurisdiction-specific.
+    jurisdictions: list[str] = Field(default_factory=list)
     base: str
     adapter: str = "rest_json"
     auth: Auth = Field(default_factory=Auth)
@@ -376,6 +381,19 @@ class Manifest(BaseModel):
     @classmethod
     def _normalise_regions(cls, value: list[str]) -> list[str]:
         return [region.strip().upper() for region in value]
+
+    @field_validator("jurisdictions")
+    @classmethod
+    def _normalise_jurisdictions(cls, value: list[str]) -> list[str]:
+        out: list[str] = []
+        for item in value:
+            code = item.strip().upper()
+            if not re.fullmatch(r"[A-Z]{2}(-[A-Z0-9]+)*", code):
+                raise ValueError(
+                    f"invalid jurisdiction id '{item}'; expected US-XX or US-XX-CITY"
+                )
+            out.append(code)
+        return out
 
     def ttl(self, default: float) -> float:
         return self.cache_ttl if self.cache_ttl is not None else default

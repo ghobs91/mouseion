@@ -349,6 +349,11 @@ boundary.
 machine-readable source in the registry has a manifest and a live contract; an
 unregistered or `manual` jurisdiction returns `web_search_required`, not a guess.
 
+**Gate status:** the abstention half is met. Civic manifests declare jurisdiction
+ids, the router filters by them, and an uncovered local-office query returns
+`no_jurisdiction_coverage` with the ids. The coverage half is not: 17 civic
+providers cover 15 of 101 registry entries.
+
 ### Phase C — Commerce read-only catalog (3–5 days)
 
 - Add the `commerce` domain and `commercial_platform` provenance.

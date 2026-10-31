@@ -7,6 +7,7 @@ transport: http
 adapter: html_table
 base: https://www.elpasotexas.gov
 regions: [US]
+jurisdictions: [US-TX-EL-PASO]
 description: >-
   The current elected officials of the City of El Paso, published by the City
   Clerk as an HTML table: city council members by district with the end of their

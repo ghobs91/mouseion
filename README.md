@@ -401,6 +401,25 @@ table. Tables are selected by their header row rather than position, because
 portals put navigation and calendar tables ahead of the data. Rhode Island is
 labelled a rolling window: it is the site's recent-filings list, not the archive.
 
+### Jurisdiction-aware routing
+
+Every civic provider declares the jurisdiction ids it covers, from
+`jurisdictions.yaml`. The router resolves place names in the query and drops
+providers whose coverage does not include them:
+
+- `US-CA` covers `US-CA-LOS-ANGELES`; the reverse is not true.
+- A county that lists its cities matches them by id, because the id hierarchy
+  does not encode county membership.
+- Place names match longest-first, so "Kansas City" is not Kansas and "New York
+  City" is not just New York. Two-letter state codes only match in uppercase,
+  because "in", "or" and "me" are English words.
+
+When a query names a local office in a jurisdiction no provider covers, the
+router returns nothing and the engine answers `no_jurisdiction_coverage` with the
+uncovered ids — rather than letting a federal or other-state register answer a
+municipal question. A query about a Chicago mayoral race does not reach the FEC,
+and does not reach New York's disclosure data.
+
 A jurisdiction becomes a provider only after its surface passes the probe. Until then
 it is a registry row, and an unregistered or non-machine-readable jurisdiction should
 return `web_search_required` rather than an invented record. The `csv` adapter exists
@@ -695,7 +714,7 @@ never as an upstream 403.
 
 Five adapters (`rest_json`, `socrata`, `atom`, `sdmx_json`, `cdx`), SQLite cache with
 snapshot-safe cursors, rule + embedding + lexical router with a 48-question held-out
-eval, MCP server, CLI, GBNF export, 370 offline tests and 103 live contract tests.
+eval, MCP server, CLI, GBNF export, 378 offline tests and 103 live contract tests.
 
 Eleven upstream behaviours the adapter contract had to grow for, all now generic:
 
@@ -731,7 +750,7 @@ Eleven upstream behaviours the adapter contract had to grow for, all now generic
 Two layers, and they test different things:
 
 ```bash
-pytest                    # 370 offline: fixture replay
+pytest                    # 378 offline: fixture replay
 pytest -m live            # 84 live: every upstream, with the manifest example
 mouseion record           # re-record fixtures after an intentional change
 ```

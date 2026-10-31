@@ -7,6 +7,7 @@ transport: http
 adapter: socrata
 base: https://data.lacity.org
 regions: [US]
+jurisdictions: [US-CA-LOS-ANGELES]
 description: >-
   Campaign contributions and miscellaneous increases to cash reported to the
   Los Angeles City Ethics Commission. One row per contribution, with candidate,

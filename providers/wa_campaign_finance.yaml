@@ -7,6 +7,7 @@ transport: http
 adapter: socrata
 base: https://data.wa.gov
 regions: [US]
+jurisdictions: [US-WA]
 description: >-
   Contributions to Washington state and local candidates and political
   committees, reported to the Public Disclosure Commission. One row per

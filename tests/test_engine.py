@@ -344,8 +344,9 @@ def test_query_map_translates_canonical_fields():
         {"alpha": envelope("alpha")},
     )
     query = CanonicalQuery(text="anything", limit=7)
-    params = engine._params_for(alpha.capabilities["search"], query)
+    params, missing = engine._params_for(alpha.capabilities["search"], query)
     assert params == {"q": "anything", "limit": 7}
+    assert missing == []
 
 
 def test_identifier_is_extracted_for_an_exact_capability():
@@ -482,3 +483,27 @@ def test_single_flight_collapses_concurrent_identical_calls():
     results = run(scenario())
     assert len(client.calls) == 1
     assert all(result.web_search_required is False for result in results)
+
+
+def test_uncovered_jurisdiction_reports_the_gap():
+    from mouseion.civic import Jurisdiction, JurisdictionIndex
+
+    alpha = manifest("alpha")
+    engine, client = make_engine([alpha], [], {"alpha": envelope("alpha")})
+    engine.router.jurisdictions = JurisdictionIndex(
+        [
+            Jurisdiction(
+                id="US-IL-CHICAGO",
+                name="Chicago",
+                level="city",
+                state="IL",
+            )
+        ]
+    )
+
+    result = run(engine.lookup("who is running for city council in Chicago"))
+
+    assert result.web_search_required is True
+    assert result.reason == "no_jurisdiction_coverage"
+    assert result.jurisdictions == ("US-IL-CHICAGO",)
+    assert client.calls == []

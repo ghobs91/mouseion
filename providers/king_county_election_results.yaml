@@ -7,6 +7,7 @@ transport: http
 adapter: socrata
 base: https://data.kingcounty.gov
 regions: [US]
+jurisdictions: [US-WA-KING, US-WA-SEATTLE]
 description: >-
   Precinct-level election results for King County, Washington, from 2004 to 2026.
   King County publishes one dataset per election, so this provider maps a stable

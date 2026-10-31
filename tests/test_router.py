@@ -1,14 +1,18 @@
 from __future__ import annotations
 
 import asyncio
+from pathlib import Path
 
 import pytest
 
 from mouseion.cache import Cache
+from mouseion.civic import JurisdictionIndex, load_jurisdictions
 from mouseion.embedders import EmbeddingError
 from mouseion.evaluate import evaluate, load_cases
 from mouseion.registry import Registry
 from mouseion.router import Router
+
+ROOT = Path(__file__).resolve().parent.parent
 
 TOPIC = {"recall": 0, "medicine": 0, "trial": 1, "rule": 2, "futures": 3}
 
@@ -124,9 +128,10 @@ def test_search_orders_the_matched_capability_first(registry, cache):
 
 
 def test_eval_baseline_holds(registry, cache):
-    report = run(evaluate(Router(registry, cache), load_cases()))
-    assert report["total"] == 68
-    assert report["top1"] >= 58, report["misses"]
+    index = JurisdictionIndex(load_jurisdictions(ROOT / "jurisdictions.yaml"))
+    report = run(evaluate(Router(registry, cache, jurisdictions=index), load_cases()))
+    assert report["total"] == 72
+    assert report["top1"] >= 64, report["misses"]
     assert report["top3"] >= report["top1"]
 
 
@@ -165,3 +170,19 @@ def test_calibrated_defaults_are_the_measured_ones():
     from mouseion.router import ALPHA, COS_FLOOR, LEX_FLOOR
 
     assert (ALPHA, COS_FLOOR, LEX_FLOOR) == (0.8, 0.55, 0.25)
+
+
+def test_uncovered_local_jurisdiction_abstains(registry, cache):
+    index = JurisdictionIndex(load_jurisdictions(ROOT / "jurisdictions.yaml"))
+    router = Router(registry, cache, jurisdictions=index)
+
+    assert run(router.route("who is running for city council in Chicago")) == []
+    assert run(router.route("who funded a Boston mayoral campaign")) == []
+
+
+def test_covered_jurisdiction_still_routes(registry, cache):
+    index = JurisdictionIndex(load_jurisdictions(ROOT / "jurisdictions.yaml"))
+    router = Router(registry, cache, jurisdictions=index)
+
+    candidates = run(router.route("Seattle city council campaign contributions"))
+    assert candidates and candidates[0].provider == "wa_campaign_finance"

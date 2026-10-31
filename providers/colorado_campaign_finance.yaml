@@ -7,6 +7,7 @@ transport: http
 adapter: csv
 base: https://tracer.sos.colorado.gov
 regions: [US]
+jurisdictions: [US-CO]
 description: >-
   Colorado campaign-finance bulk data from the Secretary of State's TRACER
   system: annual ZIP archives of itemized contributions and expenditures. One row

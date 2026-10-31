@@ -248,6 +248,11 @@ async def _run(args: argparse.Namespace) -> int:
                     "query": args.query,
                     "router": app.router.status(),
                     "query_regions": sorted(detect_regions(args.query)),
+                    "query_jurisdictions": (
+                        sorted(app.router.jurisdictions.detect(args.query))
+                        if app.router.jurisdictions
+                        else []
+                    ),
                     "candidates": [candidate.as_dict() for candidate in candidates],
                 }
             )
