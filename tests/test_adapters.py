@@ -255,6 +255,14 @@ def test_map_exclude_turns_keyed_maps_into_records():
     assert [record["uid"] for record in records] == ["1", "2"]
 
 
+def test_root_keyed_map_can_be_read_as_records():
+    from mouseion.adapters.base import extract_records
+
+    body = {"a": {"id": "a"}, "b": {"id": "b"}}
+    records = extract_records(body, "$")
+    assert [record["id"] for record in records] == ["a", "b"]
+
+
 # -- unstable upstream windows -------------------------------------------
 
 

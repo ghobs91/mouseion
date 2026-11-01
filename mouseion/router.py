@@ -114,7 +114,11 @@ class Router:
         # contributed nothing: report lexical similarity directly.
         blended = bool(cosines)
 
-        best: dict[str, Candidate] = {}
+        # A provider often has several capabilities that share its name. When their
+        # scores tie, the capability covering more of the query tokens is the better
+        # answer: "Bundesliga table" must reach standings, not matches.
+        query_tokens = set(_tokens(query))
+        best: dict[str, tuple[Candidate, int]] = {}
         for doc in docs:
             key = (doc.provider, doc.capability)
             lex = lexical.get(key, 0.0)
@@ -129,11 +133,15 @@ class Router:
                 score = self.alpha * cos + (1.0 - self.alpha) * lex if blended else lex
                 candidate = Candidate(doc.provider, doc.capability, score, lex, cos, False)
 
+            coverage = len(query_tokens & doc.tokens)
             current = best.get(doc.provider)
-            if current is None or candidate.score > current.score:
-                best[doc.provider] = candidate
+            if current is None or (candidate.score, coverage) > (current[0].score, current[1]):
+                best[doc.provider] = (candidate, coverage)
 
-        ordered = sorted(best.values(), key=lambda c: (-c.score, c.provider))
+        ordered = sorted(
+            (candidate for candidate, _ in best.values()),
+            key=lambda c: (-c.score, c.provider),
+        )
         query_regions = detect_regions(query)
         if query_regions:
             ordered = [

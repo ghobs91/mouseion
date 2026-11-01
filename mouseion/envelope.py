@@ -20,8 +20,11 @@ def dig(obj: Any, path: str | None, default: Any = None) -> Any:
     """Resolve a dotted path against nested dicts and lists.
 
     ``dig({"a": {"b": [{"c": 1}]}}, "a.b.0.c") -> 1``
+
+    ``$`` addresses the root object, for upstreams whose body is already the
+    keyed record map (Firebase Realtime Database, the DFL match feed).
     """
-    if not path:
+    if not path or path == "$":
         return obj
     cur = obj
     for part in path.split("."):
