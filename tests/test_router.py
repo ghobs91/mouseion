@@ -134,12 +134,19 @@ def test_tied_provider_capability_prefers_more_query_tokens(registry, cache):
     assert candidates[0].capability == "standings"
 
 
+def test_forecast_prefers_the_forecast_capability(registry, cache):
+    router = Router(registry, cache)
+    candidates = run(router.route("weather forecast for Seattle tomorrow"))
+    assert candidates[0].provider == "nws"
+    assert candidates[0].capability == "forecast"
+
+
 def test_eval_baseline_holds(registry, cache):
     index = JurisdictionIndex(load_jurisdictions(ROOT / "jurisdictions.yaml"))
     report = run(evaluate(Router(registry, cache, jurisdictions=index), load_cases()))
-    assert report["total"] == 118
-    assert report["top1"] >= 105, report["misses"]
-    assert report["top3"] >= 113, report["misses"]
+    assert report["total"] == 122
+    assert report["top1"] >= 109, report["misses"]
+    assert report["top3"] >= 117, report["misses"]
     assert report["top3"] >= report["top1"]
 
 

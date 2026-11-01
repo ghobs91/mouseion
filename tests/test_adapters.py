@@ -119,6 +119,54 @@ def test_rss_adapter_rejects_an_atom_document(registry):
         adapter.parse(manifest, cap, body, prepare(manifest, cap, {"limit": 5}))
 
 
+NWS_FORECAST_BODY = {
+    "data": {
+        "temperature": ["53", "40"],
+        "pop": [None, "20"],
+        "weather": ["Sunny", "Patchy Fog"],
+        "text": ["Clear, with a high near 53.", "Patchy fog after midnight."],
+        "iconLink": ["https://example/sun.png", "https://example/fog.png"],
+        "hazard": [],
+        "hazardUrl": [],
+    },
+    "time": {
+        "startPeriodName": ["This Afternoon", "Tonight"],
+        "startValidTime": ["2026-11-01T12:00:00-08:00", "2026-11-01T18:00:00-08:00"],
+        "tempLabel": ["High", "Low"],
+    },
+    "location": {"areaDescription": "Downtown Seattle WA"},
+}
+
+
+def test_nws_forecast_zips_the_two_columnar_blocks(registry):
+    manifest = registry.get("nws")
+    cap = manifest.capabilities["forecast"]
+    adapter = get_adapter(cap.adapter)
+    req = prepare(manifest, cap, {"lat": 47.6062, "lon": -122.3321})
+    result = adapter.parse(manifest, cap, NWS_FORECAST_BODY, req)
+
+    assert len(result.records) == 2
+    first, second = result.records
+    assert first.source_record_id == "2026-11-01T12:00:00-08:00:This Afternoon"
+    assert first.source_url == "https://forecast.weather.gov/MapClick.php?lat=47.6062&lon=-122.3321"
+    assert first.data["temperature"] == "53"
+    assert first.data["temp_label"] == "High"
+    assert first.data["area"] == "Downtown Seattle WA"
+    assert second.data["precipitation_probability"] == "20"
+    assert second.data.get("hazard") is None
+
+
+def test_nws_forecast_pages_locally(registry):
+    manifest = registry.get("nws")
+    cap = manifest.capabilities["forecast"]
+    adapter = get_adapter(cap.adapter)
+    req = prepare(manifest, cap, {"lat": 47.6062, "lon": -122.3321, "limit": 1})
+    result = adapter.parse(manifest, cap, NWS_FORECAST_BODY, req)
+
+    assert len(result.records) == 1
+    assert result.next_cursor == "1"
+
+
 def test_projection_field_fallbacks(registry):
     manifest = registry.get("wikidata")
     cap = manifest.capabilities["entity"]

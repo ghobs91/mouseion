@@ -1,6 +1,6 @@
 # Source inventory
 
-The full registry: **110 providers and 158 capabilities across ten domains**.
+The full registry: **110 providers and 159 capabilities across ten domains**.
 `none` means keyless; every other value names the credential the manifest
 declares. The authoritative live view is `mouseion providers` or the dashboard's
 Sources tab. This page is the stable inventory for reading and review.
@@ -81,7 +81,7 @@ directory of every API on the internet.
 | NOAA Tides and Currents | none | `water_level` |
 | Nominatim | none | `search`, `reverse` |
 | npm | none | `search`, `package` |
-| NWS alerting | none | `active_alerts` |
+| NWS alerting | none | `active_alerts`, `forecast` |
 | NYC Open Data | none | `parcels` |
 | OpenAlex | none | `search_works` |
 | openFDA | none | `drug_recalls`, `drug_labels`, `device_recalls` |

@@ -95,7 +95,7 @@ A manifest declares one of ten domains and a finer `sub_category`:
 |---|---:|---|
 | `civic_local` | 17 | campaign finance, election results, elected officials |
 | `academic_scientific` | 14 | arXiv, Crossref, OpenAlex, PubMed, PMC, UniProt, GBIF |
-| `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS, GeoNames, FEMA |
+| `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS alerts and forecasts, GeoNames, FEMA |
 | `reference` | 13 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, UEFA, FIFA, five soccer leagues |
 | `financial_sovereign` | 17 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF, Companies House; central-bank and regulator press |
 | `governance_legislative` | 12 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener, FDA press |
@@ -200,7 +200,7 @@ its own catalogue, not a public-record originator.
 
 ## Coverage
 
-**110 providers, 158 capabilities, ten domains.** The full inventory is in
+**110 providers, 159 capabilities, ten domains.** The full inventory is in
 [`docs/PROVIDERS.md`](docs/PROVIDERS.md). The demand-shaped gap analysis, using
 Firecrawl Alexandria's categories as a reference, is in
 [`docs/PROVIDER-TARGETS.md`](docs/PROVIDER-TARGETS.md).
@@ -215,6 +215,9 @@ Highlights:
   England, FDA, MBTA, SFMTA and Caltrain publish their own press feeds; the RSS
   adapter reads them directly, filters by keyword locally, and cites the item
   link. No aggregator in the path.
+- **Weather** — NWS alerts and a seven-day forecast for any US coordinate, with
+  the period label, high/low, precipitation probability and the forecaster's own
+  narrative.
 - **Soccer** — the Premier League, UEFA, FIFA, LALIGA, Bundesliga, Serie A and
   Ligue 1 read from their own site backends, with football-data.org kept as an
   explicit fallback.

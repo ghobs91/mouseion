@@ -47,7 +47,7 @@ capabilities; one provider often covers several capabilities.
 |---|---|---|
 | `civic_local` | 17 | campaign finance and election results across 11 jurisdictions |
 | `academic_scientific` | 14 | arXiv, Crossref, OpenAlex, DataCite, PMC, PubMed, UniProt, GBIF |
-| `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS, EONET, GeoNames |
+| `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS alerts and forecasts, EONET, GeoNames |
 | `governance_legislative` | 12 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener, FDA press |
 | `financial_sovereign` | 17 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF; central-bank and regulator press |
 | `developer_infrastructure` | 9 | npm, PyPI, crates, Go, Maven, GitHub, NVD, Hugging Face |

@@ -1,0 +1,120 @@
+# Coverage register
+
+The reference every "what should we build next" decision starts from. The goal is a
+**general primary-source router**: for any question people actually ask, return a
+record from the authority that originates it, with a citation.
+
+This page exists so that "next" is chosen against the whole map, not the most
+recently discussed source. Update the status columns when a provider lands.
+
+## How to read this
+
+- **Domain** is the internal routing unit (one of ten in `mouseion/manifest.py`).
+- **Topic** is what a user actually asks about, drawn from Alexandria's demand
+  catalogue, the Gemini search-intent taxonomy, and the repo's own
+  `eval/coverage-gaps.jsonl` signals.
+- **Status**: `covered` (a primary provider answers it), `partial` (a provider
+  touches it but cannot answer the common phrasing), `gap` (no primary provider),
+  or `excluded` (cannot be served without breaking the source policy).
+
+## Current state
+
+**110 providers / 159 capabilities.** Domain distribution is deliberately uneven:
+depth where the sources are good, not an even split.
+
+| Domain | Providers | Strong at | Weak at |
+|---|---:|---|---|
+| `civic_local` | 17 | campaign finance, election results | candidates, ballots, local notices |
+| `financial_sovereign` | 17 | central banks, regulators, filings, statistics | sanctions, market quotes |
+| `academic_scientific` | 14 | literature, biology, chemistry, clinical trials | global health, structures, genomes |
+| `geo_earth_observation` | 14 | geocoding, hazards, hydrology, alerts | **forecast**, real-time conditions |
+| `reference` | 13 | sports, music, film, jobs, encyclopedia | podcasts, games, people |
+| `governance_legislative` | 12 | legislation, courts, agencies, health regulation | state government |
+| `developer_infrastructure` | 9 | package registries, vulnerabilities, code | Q&A, containers |
+| `transport_infrastructure` | 7 | airports, flight status, transit news | real-time transit, routing |
+| `archives_web_state` | 5 | web and national archives | — |
+| `commerce` | 2 | Shopify catalogue, food products | barcodes, non-food products |
+
+## Topic status
+
+| Topic (user phrasing) | Status | Authority in place / missing |
+|---|---|---|
+| Weather warnings and alerts | covered | NWS |
+| Weather forecast | covered | NWS `forecast` (shipped) |
+| Earthquakes, tides, storms, floods | covered | USGS, NOAA, NHC, FEMA |
+| Places, addresses, geography | covered | Nominatim, GeoNames, Census, Overpass |
+| Academic papers and citations | covered | arXiv, Crossref, OpenAlex, PubMed, PMC |
+| Clinical trials, drugs, devices | covered | ClinicalTrials.gov, openFDA, CMS |
+| Global health statistics | gap | WHO GHO |
+| Protein structures, genomes | gap | RCSB PDB, Ensembl |
+| Federal law, rules, court opinions | covered | Congress, GovInfo, Federal Register, CourtListener |
+| State government announcements | gap | 125 verified state feeds; no manifests |
+| Local election results and money | covered | 17 civic providers, 101 jurisdictions |
+| Candidates and ballots | gap | 5 explicit demand signals in `eval/coverage-gaps.jsonl` |
+| Restaurant inspections | gap | city health Socrata datasets |
+| Company registration and officers | partial | SEC, GLEIF, ROR, Companies House; no officers |
+| Sanctions and people screening | gap | OFAC SDN, EU and UK lists |
+| Product barcodes and non-food goods | partial | Open Food Facts; Open Products Facts missing |
+| Air travel status | covered | FAA, Schiphol, OurAirports |
+| Transit service announcements | partial | MBTA, SFMTA, Caltrain news |
+| Real-time transit | gap | GTFS-RT |
+| Jobs and occupations | partial | USAJobs; O*NET, Arbeitnow missing |
+| Packages, vulnerabilities, source code | covered | npm, PyPI, crates, Go, Maven, GitHub, NVD |
+| Developer Q&A | gap | Stack Exchange |
+| Macroeconomic statistics | covered | FRED, BLS, ECB, World Bank, Treasury |
+| IMF / OECD / BIS series | gap | SDMX endpoints, adapter already exists |
+| Sports results | covered | MLB, UEFA, FIFA, five leagues |
+| Music, film, TV | partial | MusicBrainz, TMDB |
+| Podcasts | gap | Podcast Index |
+| Video games | gap | IGDB |
+| Breaking news headlines | partial | 10 agency press feeds; no cross-source index |
+| Consumer reviews, coupons, brand pages, social profiles | excluded | commercial or navigational, not primary records |
+
+## Scoring
+
+Every "next" decision scores the candidate 1-5 on five axes, then records the
+result here:
+
+| Axis | What a 5 means |
+|---|---|
+| **Demand** | a question people ask constantly (weather, local services) |
+| **Gap** | nothing in the registry answers the common phrasing |
+| **Policy fit** | the originator publishes it keyless and free |
+| **Leverage** | an existing adapter or workflow carries most of the work |
+| **Effort** | 5 = days; 1 = one manifest and a fixture |
+
+`impact = 0.35·demand + 0.25·gap + 0.20·policy + 0.20·leverage`, reported with
+effort alongside. A lower-impact item can still win on cost, but the trade is
+stated, not hidden.
+
+## Ranked backlog
+
+| Rank | Step | Demand | Gap | Policy | Leverage | Impact | Effort |
+|---:|---|---:|---:|---:|---:|---:|---|
+| ~~1~~ | ~~NWS forecast capability~~ — shipped | 5 | 4 | 5 | 4 | **4.55** | medium |
+| 2 | State government announcement tranche | 4 | 4 | 5 | 5 | 4.45 | low |
+| 3 | Restaurant inspection capabilities | 4 | 5 | 5 | 4 | 4.45 | medium |
+| 4 | WHO Global Health Observatory | 4 | 5 | 5 | 4 | 4.45 | low |
+| 5 | GTFS-RT for major agencies | 4 | 5 | 5 | 2 | 4.10 | high |
+| 6 | OFAC sanctions screening | 4 | 4 | 5 | 3 | 3.95 | high |
+| 7 | O*NET occupations | 3 | 4 | 5 | 4 | 3.95 | low |
+| 8 | IMF / OECD / BIS SDMX | 3 | 3 | 5 | 5 | 3.85 | low |
+| 9 | Podcast Index and IGDB | 3 | 5 | 4 | 3 | 3.80 | low |
+| 10 | Stack Exchange | 4 | 4 | 3 | 4 | 3.75 | low |
+
+**Shipped: #1, the NWS forecast capability.** It was the highest-demand question
+the registry could not answer at all, and it needed one adapter plus one
+capability rather than a new tranche.
+
+**Next by the same rule: #2, the state government announcement tranche.** After
+weather, it has the highest impact with the lowest effort, because 125 verified
+state feeds and the RSS adapter already exist.
+
+## Maintenance
+
+- When a provider lands, move its row from `gap`/`partial` to `covered` and add it
+  to `docs/PROVIDERS.md`.
+- When a candidate is started, record the score here first; when it ships, record
+  what the score got wrong.
+- Re-score after every batch: a covered topic lowers the gap score of everything
+  adjacent to it.

@@ -1,14 +1,15 @@
 id: nws
-title: National Weather Service alerts
+title: National Weather Service
 category: places
 domain: geo_earth_observation
 sub_category: hydrometeorology
 regions: [US]
 description: >-
-  Active US weather alerts from api.weather.gov: watches, warnings and advisories with
-  severity, affected areas and expiry. Keyless, but NWS requires a User-Agent that
-  identifies the caller. The endpoint has no page size, so results are fetched once and
-  sliced locally.
+  NOAA's National Weather Service: active watches, warnings and advisories from
+  api.weather.gov, and a seven-day day/night forecast for a US latitude and
+  longitude. Alerts include severity, affected areas and expiry; the forecast
+  returns 13 periods with conditions, temperature, precipitation probability and
+  the narrative. Keyless.
 docs_url: https://www.weather.gov/documentation/services-web-api
 keywords:
   - weather
@@ -21,6 +22,10 @@ keywords:
   - storm
   - heat advisory
   - forecast
+  - temperature
+  - rain
+  - snow
+  - precipitation
 base: https://api.weather.gov
 adapter: rest_json
 auth:
@@ -94,3 +99,61 @@ capabilities:
     example:
       area: CA
       limit: 5
+  forecast:
+    description: >-
+      Seven-day day/night forecast for a US latitude and longitude, as the
+      National Weather Service publishes it. Returns 13 periods with the period
+      label, valid time, high/low, temperature, precipitation probability,
+      conditions, hazard and detailed text. Fahrenheit by default; pass unit=1
+      for Celsius.
+    adapter: nws_forecast
+    base: https://forecast.weather.gov
+    path: /MapClick.php
+    params:
+      lat:
+        type: number
+        required: true
+        description: Latitude, e.g. 47.6062.
+      lon:
+        type: number
+        required: true
+        description: Longitude, e.g. -122.3321.
+      unit:
+        type: string
+        enum: ["0", "1"]
+        default: "0"
+        description: "0 for Fahrenheit (default), 1 for Celsius."
+      limit:
+        type: integer
+        description: Periods to return (1-13, default 13).
+        default: 13
+    defaults:
+      FcstType: json
+    pagination:
+      mode: offset
+      default_limit: 13
+      max_limit: 13
+    local_window: true
+    id_template: "{start}:{period}"
+    source_url_template: "https://forecast.weather.gov/MapClick.php?lat={lat}&lon={lon}"
+    fields:
+      period: period
+      start: start
+      temp_label: temp_label
+      temperature: temperature
+      precipitation_probability: precipitation_probability
+      weather: weather
+      detail: detail
+      icon: icon
+      hazard: hazard
+      hazard_url: hazard_url
+      area: area
+    exemplars:
+      - what is the weather forecast for Seattle
+      - will it rain tomorrow in New York
+      - seven day forecast for a latitude and longitude
+      - high and low temperatures this week
+      - do I need an umbrella tomorrow
+    example:
+      lat: 47.6062
+      lon: -122.3321

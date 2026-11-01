@@ -6,6 +6,7 @@ from .cdx import CdxAdapter
 from .csv_adapter import CsvAdapter
 from .faa_nas import FaaNasAdapter
 from .html_table import HtmlTableAdapter
+from .nws_forecast import NwsForecastAdapter
 from .rest_json import RestJsonAdapter
 from .rss import RssAdapter
 from .sdmx_json import SdmxJsonAdapter
@@ -22,6 +23,7 @@ ADAPTERS: dict[str, Adapter] = {
         CdxAdapter(),
         CsvAdapter(),
         HtmlTableAdapter(),
+        NwsForecastAdapter(),
         FaaNasAdapter(),
     )
 }

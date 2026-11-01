@@ -144,3 +144,8 @@
 
 {"query": "caltrain schedule change on the peninsula", "expect": "caltrain_news"}
 {"query": "caltrain electrification progress", "expect": "caltrain_news"}
+
+{"query": "what is the weather forecast for Seattle tomorrow", "expect": "nws"}
+{"query": "will it rain in Chicago this weekend", "expect": "nws"}
+{"query": "do I need an umbrella in Boston tomorrow", "expect": "nws"}
+{"query": "high temperature in Phoenix today", "expect": "nws"}
