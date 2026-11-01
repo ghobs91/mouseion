@@ -40,7 +40,7 @@ Captured 2026-10-31 from the Alexandria directory page.
 
 ## Where mouseion stands
 
-96 providers across ten routing domains. The counts below are providers, not
+100 providers across ten routing domains. The counts below are providers, not
 capabilities; one provider often covers several capabilities.
 
 | Domain | Providers | What is already strong |
@@ -54,7 +54,7 @@ capabilities; one provider often covers several capabilities.
 | `archives_web_state` | 5 | Wayback, Internet Archive, LoC, UK National Archives |
 | `commerce` | 2 | Shopify catalog, Open Food Facts |
 | `transport_infrastructure` | 4 | OurAirports, FAA status, Schiphol flights |
-| `reference` | 7 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, UEFA, football-data |
+| `reference` | 13 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, UEFA, FIFA, Premier League, LALIGA, Bundesliga, Serie A, Ligue 1, football-data |
 
 ## Gap matrix
 
@@ -76,7 +76,7 @@ card.
 | Travel (21) | OurAirports, FAA, Schiphol | routes, rail | **OurAirports** ✅, **FAA NAS** ✅, **Schiphol** ✅, OpenFlights | 1 / 2 |
 | News (16) | official registers only | global news index | GDELT (aggregator exception), Media Cloud, official press rooms | 1 / 2 |
 | Research (16) | 14 providers | citation graph, preprints | Semantic Scholar, CORE, bioRxiv/medRxiv | 2 / 1 |
-| Sports (14) | MLB, UEFA, Premier League, FIFA, football-data | other leagues | **MLB** ✅, **UEFA** ✅, **Premier League** ✅, **FIFA** ✅; football-data.org only for La Liga/Bundesliga/Serie A/Ligue 1 | 1 / 2 |
+| Sports (14) | MLB, UEFA, Premier League, FIFA, LALIGA, Bundesliga, Serie A, Ligue 1, football-data | other leagues | **MLB** ✅, **UEFA** ✅, **Premier League** ✅, **FIFA** ✅, **LALIGA** ✅, **Bundesliga** ✅, **Serie A** ✅, **Ligue 1** ✅; football-data.org retained as an explicit-use fallback | 1 / 2 |
 | Jobs (13) | USAJobs | occupations | **USAJobs** ✅, O*NET, Arbeitnow | 2 / 1 |
 | AI models (12) | **Hugging Face** | model catalogues | **Hugging Face** ✅, OpenRouter (commercial) | 1 |
 | People (12) | Wikidata, GLEIF, SEC insiders | sanctions, officers | OpenSanctions, Companies House officers | 2 |
@@ -102,9 +102,13 @@ card.
 
 **Soccer sourcing note:** football-data.org does not publish its upstreams. The
 Premier League, UEFA and FIFA expose public official feeds, so those are used
-directly. La Liga, Bundesliga, Serie A and Ligue 1 do not expose a public
-official API (tested), so football-data.org remains an explicit-use aggregator
-for them.
+directly. The four remaining domestic leagues are now read from the same
+browser-facing backends their sites use: LALIGA's public-service API, the
+Bundesliga's bapi feed, Lega Serie A's data service and LFP's match API for
+Ligue 1. Those endpoints need browser headers (and LALIGA's public web
+subscription key) and are more brittle than a published developer API, so the
+season keys are manifest parameters and football-data.org remains as an
+explicit-use fallback.
 
 **P1 — shipped:**
 
