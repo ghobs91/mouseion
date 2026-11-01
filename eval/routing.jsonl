@@ -123,3 +123,24 @@
 {"query": "is the red line running normally in boston", "expect": "mbta_news"}
 {"query": "mbta ferry service change", "expect": "mbta_news"}
 {"query": "boston transit construction update", "expect": "mbta_news"}
+
+{"query": "did regulators seize a failing bank", "expect": "fdic_press"}
+{"query": "fdic receivership announcement", "expect": "fdic_press"}
+
+{"query": "did the bank of england raise bank rate", "expect": "bank_of_england_news"}
+{"query": "uk monetary policy committee decision", "expect": "bank_of_england_news"}
+
+{"query": "sec charges a company with fraud", "expect": "sec_press"}
+{"query": "what did the securities and exchange commission announce", "expect": "sec_press"}
+
+{"query": "cftc sues a crypto scheme", "expect": "cftc_press"}
+{"query": "commodity futures enforcement announcement", "expect": "cftc_press"}
+
+{"query": "ecb governing council press conference", "expect": "ecb_press"}
+{"query": "european central bank speech", "expect": "ecb_press"}
+
+{"query": "muni service changes in san francisco", "expect": "sfmta_news"}
+{"query": "sfmta bikeshare expansion", "expect": "sfmta_news"}
+
+{"query": "caltrain schedule change on the peninsula", "expect": "caltrain_news"}
+{"query": "caltrain electrification progress", "expect": "caltrain_news"}

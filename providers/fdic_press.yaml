@@ -1,0 +1,82 @@
+id: fdic_press
+title: FDIC press releases
+category: finance
+domain: financial_sovereign
+sub_category: agency_announcements
+adapter: rss
+base: https://www.fdic.gov
+regions: [US]
+description: >-
+  The Federal Deposit Insurance Corporation's official news feed: board actions,
+  bank failures and receiverships, enforcement actions and deposit-insurance
+  announcements, as the FDIC publishes them. Returns title, link, publication date
+  and summary. Keyless.
+docs_url: https://www.fdic.gov/news
+keywords:
+  - fdic
+  - federal deposit insurance
+  - bank failure
+  - failing bank
+  - seized bank
+  - bank seizure
+  - receivership
+  - deposit insurance
+  - bank closure
+  - enforcement action
+  - press release
+attribution: "Federal Deposit Insurance Corporation"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "Federal Deposit Insurance Corporation"
+  originator_domain: fdic.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.fdic.gov/news
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 600
+limits:
+  rps: 1
+capabilities:
+  announcements:
+    description: >-
+      Recent FDIC announcements, newest first. Returns the title, link,
+      publication date and summary. `query` filters the current window by keyword
+      across title and summary; there is no server-side search on a feed.
+    path: /rss.xml
+    params:
+      query:
+        type: string
+        description: >-
+          Keyword filter applied locally to the current window's title and
+          summary, e.g. 'receivership' or 'enforcement'.
+      limit:
+        type: integer
+        description: Records per page (1-50, default 20).
+        default: 20
+    pagination: {mode: offset, default_limit: 20, max_limit: 50}
+    local_window: true
+    id_field: id
+    fields:
+      id: id
+      title: title
+      link: link
+      published: published
+      summary: summary
+      author: author
+      categories: categories
+    strip_html: [summary]
+    source_url_template: "{link}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - latest fdic announcements
+      - did a bank fail this week
+      - fdic receivership news
+      - federal deposit insurance enforcement action
+    example: {limit: 5}

@@ -1,0 +1,77 @@
+id: ecb_press
+title: ECB press releases
+category: finance
+domain: financial_sovereign
+sub_category: central_bank_announcements
+adapter: rss
+base: https://www.ecb.europa.eu
+regions: [EU]
+description: >-
+  The European Central Bank's official press feed: Governing Council decisions,
+  monetary-policy statements, speeches, interviews and supervisory announcements,
+  as the ECB publishes them. Returns title, link and publication date. Keyless.
+docs_url: https://www.ecb.europa.eu/press/html/index.en.html
+keywords:
+  - ecb
+  - european central bank
+  - press release
+  - governing council
+  - monetary policy decision
+  - speech
+  - speech transcript
+  - press conference
+  - interview
+  - euro area
+attribution: "European Central Bank"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "European Central Bank"
+  originator_domain: ecb.europa.eu
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.ecb.europa.eu/press/html/index.en.html
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 600
+limits:
+  rps: 1
+capabilities:
+  announcements:
+    description: >-
+      Recent ECB announcements, newest first. Returns the title, link and
+      publication date. This feed carries no summary. `query` filters the current
+      window by title; there is no server-side search on a feed.
+    path: /rss/press.html
+    params:
+      query:
+        type: string
+        description: >-
+          Keyword filter applied locally to the current window's title, e.g.
+          'governing council' or 'speech'.
+      limit:
+        type: integer
+        description: Records per page (1-50, default 20).
+        default: 20
+    pagination: {mode: offset, default_limit: 20, max_limit: 50}
+    local_window: true
+    id_field: id
+    fields:
+      id: id
+      title: title
+      link: link
+      published: published
+    strip_html: [title]
+    source_url_template: "{link}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - latest ecb press releases
+      - european central bank governing council decision
+      - ecb speech by a board member
+      - ecb monetary policy announcement
+    example: {limit: 5}

@@ -1,0 +1,81 @@
+id: sfmta_news
+title: SFMTA news
+category: places
+domain: transport_infrastructure
+sub_category: transit_announcements
+adapter: rss
+base: https://www.sfmta.com
+regions: [US]
+description: >-
+  The San Francisco Municipal Transportation Agency's official blog: Muni service
+  changes, Muni Metro and bus projects, bikeshare, parking and accessibility
+  updates, as the agency publishes them. Returns title, link, publication date and
+  summary. Keyless.
+docs_url: https://www.sfmta.com/blog
+keywords:
+  - sfmta
+  - san francisco transit
+  - muni
+  - muni metro
+  - muni service
+  - muni changes
+  - bikeshare
+  - san francisco parking
+  - service change
+  - transit announcement
+attribution: "San Francisco Municipal Transportation Agency"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "San Francisco Municipal Transportation Agency"
+  originator_domain: sfmta.com
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.sfmta.com/blog
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 600
+limits:
+  rps: 1
+capabilities:
+  announcements:
+    description: >-
+      Recent SFMTA news items, newest first. Returns the title, link, publication
+      date, summary and author. `query` filters the current window by keyword
+      across title and summary; there is no server-side search on a feed.
+    path: /blog/rss.xml
+    params:
+      query:
+        type: string
+        description: >-
+          Keyword filter applied locally to the current window's title and
+          summary, e.g. 'muni' or 'bikeshare'.
+      limit:
+        type: integer
+        description: Records per page (1-50, default 20).
+        default: 20
+    pagination: {mode: offset, default_limit: 20, max_limit: 50}
+    local_window: true
+    id_field: id
+    fields:
+      id: id
+      title: title
+      link: link
+      published: published
+      summary: summary
+      author: author
+      categories: categories
+    strip_html: [summary]
+    source_url_template: "{link}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - latest sfmta news
+      - muni service change in san francisco
+      - san francisco bikeshare update
+      - sfmta muni metro project
+    example: {limit: 5}

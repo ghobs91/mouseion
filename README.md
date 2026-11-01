@@ -97,11 +97,11 @@ A manifest declares one of ten domains and a finer `sub_category`:
 | `academic_scientific` | 14 | arXiv, Crossref, OpenAlex, PubMed, PMC, UniProt, GBIF |
 | `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS, GeoNames, FEMA |
 | `reference` | 13 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, UEFA, FIFA, five soccer leagues |
-| `financial_sovereign` | 12 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF, Companies House, Federal Reserve press |
+| `financial_sovereign` | 17 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF, Companies House; central-bank and regulator press |
 | `governance_legislative` | 12 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener, FDA press |
 | `developer_infrastructure` | 9 | npm, PyPI, crates.io, Go, Maven, GitHub, NVD, Hugging Face |
 | `archives_web_state` | 5 | Wayback, Internet Archive, Library of Congress, UK National Archives |
-| `transport_infrastructure` | 5 | OurAirports, FAA airport status, Schiphol flights, MBTA news |
+| `transport_infrastructure` | 7 | OurAirports, FAA airport status, Schiphol flights, MBTA, SFMTA, Caltrain news |
 | `commerce` | 2 | Shopify Global Catalog, Open Food Facts |
 
 Routing runs in three passes:
@@ -200,7 +200,7 @@ its own catalogue, not a public-record originator.
 
 ## Coverage
 
-**103 providers, 151 capabilities, ten domains.** The full inventory is in
+**110 providers, 158 capabilities, ten domains.** The full inventory is in
 [`docs/PROVIDERS.md`](docs/PROVIDERS.md). The demand-shaped gap analysis, using
 Firecrawl Alexandria's categories as a reference, is in
 [`docs/PROVIDER-TARGETS.md`](docs/PROVIDER-TARGETS.md).
@@ -211,9 +211,10 @@ Highlights:
   state, county and city jurisdictions, and a parallel discovery pipeline. A
   Chicago query abstains rather than reaching New York's disclosures.
 - **Commerce** — Shopify's read-only UCP catalogue and Open Food Facts.
-- **Agency announcements** — the Federal Reserve, FDA and MBTA publish their own
-  press feeds; the RSS adapter reads them directly, filters by keyword locally,
-  and cites the item link. No aggregator in the path.
+- **Agency announcements** — the Federal Reserve, SEC, FDIC, CFTC, ECB, Bank of
+  England, FDA, MBTA, SFMTA and Caltrain publish their own press feeds; the RSS
+  adapter reads them directly, filters by keyword locally, and cites the item
+  link. No aggregator in the path.
 - **Soccer** — the Premier League, UEFA, FIFA, LALIGA, Bundesliga, Serie A and
   Ligue 1 read from their own site backends, with football-data.org kept as an
   explicit fallback.
@@ -374,7 +375,7 @@ than a directory of every API.
 ## Repository map
 
 ```
-providers/        103 YAML manifests, one per source
+providers/        110 YAML manifests, one per source
 mouseion/
   manifest.py     schema: domain, source policy, auth, capabilities, projection
   registry.py     loading, lexical scoring, provider cards

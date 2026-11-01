@@ -1,0 +1,77 @@
+id: caltrain_news
+title: Caltrain news
+category: places
+domain: transport_infrastructure
+sub_category: transit_announcements
+adapter: rss
+base: https://www.caltrain.com
+regions: [US]
+description: >-
+  Caltrain's official news feed: service changes, construction and grade
+  separation, electrification and schedule updates for the Peninsula commuter rail
+  between San Francisco and San Jose. Returns title, link, publication date and
+  summary. Keyless.
+docs_url: https://www.caltrain.com/news
+keywords:
+  - caltrain
+  - peninsula rail
+  - commuter rail
+  - san jose train
+  - california train
+  - electrification
+  - service change
+attribution: "Peninsula Corridor Joint Powers Board (Caltrain)"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "Peninsula Corridor Joint Powers Board (Caltrain)"
+  originator_domain: caltrain.com
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.caltrain.com/news
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 600
+limits:
+  rps: 1
+capabilities:
+  announcements:
+    description: >-
+      Recent Caltrain news items, newest first. Returns the title, link,
+      publication date, summary and author. Item titles arrive wrapped in an
+      anchor tag, so HTML is stripped from both title and summary.
+    path: /news/rss
+    params:
+      query:
+        type: string
+        description: >-
+          Keyword filter applied locally to the current window's title and
+          summary, e.g. 'electrification' or 'schedule'.
+      limit:
+        type: integer
+        description: Records per page (1-50, default 20).
+        default: 20
+    pagination: {mode: offset, default_limit: 20, max_limit: 50}
+    local_window: true
+    id_field: id
+    fields:
+      id: id
+      title: title
+      link: link
+      published: published
+      summary: summary
+      author: author
+    strip_html: [title, summary]
+    source_url_template: "{link}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - latest caltrain news
+      - caltrain electrification update
+      - peninsula commuter rail service change
+      - caltrain construction notice
+    example: {limit: 5}

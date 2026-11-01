@@ -1,0 +1,80 @@
+id: bank_of_england_news
+title: Bank of England news
+category: finance
+domain: financial_sovereign
+sub_category: central_bank_announcements
+adapter: rss
+base: https://www.bankofengland.co.uk
+regions: [GB]
+description: >-
+  The Bank of England's official news feed: Monetary Policy Committee decisions,
+  Financial Policy Committee statements, speeches, consultations and court minutes,
+  as the Bank publishes them. Returns title, link, publication date and summary.
+  Keyless.
+docs_url: https://www.bankofengland.co.uk/news
+keywords:
+  - bank of england
+  - boe
+  - monetary policy committee
+  - mpc
+  - bank rate
+  - financial policy committee
+  - court minutes
+  - uk central bank
+  - press release
+attribution: "Bank of England"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "Bank of England"
+  originator_domain: bankofengland.co.uk
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.bankofengland.co.uk/news
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 600
+limits:
+  rps: 1
+capabilities:
+  announcements:
+    description: >-
+      Recent Bank of England announcements, newest first. Returns the title, link,
+      publication date and summary. `query` filters the current window by keyword
+      across title and summary; there is no server-side search on a feed.
+    path: /rss/news
+    params:
+      query:
+        type: string
+        description: >-
+          Keyword filter applied locally to the current window's title and
+          summary, e.g. 'bank rate' or 'speech'.
+      limit:
+        type: integer
+        description: Records per page (1-50, default 20).
+        default: 20
+    pagination: {mode: offset, default_limit: 20, max_limit: 50}
+    local_window: true
+    id_field: id
+    fields:
+      id: id
+      title: title
+      link: link
+      published: published
+      summary: summary
+      author: author
+      categories: categories
+    strip_html: [summary]
+    source_url_template: "{link}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - latest bank of england announcements
+      - did the mpc change the bank rate
+      - bank of england speech
+      - uk central bank statement
+    example: {limit: 5}

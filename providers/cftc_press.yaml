@@ -1,0 +1,81 @@
+id: cftc_press
+title: CFTC press releases
+category: finance
+domain: financial_sovereign
+sub_category: agency_announcements
+adapter: rss
+base: https://www.cftc.gov
+regions: [US]
+description: >-
+  The Commodity Futures Trading Commission's official press releases: enforcement
+  actions, fraud cases, rulemaking and advisory-committee announcements for the
+  derivatives markets. Returns title, link, publication date and summary. Keyless.
+docs_url: https://www.cftc.gov/PressRoom/PressReleases
+keywords:
+  - cftc
+  - commodity futures trading commission
+  - press release
+  - derivatives enforcement
+  - commodities fraud
+  - sues
+  - lawsuit
+  - crypto scheme
+  - settlement
+  - rulemaking
+  - advisory committee
+attribution: "U.S. Commodity Futures Trading Commission"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "U.S. Commodity Futures Trading Commission"
+  originator_domain: cftc.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.cftc.gov/PressRoom/PressReleases
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 600
+limits:
+  rps: 1
+capabilities:
+  announcements:
+    description: >-
+      Recent CFTC press releases, newest first. Returns the title, link,
+      publication date, summary and author. `query` filters the current window by
+      keyword across title and summary; there is no server-side search on a feed.
+    path: /rss.xml
+    params:
+      query:
+        type: string
+        description: >-
+          Keyword filter applied locally to the current window's title and
+          summary, e.g. 'fraud' or 'rulemaking'.
+      limit:
+        type: integer
+        description: Records per page (1-50, default 20).
+        default: 20
+    pagination: {mode: offset, default_limit: 20, max_limit: 50}
+    local_window: true
+    id_field: id
+    fields:
+      id: id
+      title: title
+      link: link
+      published: published
+      summary: summary
+      author: author
+      categories: categories
+    strip_html: [summary]
+    source_url_template: "{link}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - latest cftc press releases
+      - commodities fraud case announced by the cftc
+      - cftc enforcement action
+      - derivatives rulemaking announcement
+    example: {limit: 5}

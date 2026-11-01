@@ -1,6 +1,6 @@
 # Source inventory
 
-The full registry: **103 providers and 151 capabilities across ten domains**.
+The full registry: **110 providers and 158 capabilities across ten domains**.
 `none` means keyless; every other value names the credential the manifest
 declares. The authoritative live view is `mouseion providers` or the dashboard's
 Sources tab. This page is the stable inventory for reading and review.
@@ -13,8 +13,10 @@ directory of every API on the internet.
 |---|---|---|
 | arXiv | none | `search` |
 | BLS | none | `series_observations` |
+| Bank of England news | none | `announcements` |
 | Census Geocoder | none | `geocode_address` |
 | CFTC Commitments of Traders | none | `legacy_futures_only` |
+| CFTC press releases | none | `announcements` |
 | CISA KEV | none | `catalog` |
 | ClinicalTrials.gov | none | `search`, `get` |
 | CMS Care Compare | none | `hospitals` |
@@ -26,6 +28,7 @@ directory of every API on the internet.
 | data.gov.au | none | `search_datasets` |
 | DataCite | none | `search_dois` |
 | ECB | none | `yield_curve`, `exchange_rates`, `policy_rate` |
+| ECB press releases | none | `announcements` |
 | Federal Register | none | `search`, `get` |
 | Federal Reserve Board press releases | none | `announcements` |
 | FRED | free key | `search_series`, `series_observations` |
@@ -38,10 +41,12 @@ directory of every API on the internet.
 | Premier League | none | `fixtures`, `competitions` |
 | LALIGA | none | `matches`, `standings` |
 | Bundesliga | none | `matches`, `standings` |
+| Caltrain news | none | `announcements` |
 | Serie A | none | `matches`, `standings` |
 | Ligue 1 | none | `matches`, `standings`, `calendar` |
 | FAA Airport Status | none | `status` |
 | FDA press releases | none | `announcements` |
+| FDIC press releases | none | `announcements` |
 | football-data.org (fallback) | free key | `competitions`, `matches`, `standings` |
 | Schiphol Flights | free app id + key | `flights`, `flight` |
 | UEFA Match Centre | none | `matches`, `match` |
@@ -90,8 +95,10 @@ directory of every API on the internet.
 | PyPI | none | `package`, `release` |
 | ROR | none | `search_organizations` |
 | SEC EDGAR | contact UA | `full_text_search`, `filings_by_cik` |
+| SEC press releases | contact UA | `announcements` |
 | Shopify Global Catalog | free client credentials | `tools` (runtime, read-only) |
 | DataSF | none | `police_incidents` |
+| SFMTA news | none | `announcements` |
 | US Treasury Fiscal Data | none | `debt_to_penny`, `avg_interest_rates` |
 | Wikipedia | none | `search`, `summary`, `article`, `sections`, `links`, `coordinates` |
 | Washington Campaign Expenditures | none | `expenditures` |

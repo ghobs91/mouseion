@@ -25,8 +25,15 @@ DC = "{http://purl.org/dc/elements/1.1/}"
 
 
 def _text(node: ET.Element, path: str, default: str = "") -> str:
-    value = node.findtext(path, default=default) or ""
-    return " ".join(value.split())
+    """All text inside ``path``, including descendants.
+
+    ``findtext`` only returns the text before the first child element, which loses
+    the title in feeds that wrap it in an anchor tag (Caltrain).
+    """
+    element = node.find(path)
+    if element is None:
+        return default
+    return " ".join("".join(element.itertext()).split())
 
 
 class RssAdapter(RestJsonAdapter):
