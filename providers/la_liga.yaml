@@ -1,0 +1,115 @@
+id: la_liga
+title: LALIGA
+category: sports
+domain: reference
+sub_category: soccer
+transport: http
+adapter: rest_json
+base: https://apim.laliga.com
+regions: [ES]
+description: >-
+  LALIGA's own public-service API, the backend behind laliga.com. Requires the
+  browser subscription key from the site; it rotates, so supply a current value
+  as LALIGA_SUBSCRIPTION_KEY. The subscription slug and season year name the
+  competition edition (e.g. laliga-easports-2026).
+docs_url: https://www.laliga.com/
+keywords:
+  - la liga
+  - laliga
+  - primera division
+  - laliga easports
+  - soccer
+  - football
+attribution: "LALIGA"
+source:
+  is_primary: true
+  originator: "LALIGA"
+  originator_domain: laliga.com
+  provenance: official
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.laliga.com/en-GB/laliga-easports/results
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 30, burst: 8, concurrency: 2}
+cache_ttl: 300
+headers:
+  Origin: https://www.laliga.com
+  Referer: https://www.laliga.com/
+auth:
+  type: api_key
+  env: LALIGA_SUBSCRIPTION_KEY
+  param: Ocp-Apim-Subscription-Key
+  location: header
+  signup_url: https://www.laliga.com/
+capabilities:
+  matches:
+    description: >-
+      LALIGA fixtures and results. Returns kickoff, status, gameweek, both teams
+      and their scores. Omit week for the whole season; pass a week for one
+      round. Statuses include PreMatch, FullTime and Postponed.
+    path: /public-service/api/v1/matches
+    params:
+      subscription: {type: string, default: laliga-easports-2026, description: "subscription slug for the season edition, e.g. laliga-easports-2026"}
+      season: {type: integer, default: 2026, description: "season start year"}
+      week: {type: integer, description: "gameweek number; omit for the whole season"}
+      limit: {type: integer, default: 25}
+    alias: {subscription: subscriptionSlug, season: seasonYear}
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 25, max_limit: 100, start: 0}
+    record_path: matches
+    id_field: id
+    fields:
+      id: id
+      slug: slug
+      competition: competition.name
+      season: season.name
+      gameweek: gameweek.week
+      kickoff: date
+      status: status
+      home: home_team.nickname
+      away: away_team.nickname
+      home_score: home_score
+      away_score: away_score
+      venue: venue.name
+    source_url_template: "https://www.laliga.com/en-GB/match/{slug}"
+    exemplars:
+      - La Liga results
+      - La Liga fixtures
+      - LALIGA scores
+      - La Liga matchday 11
+      - Real Madrid result
+      - Barcelona score
+    example: {week: 11, limit: 3}
+  standings:
+    description: >-
+      The LALIGA EA SPORTS table. Returns position, team, played, won, drawn,
+      lost, goals for and against, goal difference and points. Omit week for the
+      current table; pass a week for the table after that gameweek.
+    path: /public-service/api/v1/subscriptions/{subscription}/standing
+    params:
+      subscription: {type: string, default: laliga-easports-2026, description: "subscription slug for the season edition, e.g. laliga-easports-2026"}
+      week: {type: integer, description: "gameweek number; omit for the current table"}
+    record_path: standings
+    id_field: id
+    fields:
+      id: team.id
+      position: position
+      team: team.nickname
+      played: played
+      won: won
+      drawn: drawn
+      lost: lost
+      goals_for: goals_for
+      goals_against: goals_against
+      goal_difference: goal_difference
+      points: points
+    source_url_template: "https://www.laliga.com/en-GB/laliga-easports/standing"
+    exemplars:
+      - La Liga table
+      - La Liga standings
+      - La Liga classification
+      - who is top of La Liga
+      - LALIGA EA SPORTS table
+    example: {week: 11}

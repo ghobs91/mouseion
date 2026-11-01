@@ -127,10 +127,17 @@ def test_search_orders_the_matched_capability_first(registry, cache):
     assert openfda["capabilities"][0]["name"] == "drug_recalls"
 
 
+def test_tied_provider_capability_prefers_more_query_tokens(registry, cache):
+    router = Router(registry, cache)
+    candidates = run(router.route("Bundesliga table"))
+    assert candidates[0].provider == "bundesliga"
+    assert candidates[0].capability == "standings"
+
+
 def test_eval_baseline_holds(registry, cache):
     index = JurisdictionIndex(load_jurisdictions(ROOT / "jurisdictions.yaml"))
     report = run(evaluate(Router(registry, cache, jurisdictions=index), load_cases()))
-    assert report["total"] == 91
+    assert report["total"] == 95
     assert report["top1"] >= 79, report["misses"]
     assert report["top3"] >= report["top1"]
 

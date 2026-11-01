@@ -1,0 +1,100 @@
+id: bundesliga
+title: Bundesliga
+category: sports
+domain: reference
+sub_category: soccer
+transport: http
+adapter: rest_json
+base: https://wapp.bapi.bundesliga.com
+regions: [DE]
+description: >-
+  The Bundesliga's own data feed, the backend that bundesliga.com reads. Keyless.
+  The season id is DFL's opaque key (e.g. DFL-SEA-0001KA for 2026/27);
+  /config/configNode.json reports the current one.
+docs_url: https://www.bundesliga.com/
+keywords:
+  - bundesliga
+  - german football
+  - soccer
+  - football
+attribution: "Bundesliga (DFL)"
+source:
+  is_primary: true
+  originator: "Deutsche Fußball Liga (DFL)"
+  originator_domain: bundesliga.com
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.bundesliga.com/en/bundesliga/matchday
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 30, burst: 8, concurrency: 2}
+cache_ttl: 300
+headers:
+  Origin: https://www.bundesliga.com
+  Referer: https://www.bundesliga.com/
+capabilities:
+  matches:
+    description: >-
+      Bundesliga fixtures and results, ordered by matchday. Returns kickoff,
+      status, matchday, both teams and their scores. Omit matchday for the whole
+      season; pass a matchday for one round.
+    path: /all/DFL-COM-000001/seasons/{season}/matches.json
+    params:
+      season: {type: string, default: DFL-SEA-0001KA, description: "DFL season id, e.g. DFL-SEA-0001KA"}
+      matchday: {type: integer, description: "matchday number; omit for the whole season"}
+      limit: {type: integer, default: 25}
+    defaults: {orderBy: '"matchday"'}
+    alias: {matchday: equalTo}
+    pagination: {mode: offset, default_limit: 25, max_limit: 100, start: 0}
+    local_window: true
+    record_path: "$"
+    id_field: id
+    fields:
+      id: matchId
+      matchday: matchday
+      kickoff: plannedKickOff
+      status: matchStatus
+      home: teams.home.nameFull
+      away: teams.away.nameFull
+      home_score: score.home.fulltime
+      away_score: score.away.fulltime
+    source_url_template: "https://www.bundesliga.com/en/bundesliga/matchday"
+    exemplars:
+      - Bundesliga results
+      - Bundesliga fixtures
+      - Bundesliga scores
+      - Bundesliga matchday 8
+      - Bayern Munich result
+      - Borussia Dortmund score
+    example: {matchday: 8}
+  standings:
+    description: >-
+      The current Bundesliga table. Returns position, team, played, won, drawn,
+      lost, goals for and against, goal difference and points.
+    path: /all/DFL-COM-000001/seasons/{season}/liveTable.json
+    params:
+      season: {type: string, default: DFL-SEA-0001KA, description: "DFL season id, e.g. DFL-SEA-0001KA"}
+    record_path: entries
+    id_field: id
+    fields:
+      id: club.id
+      position: rank
+      team: club.nameFull
+      played: gamesPlayed
+      won: wins
+      drawn: draws
+      lost: losses
+      goals_for: goalsScored
+      goals_against: goalsAgainst
+      goal_difference: goalDifference
+      points: points
+    source_url_template: "https://www.bundesliga.com/en/bundesliga/table"
+    exemplars:
+      - Bundesliga table
+      - Bundesliga standings
+      - who is top of the Bundesliga
+      - Bundesliga live table
+    example: {}

@@ -143,7 +143,7 @@ def test_snapshot_endpoint(server):
     status, body, _ = get(server + "/api/snapshot")
     assert status == 200
     payload = json.loads(body)
-    assert payload["totals"]["providers"] == 96
+    assert payload["totals"]["providers"] == 100
     assert payload["totals"]["jurisdictions"] == 101
 
 
@@ -217,7 +217,7 @@ def test_credential_write_and_delete(server):
     _, snapshot = call(server + "/api/snapshot")
     fred = next(item for item in snapshot["providers"] if item["id"] == "fred")
     assert fred["credentials"][0]["source"] == "store"
-    assert snapshot["totals"]["credentials_missing"] == 15
+    assert snapshot["totals"]["credentials_missing"] == 16
 
     status, body = call(
         server + "/api/credentials?env=FRED_API_KEY",

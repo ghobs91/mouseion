@@ -106,4 +106,8 @@
 {"query": "ground stop at O'Hare", "expect": "faa_airport_status"}
 {"query": "flight status at Schiphol", "expect": "schiphol_flights"}
 {"query": "Premier League results", "expect": "premier_league"}
+{"query": "Spanish La Liga scoreboard", "expect": "la_liga"}
+{"query": "German Bundesliga league standings", "expect": "bundesliga"}
+{"query": "Italian Serie A table", "expect": "serie_a"}
+{"query": "French Ligue 1 results", "expect": "ligue1"}
 {"query": "World Cup results", "expect": "fifa"}

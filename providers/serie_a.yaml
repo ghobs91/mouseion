@@ -1,0 +1,96 @@
+id: serie_a
+title: Serie A
+category: sports
+domain: reference
+sub_category: soccer
+transport: http
+adapter: rest_json
+base: https://api-sdp.legaseriea.it
+regions: [IT]
+description: >-
+  Lega Serie A's own data service, the backend behind legaseriea.it. Keyless.
+  The season id is Lega Serie A's opaque key (e.g.
+  ...::Football_Season::ed7fdc... for 2026/27).
+docs_url: https://en.legaseriea.it/
+keywords:
+  - serie a
+  - italian football
+  - soccer
+  - football
+attribution: "Lega Serie A"
+source:
+  is_primary: true
+  originator: "Lega Serie A"
+  originator_domain: legaseriea.it
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://en.legaseriea.it/serie-a/fixtures-results
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 30, burst: 8, concurrency: 2}
+cache_ttl: 300
+headers:
+  Origin: https://en.legaseriea.it
+  Referer: https://en.legaseriea.it/
+capabilities:
+  matches:
+    description: >-
+      Serie A fixtures and results. Returns kickoff, status, matchday, both teams
+      and their scores. The season id names the edition; the response covers the
+      whole season and is paged locally.
+    path: /v1/serie-a/football/seasons/{season}/matches
+    params:
+      season: {type: string, default: "serie-a::Football_Season::ed7fdc2a3e7b408b942ec177b7b956b5", description: "Lega Serie A season id, e.g. serie-a::Football_Season::ed7fdc2a3e7b408b942ec177b7b956b5"}
+      locale: {type: string, default: en-GB, description: "response locale, e.g. en-GB or it-IT"}
+      limit: {type: integer, default: 25}
+    pagination: {mode: offset, default_limit: 25, max_limit: 100, start: 0}
+    local_window: true
+    record_path: matches
+    id_field: id
+    fields:
+      id: matchId
+      matchday: matchSet.name
+      kickoff: matchDateUtc
+      status: status
+      home: home.shortName
+      away: away.shortName
+      home_score: homeScorePush
+      away_score: awayScorePush
+      venue: stadiumName
+    source_url_template: "https://en.legaseriea.it/serie-a/fixtures-results"
+    exemplars:
+      - Serie A results
+      - Serie A fixtures
+      - Serie A scores
+      - Serie A matchday 1
+      - Inter Milan result
+      - Juventus score
+    example: {locale: en-GB}
+  standings:
+    description: >-
+      The overall Serie A table. Each record is one club with its numeric stats
+      list (rank, points, played, won, drawn, lost, goals for and against, goal
+      difference and form), keyed by statsId.
+    path: /v1/serie-a/football/seasons/{season}/standings/overall
+    params:
+      season: {type: string, default: "serie-a::Football_Season::ed7fdc2a3e7b408b942ec177b7b956b5", description: "Lega Serie A season id"}
+      locale: {type: string, default: en-GB, description: "response locale, e.g. en-GB or it-IT"}
+    record_path: standings.0.teams
+    id_field: id
+    fields:
+      id: teamId
+      team: shortName
+      qualification: qualification
+      note: note
+      stats: stats
+    source_url_template: "https://en.legaseriea.it/serie-a/standings"
+    exemplars:
+      - Serie A table
+      - Serie A standings
+      - Serie A classification
+      - who is top of Serie A
+      - Serie A league table
+    example: {locale: en-GB}

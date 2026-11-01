@@ -8,23 +8,16 @@ adapter: rest_json
 base: https://api.football-data.org/v4
 regions: []
 description: >-
-  Domestic leagues whose official feeds are not public, plus standings:
-  La Liga, Bundesliga, Serie A and Ligue 1. The Premier League, UEFA competitions
-  and FIFA tournaments are served by their own providers. An aggregator of
-  official league feeds, not an originating authority.
+  Explicit-use fallback for domestic league fixtures, results and standings.
+  Aggregates official league feeds and does not disclose its upstreams. The
+  major domestic leagues, UEFA competitions and FIFA tournaments now each have
+  their own provider, so use this only as an operator-chosen fallback.
 docs_url: https://docs.football-data.org/
 keywords:
   - soccer
   - football
+  - football-data
   - premier league
-  - la liga
-  - bundesliga
-  - serie a
-  - ligue 1
-  - world cup
-  - standings
-  - fixture
-  - score
 attribution: "football-data.org"
 source:
   is_primary: false
@@ -32,9 +25,9 @@ source:
   originator_domain: football-data.org
   provenance: aggregator_exception
   exception_reason: >-
-    Aggregates official league feeds for the leagues that do not expose a public
-    official API (La Liga, Bundesliga, Serie A, Ligue 1). Use it explicitly;
-    Premier League, UEFA and FIFA data come from their own services.
+    Aggregates official league feeds and does not disclose its upstreams.
+    Retained as an explicit-use fallback; the major domestic leagues, UEFA and
+    FIFA all have their own providers.
   tier: 2
   auth_policy:
     free: true
@@ -91,10 +84,8 @@ capabilities:
       away_score: score.fullTime.away
     source_url_template: "https://www.football-data.org/match/{id}"
     exemplars:
-      - Premier League results
-      - La Liga fixtures
-      - Bundesliga scores
-      - Champions League match results
+      - aggregated league results
+      - soccer results by competition
     example: {code: "PL", season: 2024}
   standings:
     description: >-

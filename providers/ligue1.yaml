@@ -1,0 +1,120 @@
+id: ligue1
+title: Ligue 1
+category: sports
+domain: reference
+sub_category: soccer
+transport: http
+adapter: rest_json
+base: https://ma-api.ligue1.fr
+regions: [FR]
+description: >-
+  LFP's own data API, the backend behind ligue1.com. Keyless. Championship id 1
+  is Ligue 1; season is the start year (2026 for 2026/27).
+docs_url: https://ligue1.com/
+keywords:
+  - ligue 1
+  - ligue1
+  - french football
+  - soccer
+  - football
+attribution: "Ligue 1 (LFP)"
+source:
+  is_primary: true
+  originator: "Ligue de Football Professionnel (LFP)"
+  originator_domain: ligue1.fr
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://ligue1.fr/en/competitions/ligue1mcdonalds/results
+    verified_at: 2026-10-31
+  rate_limit: {per_min: 30, burst: 8, concurrency: 2}
+cache_ttl: 300
+headers:
+  Origin: https://ligue1.com
+  Referer: https://ligue1.com/
+capabilities:
+  matches:
+    description: >-
+      Ligue 1 fixtures and results for one gameweek. Returns kickoff, status,
+      gameweek, both teams and their scores. Championship id 1 is Ligue 1.
+    path: /championship-matches/championship/{championship}/game-week/{gameweek}
+    params:
+      championship: {type: integer, default: 1, description: "1 is Ligue 1"}
+      gameweek: {type: integer, default: 11, description: "gameweek number, 1-34"}
+      season: {type: integer, default: 2026, description: "season start year, e.g. 2026"}
+    record_path: matches
+    id_field: id
+    fields:
+      id: matchId
+      gameweek: gameWeekNumber
+      kickoff: date
+      status: period
+      home: home.clubIdentity.name
+      away: away.clubIdentity.name
+      home_score: home.score
+      away_score: away.score
+    source_url_template: "https://ligue1.com/en/competitions/ligue1mcdonalds/results"
+    exemplars:
+      - Ligue 1 results
+      - Ligue 1 fixtures
+      - Ligue 1 scores
+      - Ligue 1 matchday 1
+      - PSG result
+      - Marseille score
+    example: {gameweek: 1}
+  standings:
+    description: >-
+      The Ligue 1 table. Returns position, team, played, won, drawn, lost, goals
+      for and against, goal difference and points. standings_type selects the
+      overall, home-only or away-only table.
+    path: /championship-standings/{championship}/{standings_type}
+    params:
+      championship: {type: integer, default: 1, description: "1 is Ligue 1"}
+      standings_type: {type: string, default: general, enum: [general, home, away]}
+      season: {type: integer, default: 2026, description: "season start year, e.g. 2026"}
+    record_path: standings
+    id_field: id
+    fields:
+      id: clubId
+      position: rank
+      team: clubIdentity.name
+      played: played
+      won: wins
+      drawn: draws
+      lost: losses
+      goals_for: forGoals
+      goals_against: againstGoals
+      goal_difference: goalsDifference
+      points: points
+    source_url_template: "https://ligue1.com/en/competitions/ligue1mcdonalds/standings"
+    exemplars:
+      - Ligue 1 table
+      - Ligue 1 standings
+      - Ligue 1 classification
+      - who is top of Ligue 1
+      - Ligue 1 league table
+    example: {}
+  calendar:
+    description: >-
+      Ligue 1 gameweeks for a season: number, start and end dates, and the match
+      ids in each round. Use it to find a gameweek before calling matches.
+    path: /championship-calendar/{championship}
+    params:
+      championship: {type: integer, default: 1, description: "1 is Ligue 1"}
+      season: {type: integer, default: 2026, description: "season start year, e.g. 2026"}
+    record_path: gameWeeks
+    id_field: gameweek
+    fields:
+      gameweek: gameWeekNumber
+      start: startDate
+      end: endDate
+      matches: matchesIds
+    source_url_template: "https://ligue1.com/en/calendar/ligue1"
+    exemplars:
+      - Ligue 1 calendar
+      - Ligue 1 gameweeks
+      - which Ligue 1 matchdays are there
+    example: {}
