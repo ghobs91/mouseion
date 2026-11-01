@@ -1,6 +1,6 @@
 # Source inventory
 
-The full registry: **100 providers and 148 capabilities across ten domains**.
+The full registry: **103 providers and 151 capabilities across ten domains**.
 `none` means keyless; every other value names the credential the manifest
 declares. The authoritative live view is `mouseion providers` or the dashboard's
 Sources tab. This page is the stable inventory for reading and review.
@@ -27,6 +27,7 @@ directory of every API on the internet.
 | DataCite | none | `search_dois` |
 | ECB | none | `yield_curve`, `exchange_rates`, `policy_rate` |
 | Federal Register | none | `search`, `get` |
+| Federal Reserve Board press releases | none | `announcements` |
 | FRED | free key | `search_series`, `series_observations` |
 | GBIF | none | `search_occurrences` |
 | GLEIF | none | `search_lei` |
@@ -40,6 +41,7 @@ directory of every API on the internet.
 | Serie A | none | `matches`, `standings` |
 | Ligue 1 | none | `matches`, `standings`, `calendar` |
 | FAA Airport Status | none | `status` |
+| FDA press releases | none | `announcements` |
 | football-data.org (fallback) | free key | `competitions`, `matches`, `standings` |
 | Schiphol Flights | free app id + key | `flights`, `flight` |
 | UEFA Match Centre | none | `matches`, `match` |
@@ -62,6 +64,7 @@ directory of every API on the internet.
 | Grants.gov | none | `search_opportunities` |
 | Hawaii Campaign Spending | none | `ledger` |
 | Maven Central | none | `search` |
+| MBTA news | none | `announcements` |
 | New York Campaign Finance | none | `disclosures` |
 | New York Campaign Filers | none | `filers` |
 | New York City Campaign Finance | none | `contributions` |

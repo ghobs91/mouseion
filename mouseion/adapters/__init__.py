@@ -7,6 +7,7 @@ from .csv_adapter import CsvAdapter
 from .faa_nas import FaaNasAdapter
 from .html_table import HtmlTableAdapter
 from .rest_json import RestJsonAdapter
+from .rss import RssAdapter
 from .sdmx_json import SdmxJsonAdapter
 from .socrata import SocrataAdapter
 
@@ -16,6 +17,7 @@ ADAPTERS: dict[str, Adapter] = {
         RestJsonAdapter(),
         SocrataAdapter(),
         AtomAdapter(),
+        RssAdapter(),
         SdmxJsonAdapter(),
         CdxAdapter(),
         CsvAdapter(),

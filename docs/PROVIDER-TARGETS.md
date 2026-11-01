@@ -40,7 +40,7 @@ Captured 2026-10-31 from the Alexandria directory page.
 
 ## Where mouseion stands
 
-100 providers across ten routing domains. The counts below are providers, not
+103 providers across ten routing domains. The counts below are providers, not
 capabilities; one provider often covers several capabilities.
 
 | Domain | Providers | What is already strong |
@@ -48,12 +48,12 @@ capabilities; one provider often covers several capabilities.
 | `civic_local` | 17 | campaign finance and election results across 11 jurisdictions |
 | `academic_scientific` | 14 | arXiv, Crossref, OpenAlex, DataCite, PMC, PubMed, UniProt, GBIF |
 | `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS, EONET, GeoNames |
-| `governance_legislative` | 11 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener |
-| `financial_sovereign` | 11 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF |
+| `governance_legislative` | 12 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener, FDA press |
+| `financial_sovereign` | 12 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF, Federal Reserve press |
 | `developer_infrastructure` | 9 | npm, PyPI, crates, Go, Maven, GitHub, NVD, Hugging Face |
 | `archives_web_state` | 5 | Wayback, Internet Archive, LoC, UK National Archives |
 | `commerce` | 2 | Shopify catalog, Open Food Facts |
-| `transport_infrastructure` | 4 | OurAirports, FAA status, Schiphol flights |
+| `transport_infrastructure` | 5 | OurAirports, FAA status, Schiphol flights, MBTA news |
 | `reference` | 13 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, UEFA, FIFA, Premier League, LALIGA, Bundesliga, Serie A, Ligue 1, football-data |
 
 ## Gap matrix
@@ -74,7 +74,7 @@ card.
 | Places (23) | Nominatim, Overpass, USGS, **GeoNames** | hierarchy, timezone, population | **GeoNames** ✅, Who's On First, USGS GNIS | 2 / 1 |
 | Developer (21) | 9 providers | package registries, Q&A | **Hugging Face** ✅, Docker Hub, Stack Exchange | 1 |
 | Travel (21) | OurAirports, FAA, Schiphol | routes, rail | **OurAirports** ✅, **FAA NAS** ✅, **Schiphol** ✅, OpenFlights | 1 / 2 |
-| News (16) | official registers only | global news index | GDELT (aggregator exception), Media Cloud, official press rooms | 1 / 2 |
+| News (16) | official announcement feeds and registers | global news index | agency press releases via RSS (Federal Reserve, FDA, MBTA shipped); GDELT (aggregator exception), Media Cloud | 1 / 2 |
 | Research (16) | 14 providers | citation graph, preprints | Semantic Scholar, CORE, bioRxiv/medRxiv | 2 / 1 |
 | Sports (14) | MLB, UEFA, Premier League, FIFA, LALIGA, Bundesliga, Serie A, Ligue 1, football-data | other leagues | **MLB** ✅, **UEFA** ✅, **Premier League** ✅, **FIFA** ✅, **LALIGA** ✅, **Bundesliga** ✅, **Serie A** ✅, **Ligue 1** ✅; football-data.org retained as an explicit-use fallback | 1 / 2 |
 | Jobs (13) | USAJobs | occupations | **USAJobs** ✅, O*NET, Arbeitnow | 2 / 1 |
@@ -118,6 +118,13 @@ explicit-use fallback.
 7. **Entertainment**: MusicBrainz (keyless) and TMDB (free key) ✅.
 8. **Travel**: OurAirports (public-domain CSV) ✅.
 9. **Real estate**: FEMA NFHL via ArcGIS REST (keyless) ✅.
+
+**Agency announcements — started:** the Federal Reserve, FDA and MBTA publish
+their own press feeds, now read directly as RSS with a local keyword filter
+(`federal_reserve_press`, `fda_press`, `mbta_news`). This is the in-policy
+alternative to a news aggregator: the feed is the originator's own publication,
+so no `aggregator_exception` is needed. The remaining work is breadth — roughly
+230 federal and state agency feeds are available — not new plumbing.
 
 **P2 — depth and long tail:**
 

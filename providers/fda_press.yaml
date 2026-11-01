@@ -1,0 +1,77 @@
+id: fda_press
+title: FDA press releases
+category: health
+domain: governance_legislative
+sub_category: health_announcements
+adapter: rss
+base: https://www.fda.gov
+regions: [US]
+description: >-
+  The FDA's official press releases: drug and device approvals, safety warnings,
+  recalls announced by the agency, and enforcement updates, as the FDA publishes
+  them. Returns title, link, publication date and summary. Keyless.
+docs_url: https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds
+keywords:
+  - fda
+  - food and drug administration
+  - press release
+  - drug approval
+  - device approval
+  - enforcement
+  - health announcement
+attribution: "U.S. Food and Drug Administration"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "U.S. Food and Drug Administration"
+  originator_domain: fda.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 600
+limits:
+  rps: 1
+capabilities:
+  announcements:
+    description: >-
+      Recent FDA press releases, newest first. Returns the title, link,
+      publication date, summary and author. `query` filters the current window by
+      keyword across title and summary; there is no server-side search on a feed.
+    path: /about-fda/contact-fda/stay-informed/rss-feeds/press-releases/rss.xml
+    params:
+      query:
+        type: string
+        description: >-
+          Keyword filter applied locally to the current window's title and
+          summary, e.g. 'approval' or 'safety'.
+      limit:
+        type: integer
+        description: Records per page (1-50, default 20).
+        default: 20
+    pagination: {mode: offset, default_limit: 20, max_limit: 50}
+    local_window: true
+    id_field: id
+    fields:
+      id: id
+      title: title
+      link: link
+      published: published
+      summary: summary
+      author: author
+      categories: categories
+    strip_html: [summary]
+    source_url_template: "{link}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - what did the fda announce this week
+      - fda press release about a drug approval
+      - latest food and drug administration safety news
+      - fda enforcement announcement
+    example: {limit: 5}

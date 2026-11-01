@@ -137,8 +137,9 @@ def test_tied_provider_capability_prefers_more_query_tokens(registry, cache):
 def test_eval_baseline_holds(registry, cache):
     index = JurisdictionIndex(load_jurisdictions(ROOT / "jurisdictions.yaml"))
     report = run(evaluate(Router(registry, cache, jurisdictions=index), load_cases()))
-    assert report["total"] == 95
-    assert report["top1"] >= 79, report["misses"]
+    assert report["total"] == 104
+    assert report["top1"] >= 93, report["misses"]
+    assert report["top3"] >= 99, report["misses"]
     assert report["top3"] >= report["top1"]
 
 

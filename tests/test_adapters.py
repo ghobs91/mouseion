@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 from mouseion.adapters import get_adapter
+from mouseion.envelope import ProviderError
 
 
 def prepare(manifest, capability, params=None, cursor=None):
@@ -60,6 +61,62 @@ def test_local_filter_narrows_a_catalog(registry):
     assert len(result.records) == 1
     assert result.records[0].data["cve_id"] == "CVE-2024-0001"
     assert result.upstream_version == "2026.10.28"
+
+
+RSS_BODY = {
+    "_raw_text": """<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel>
+  <title>Test feed</title>
+  <item>
+    <title>Board issues a statement on reserve balances</title>
+    <link>https://example.gov/a</link>
+    <guid>https://example.gov/a</guid>
+    <pubDate>Thu, 29 Oct 2026 20:30:00 GMT</pubDate>
+    <description>Short &lt;b&gt;summary&lt;/b&gt;.</description>
+    <category>Monetary Policy</category>
+  </item>
+  <item>
+    <title>Board announces approval of an application</title>
+    <link>https://example.gov/b</link>
+    <guid>guid-b</guid>
+    <pubDate>Wed, 28 Oct 2026 18:00:00 GMT</pubDate>
+    <description>Order text.</description>
+  </item>
+</channel></rss>"""
+}
+
+
+def test_rss_adapter_projects_items_and_filters_locally(registry):
+    manifest = registry.get("federal_reserve_press")
+    cap = manifest.capabilities["announcements"]
+    adapter = get_adapter(manifest.adapter)
+
+    req = prepare(manifest, cap, {"limit": 5})
+    assert "query" not in req.params
+    result = adapter.parse(manifest, cap, RSS_BODY, req)
+
+    assert result.records[0].data["title"].startswith("Board issues")
+    record = result.records[0]
+    assert record.source_record_id == "https://example.gov/a"
+    assert record.source_url == "https://example.gov/a"
+    assert record.data["categories"] == ["Monetary Policy"]
+    # strip_html removes the inline markup from the summary.
+    assert record.data["summary"] == "Short summary."
+
+    filtered = adapter.parse(
+        manifest, cap, RSS_BODY, prepare(manifest, cap, {"query": "approval", "limit": 5})
+    )
+    assert [row.data["id"] for row in filtered.records] == ["guid-b"]
+
+
+def test_rss_adapter_rejects_an_atom_document(registry):
+    manifest = registry.get("federal_reserve_press")
+    cap = manifest.capabilities["announcements"]
+    adapter = get_adapter(manifest.adapter)
+    body = {"_raw_text": '<?xml version="1.0"?><feed xmlns="http://www.w3.org/2005/Atom"></feed>'}
+
+    with pytest.raises(ProviderError, match="RSS"):
+        adapter.parse(manifest, cap, body, prepare(manifest, cap, {"limit": 5}))
 
 
 def test_projection_field_fallbacks(registry):

@@ -111,3 +111,15 @@
 {"query": "Italian Serie A table", "expect": "serie_a"}
 {"query": "French Ligue 1 results", "expect": "ligue1"}
 {"query": "World Cup results", "expect": "fifa"}
+
+{"query": "did the fed lower the discount rate", "expect": "federal_reserve_press"}
+{"query": "bank merger order approved by the federal reserve board", "expect": "federal_reserve_press"}
+{"query": "what enforcement actions has the fed announced", "expect": "federal_reserve_press"}
+
+{"query": "what did the fda approve this week", "expect": "fda_press"}
+{"query": "device clearance announced by the food and drug administration", "expect": "fda_press"}
+{"query": "agency announcement about a new treatment approval", "expect": "fda_press"}
+
+{"query": "is the red line running normally in boston", "expect": "mbta_news"}
+{"query": "mbta ferry service change", "expect": "mbta_news"}
+{"query": "boston transit construction update", "expect": "mbta_news"}

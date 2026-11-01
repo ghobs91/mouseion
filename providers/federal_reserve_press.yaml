@@ -1,0 +1,83 @@
+id: federal_reserve_press
+title: Federal Reserve press releases
+category: finance
+domain: financial_sovereign
+sub_category: agency_announcements
+adapter: rss
+base: https://www.federalreserve.gov
+regions: [US]
+description: >-
+  The Federal Reserve Board's official press releases: policy statements, orders
+  on bank applications, enforcement actions and supervisory announcements, as the
+  Board publishes them. Returns title, link, publication date and summary from the
+  Board's own feed. Keyless.
+docs_url: https://www.federalreserve.gov/feeds/feeds.htm
+keywords:
+  - federal reserve
+  - federal reserve board
+  - fed
+  - press release
+  - fomc
+  - monetary policy statement
+  - discount rate
+  - bank application
+  - enforcement action
+  - supervisory
+  - cease and desist
+attribution: "Board of Governors of the Federal Reserve System"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "Board of Governors of the Federal Reserve System"
+  originator_domain: federalreserve.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.federalreserve.gov/feeds/feeds.htm
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 600
+limits:
+  rps: 1
+capabilities:
+  announcements:
+    description: >-
+      Recent Federal Reserve Board press releases, newest first. Returns the
+      title, link, publication date, summary and categories. `query` filters the
+      current window by keyword across title and summary; there is no server-side
+      search on a feed.
+    path: /feeds/press_all.xml
+    params:
+      query:
+        type: string
+        description: >-
+          Keyword filter applied locally to the current window's title and
+          summary, e.g. 'discount rate' or 'enforcement'.
+      limit:
+        type: integer
+        description: Records per page (1-50, default 20).
+        default: 20
+    pagination: {mode: offset, default_limit: 20, max_limit: 50}
+    local_window: true
+    id_field: id
+    fields:
+      id: id
+      title: title
+      link: link
+      published: published
+      summary: summary
+      author: author
+      categories: categories
+    strip_html: [summary]
+    source_url_template: "{link}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - what did the federal reserve announce today
+      - latest fed press releases
+      - federal reserve enforcement action against a bank
+      - fed order approving a bank application
+    example: {limit: 5}
