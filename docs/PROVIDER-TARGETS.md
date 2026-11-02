@@ -40,7 +40,7 @@ Captured 2026-10-31 from the Alexandria directory page.
 
 ## Where mouseion stands
 
-129 providers across ten routing domains. The counts below are providers, not
+131 providers across ten routing domains. The counts below are providers, not
 capabilities; one provider often covers several capabilities.
 
 | Domain | Providers | What is already strong |
@@ -49,7 +49,7 @@ capabilities; one provider often covers several capabilities.
 | `academic_scientific` | 14 | arXiv, Crossref, OpenAlex, DataCite, PMC, PubMed, UniProt, GBIF |
 | `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS alerts and forecasts, EONET, GeoNames |
 | `governance_legislative` | 20 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener, FDA press, state governors and attorneys general |
-| `financial_sovereign` | 18 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF ownership; central-bank and regulator press; NY business registry |
+| `financial_sovereign` | 20 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF ownership; Coinbase and Yahoo Finance quotes; central-bank and regulator press; NY business registry |
 | `developer_infrastructure` | 10 | npm, PyPI, crates, Go, Maven, GitHub, NVD, Hugging Face, Stack Exchange |
 | `archives_web_state` | 5 | Wayback, Internet Archive, LoC, UK National Archives |
 | `commerce` | 2 | Shopify catalog, Open Food Facts |
@@ -67,7 +67,7 @@ card.
 | Public records (199) | ~45 government/legal/civic providers | Depth, not breadth: state and local coverage | more Socrata/state portals; county recorders | 1 |
 | Company (90) | SEC, GLEIF (ownership), ROR, Companies House, NY registry | more state registries, sanctions, US federal awards | **Companies House** ✅, **NY registry** ✅, OpenSanctions, SAM.gov | 2 / 1 |
 | Retail (66) | Shopify, Open Food Facts | barcodes, recalls, non-food products | **Open Food Facts** ✅, Open Products Facts, openFDA recalls ✅, GS1 (paid) | 1 |
-| Finance (39) | 11 providers | IMF, OECD, BIS, exchange data | IMF SDMX, OECD SDMX, BIS SDMX, Nasdaq (commercial) | 1 |
+| Finance (39) | 13 providers, quotes | SDMX series; primary NYSE feeds | IMF SDMX, OECD SDMX, BIS SDMX; NYSE quotes via Yahoo (aggregator exception) | 1 |
 | Real estate (34) | Census, Nominatim, Overpass, city parcels, **FEMA NFHL**, **NY assessments**, **Collin County** | more assessors | **FEMA NFHL** ✅, **NY assessments** ✅, **Collin County** ✅, HUD, county assessor portals | 1 / 2 |
 | Health (32) | openFDA, CMS, ClinicalTrials, NIH, PubMed | WHO, NHS, state health | WHO GHO (OData), NHS Digital, state health Socrata | 1 |
 | Life sciences (31) | UniProt, PubChem, PMC, GBIF | structures, genomes | RCSB PDB, Ensembl, bioRxiv, KEGG (academic) | 1 |

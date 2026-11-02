@@ -218,3 +218,11 @@
 
 {"query": "who owns a property in Collin County", "expect": "collin_county_property"}
 {"query": "property owner in Plano Texas", "expect": "collin_county_property"}
+
+{"query": "what is the price of bitcoin", "expect": "coinbase_prices"}
+{"query": "ethereum price in dollars", "expect": "coinbase_prices"}
+{"query": "crypto exchange rates in USD", "expect": "coinbase_prices"}
+
+{"query": "what is the price of Apple stock", "expect": "yahoo_finance"}
+{"query": "AAPL quote", "expect": "yahoo_finance"}
+{"query": "how has Tesla stock performed this year", "expect": "yahoo_finance"}

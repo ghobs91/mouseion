@@ -19,13 +19,13 @@ recently discussed source. Update the status columns when a provider lands.
 
 ## Current state
 
-**129 providers / 186 capabilities.** Domain distribution is deliberately uneven:
+**131 providers / 191 capabilities.** Domain distribution is deliberately uneven:
 depth where the sources are good, not an even split.
 
 | Domain | Providers | Strong at | Weak at |
 |---|---:|---|---|
 | `civic_local` | 23 | campaign finance, election results, restaurant inspections, property owners | candidates, ballots, most county assessors |
-| `financial_sovereign` | 18 | central banks, regulators, filings, entity ownership, statistics | sanctions, market quotes |
+| `financial_sovereign` | 20 | central banks, regulators, filings, entity ownership, market quotes, statistics | sanctions, primary NYSE feeds |
 | `academic_scientific` | 14 | literature, biology, chemistry, clinical trials | global health, structures, genomes |
 | `geo_earth_observation` | 14 | geocoding, hazards, hydrology, alerts | **forecast**, real-time conditions |
 | `reference` | 15 | sports, music, film, jobs, occupations, encyclopedia, podcasts | games, people |
@@ -63,6 +63,7 @@ depth where the sources are good, not an even split.
 | Jobs and occupations | covered | USAJobs postings, O*NET occupation profiles |
 | Packages, vulnerabilities, source code | covered | npm, PyPI, crates, Go, Maven, GitHub, NVD |
 | Developer Q&A | covered | Stack Exchange |
+| Market quotes | covered | Coinbase crypto; Yahoo Finance equities/ETFs/indices via aggregator exception; no primary NYSE feed |
 | Macroeconomic statistics | covered | FRED, BLS, ECB, World Bank, Treasury |
 | IMF / OECD / BIS series | gap | SDMX endpoints, adapter already exists |
 | Sports results | covered | MLB, UEFA, FIFA, five leagues |
@@ -134,18 +135,22 @@ Scored on the same axes, with demand read as "how often an LLM searches this":
 
 | Candidate | Demand | Gap | Policy | Leverage | Impact | Note |
 |---|---:|---:|---:|---:|---:|---|
-| **Market quotes: Coinbase + Nasdaq** | 5 | 5 | 3 | 4 | **4.40** | Coinbase documented and keyless; Nasdaq is exchange-native but UA-gated and undocumented |
+| ~~**Market quotes: Coinbase + Yahoo Finance**~~ — shipped | 5 | 5 | 3 | 4 | **4.40** | Coinbase documented and keyless; Yahoo is an explicit aggregator exception covering NYSE and Nasdaq names |
 | Official docs: MDN | 5 | 4 | 4 | 4 | 4.35 | highest coding-agent demand; covers the web platform only |
 | General news: GDELT | 5 | 4 | 2 | 5 | 4.15 | aggregator exception; one API covers every topic |
 | US real-time transit (GTFS-RT) | 4 | 5 | 5 | 2 | 4.05 | high effort |
 | OFAC sanctions | 3 | 4 | 5 | 3 | 3.65 | compliance, not volume |
 
-**Pick: market quotes.** FRED already carries index levels and ECB carries daily
-FX, so the missing pieces are single-name equities and crypto spot — both
-venue-native. Coinbase is the clean half; Nasdaq carries a policy risk because
-its public endpoint is undocumented and rejects non-browser User-Agents. If
-Nasdaq is excluded, the tranche drops to ~4.15 and general news becomes the
-better pick.
+**Shipped: market quotes.** Coinbase covers crypto spot and rates; Yahoo Finance
+covers NYSE- and Nasdaq-listed equities, ETFs and indices through its public chart
+and search endpoints, as an explicit aggregator exception. NYSE has no public API
+of its own, so a primary NYSE feed remains a gap; Yahoo is the working substitute,
+never automatic.
+
+**Next by the same rule: MDN official docs (4.35).** It is policy-clean and
+keyless, and official documentation is the most common unshipped category for
+coding agents. General news via GDELT (4.15) remains the runner-up, penalized for
+the aggregator exception.
 
 ## Maintenance
 

@@ -21,6 +21,7 @@ def test_all_manifests_load(registry):
         "congress_gov",
         "courtlistener",
         "courtlistener_mcp",
+        "coinbase_prices",
         "collin_county_property",
         "colorado_campaign_finance",
         "companies_house",
@@ -134,6 +135,7 @@ def test_all_manifests_load(registry):
         "wayback",
         "wikidata",
         "world_bank",
+        "yahoo_finance",
         "zenodo",
     }
 

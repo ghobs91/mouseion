@@ -1,6 +1,6 @@
 # Source inventory
 
-The full registry: **129 providers and 186 capabilities across ten domains**.
+The full registry: **131 providers and 191 capabilities across ten domains**.
 `none` means keyless; every other value names the credential the manifest
 declares. The authoritative live view is `mouseion providers` or the dashboard's
 Sources tab. This page is the stable inventory for reading and review.
@@ -59,6 +59,7 @@ directory of every API on the internet.
 | FEMA Flood Hazard Zones | none | `flood_zone` |
 | MLB StatsAPI | none | `teams`, `schedule`, `standings` |
 | MusicBrainz | none | `search_artists`, `search_releases`, `artist` |
+| Yahoo Finance quotes | none | `quote`, `history`, `search` |
 | OurAirports | none | `airports` |
 | TMDB | free key | `search_movies`, `movie` |
 | Texas governor news | none | `announcements` |
@@ -124,6 +125,7 @@ directory of every API on the internet.
 | King County Election Results | none | `results` (73 elections, 2004–2026) |
 | King County food inspections | none | `inspections` |
 | Colorado Campaign Finance | none | `contributions`, `expenditures` (bulk ZIP) |
+| Coinbase crypto prices | none | `spot`, `exchange_rates` |
 | Collin County property owners | none | `owners` |
 | El Paso Elected Officials | none | `city_council`, `municipal_court` (HTML table) |
 | Rhode Island Recent Filings | none | `recent` (HTML table) |

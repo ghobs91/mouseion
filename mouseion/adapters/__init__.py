@@ -3,6 +3,7 @@ from __future__ import annotations
 from .atom import AtomAdapter
 from .base import Adapter, AdapterResult, PreparedRequest, extract_records
 from .cdx import CdxAdapter
+from .coinbase_rates import CoinbaseRatesAdapter
 from .csv_adapter import CsvAdapter
 from .faa_nas import FaaNasAdapter
 from .html_table import HtmlTableAdapter
@@ -14,6 +15,7 @@ from .rss import RssAdapter
 from .sdmx_json import SdmxJsonAdapter
 from .socrata import SocrataAdapter
 from .tfl_status import TflStatusAdapter
+from .yahoo_chart import YahooChartAdapter
 
 ADAPTERS: dict[str, Adapter] = {
     adapter.name: adapter
@@ -24,12 +26,14 @@ ADAPTERS: dict[str, Adapter] = {
         RssAdapter(),
         SdmxJsonAdapter(),
         CdxAdapter(),
+        CoinbaseRatesAdapter(),
         CsvAdapter(),
         HtmlTableAdapter(),
         NwsForecastAdapter(),
         OnetOccupationsAdapter(),
         PodcastIndexAdapter(),
         TflStatusAdapter(),
+        YahooChartAdapter(),
         FaaNasAdapter(),
     )
 }

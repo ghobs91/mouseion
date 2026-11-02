@@ -156,12 +156,30 @@ def test_podcast_index_splits_search_and_episodes(registry, cache):
     )
 
 
+def test_coinbase_splits_spot_and_rates(registry, cache):
+    router = Router(registry, cache)
+    assert run(router.route("what is the price of bitcoin"))[0].capability == "spot"
+    assert (
+        run(router.route("crypto exchange rates in USD"))[0].capability
+        == "exchange_rates"
+    )
+
+
+def test_yahoo_splits_quote_and_history(registry, cache):
+    router = Router(registry, cache)
+    assert run(router.route("AAPL quote"))[0].capability == "quote"
+    assert (
+        run(router.route("how has Tesla stock performed this year"))[0].capability
+        == "history"
+    )
+
+
 def test_eval_baseline_holds(registry, cache):
     index = JurisdictionIndex(load_jurisdictions(ROOT / "jurisdictions.yaml"))
     report = run(evaluate(Router(registry, cache, jurisdictions=index), load_cases()))
-    assert report["total"] == 171
-    assert report["top1"] >= 153, report["misses"]
-    assert report["top3"] >= 164, report["misses"]
+    assert report["total"] == 177
+    assert report["top1"] >= 159, report["misses"]
+    assert report["top3"] >= 170, report["misses"]
     assert report["top3"] >= report["top1"]
 
 

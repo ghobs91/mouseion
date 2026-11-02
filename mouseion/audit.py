@@ -255,10 +255,19 @@ def audit_manifest(manifest: Manifest, *, today: date | None = None) -> list[Fin
     ):
         blocked = _blocked_by(_host(url))
         if blocked:
-            err(
-                "blocked_secondary_host",
-                f"{label} host '{_host(url)}' matches blocked secondary source '{blocked}'",
+            message = (
+                f"{label} host '{_host(url)}' matches blocked secondary source '{blocked}'"
             )
+            # The blocklist keeps a secondary source from being presented as primary.
+            # An explicit aggregator_exception is the sanctioned way to ship one, so
+            # the same host is a warning once that claim is made.
+            if (
+                manifest.source.provenance == "aggregator_exception"
+                and manifest.source.exception_reason
+            ):
+                warn("blocked_secondary_host", f"{message} (explicit aggregator exception)")
+            else:
+                err("blocked_secondary_host", message)
 
     if not manifest.docs_url:
         warn("docs_url_missing", "no docs_url; the model has no primary documentation link")

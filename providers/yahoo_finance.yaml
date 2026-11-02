@@ -1,0 +1,184 @@
+id: yahoo_finance
+title: Yahoo Finance quotes
+category: finance
+domain: financial_sovereign
+sub_category: market_quotes
+adapter: rest_json
+base: https://query1.finance.yahoo.com
+regions: []
+headers:
+  User-Agent: "Mouseion/0.1 (+https://github.com/andrewg/mouseion)"
+  Accept: application/json
+description: >-
+  Yahoo Finance's public chart and search endpoints, the same data the yfinance
+  library consumes: a current quote, daily or intraday price history, and symbol
+  lookup across equities, ETFs and indices, including NYSE-listed names. Keyless.
+  Yahoo republishes exchange data, so this is an explicit aggregator exception,
+  not a primary source, and it is never used in automatic failover.
+docs_url: https://finance.yahoo.com/
+keywords:
+  - stock price
+  - share price
+  - ticker
+  - quote
+  - yahoo finance
+  - stock history
+  - market price
+  - closing price
+  - etf price
+  - index price
+attribution: "Yahoo Finance"
+auth:
+  type: none
+source:
+  is_primary: false
+  originator: "Yahoo Finance"
+  originator_domain: finance.yahoo.com
+  provenance: aggregator_exception
+  exception_reason: >-
+    Yahoo Finance republishes exchange and consolidated quote data. It answers
+    "what is the price" broadly, but the listing venue remains the originator, so
+    this provider is excluded from automatic failover.
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://finance.yahoo.com/
+    verified_at: 2026-11-02
+  rate_limit: {per_min: 30, burst: 5, concurrency: 1}
+cache_ttl: 60
+limits:
+  rps: 1
+  note: "Undocumented public endpoint; a custom User-Agent works, browser UAs are rate-limited."
+capabilities:
+  quote:
+    description: >-
+      Current quote for a ticker, including NYSE- and Nasdaq-listed equities,
+      ETFs and indices. Returns the name, exchange, currency, last price, change
+      percent, previous close, day range, volume and instrument type.
+    path: /v8/finance/chart/{symbol}
+    params:
+      symbol:
+        type: string
+        required: true
+        description: Ticker symbol, e.g. AAPL, IBM or SPY.
+      range:
+        type: string
+        description: Chart range used to build the quote (default 1d).
+        default: 1d
+      interval:
+        type: string
+        description: Chart interval (default 5m).
+        default: 5m
+    id_field: symbol
+    source_url_template: "https://finance.yahoo.com/quote/{symbol}"
+    fields:
+      symbol: chart.result.0.meta.symbol
+      name: [chart.result.0.meta.longName, chart.result.0.meta.shortName]
+      exchange: chart.result.0.meta.fullExchangeName
+      currency: chart.result.0.meta.currency
+      instrument_type: chart.result.0.meta.instrumentType
+      price: chart.result.0.meta.regularMarketPrice
+      change_percent: chart.result.0.meta.regularMarketChangePercent
+      previous_close: chart.result.0.meta.previousClose
+      day_high: chart.result.0.meta.regularMarketDayHigh
+      day_low: chart.result.0.meta.regularMarketDayLow
+      volume: chart.result.0.meta.regularMarketVolume
+      market_time: chart.result.0.meta.regularMarketTime
+    patterns:
+      - "\\bstock\\b"
+      - "\\bquote\\b"
+      - "share price"
+    query_map: {identifier: symbol}
+    exemplars:
+      - what is the price of IBM stock
+      - NYSE share price for a ticker
+      - SPY quote
+      - current stock price
+    example:
+      symbol: IBM
+  history:
+    description: >-
+      Daily or intraday price bars for a ticker over a range. Returns one row per
+      bar with the timestamp, open, high, low, close and volume.
+    adapter: yahoo_chart
+    path: /v8/finance/chart/{symbol}
+    params:
+      symbol:
+        type: string
+        required: true
+        description: Ticker symbol, e.g. AAPL.
+      range:
+        type: string
+        description: "Range such as 1d, 5d, 1mo, 6mo, 1y or 5y (default 1mo)."
+        default: 1mo
+      interval:
+        type: string
+        description: "Bar size such as 1d, 1wk or 5m (default 1d)."
+        default: 1d
+      limit:
+        type: integer
+        description: Rows per page (1-1000, default 50).
+        default: 50
+    pagination: {mode: offset, default_limit: 50, max_limit: 1000}
+    local_window: true
+    id_template: "{symbol}:{date}"
+    source_url_template: "https://finance.yahoo.com/quote/{symbol}/history"
+    fields:
+      symbol: symbol
+      date: date
+      open: open
+      high: high
+      low: low
+      close: close
+      volume: volume
+    patterns:
+      - "\\bperformed\\b"
+      - "price history"
+      - "stock history"
+    exemplars:
+      - IBM stock price history
+      - daily closing prices for a ticker
+      - how has a stock performed over the past year
+    example:
+      symbol: IBM
+      range: 1mo
+      interval: 1d
+      limit: 20
+  search:
+    description: >-
+      Look up ticker symbols by company or fund name. Returns the symbol, name,
+      exchange, quote type, sector, industry and match score.
+    base: https://query2.finance.yahoo.com
+    path: /v1/finance/search
+    params:
+      q:
+        type: string
+        required: true
+        description: Company or fund name, e.g. "international business machines".
+      quotesCount:
+        type: integer
+        description: Matches to return (1-20, default 10).
+        default: 10
+    defaults:
+      newsCount: 0
+    record_path: quotes
+    id_field: symbol
+    source_url_template: "https://finance.yahoo.com/quote/{symbol}"
+    fields:
+      symbol: symbol
+      name: [longname, shortname]
+      exchange: exchDisp
+      quote_type: quoteType
+      sector: sector
+      industry: industry
+      score: score
+    query_map: {text: q, limit: quotesCount}
+    exemplars:
+      - ticker symbol for international business machines
+      - find the stock symbol for a company
+      - yahoo finance symbol lookup
+    example:
+      q: international business machines
+      quotesCount: 5

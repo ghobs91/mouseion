@@ -1,0 +1,1 @@
+{"provider": "coinbase_prices", "capability": "spot", "recorded_at": "2026-11-02T10:29:00+00:00", "params": {"pair": "BTC-USD"}, "expected_records": 1, "body": {"data": {"amount": "77864.015", "base": "BTC", "currency": "USD"}}}

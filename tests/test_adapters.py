@@ -1132,3 +1132,79 @@ def test_gleif_parent_relationship_is_empty_when_absent(registry):
     )
 
     assert result.records == []
+
+
+COINBASE_RATES_BODY = {
+    "data": {
+        "currency": "USD",
+        "rates": {"BTC": "0.0000128", "ETH": "0.000438", "USDC": "1.0"},
+    }
+}
+
+
+def test_coinbase_rates_flattens_and_filters(registry):
+    manifest = registry.get("coinbase_prices")
+    cap = manifest.capabilities["exchange_rates"]
+    adapter = get_adapter(cap.adapter)
+    req = adapter.prepare(manifest, cap, {"currency": "USD", "q": "btc", "limit": 10}, None)
+
+    assert "q" not in req.params
+    result = adapter.parse(manifest, cap, COINBASE_RATES_BODY, req)
+
+    assert len(result.records) == 1
+    row = result.records[0]
+    assert row.data["asset"] == "BTC"
+    assert row.data["currency"] == "USD"
+    assert row.source_record_id == "USD:BTC"
+
+
+YAHOO_CHART_BODY = {
+    "chart": {
+        "result": [
+            {
+                "meta": {"symbol": "AAPL"},
+                "timestamp": [1793367000, 1793367300],
+                "indicators": {
+                    "quote": [
+                        {
+                            "open": [345.0, 346.0],
+                            "high": [346.0, 347.0],
+                            "low": [344.0, 345.0],
+                            "close": [345.5, 346.5],
+                            "volume": [1000, 2000],
+                        }
+                    ]
+                },
+            }
+        ],
+        "error": None,
+    }
+}
+
+
+def test_yahoo_chart_zips_bars(registry):
+    manifest = registry.get("yahoo_finance")
+    cap = manifest.capabilities["history"]
+    adapter = get_adapter(cap.adapter)
+    req = adapter.prepare(
+        manifest, cap, {"symbol": "AAPL", "range": "1d", "interval": "5m"}, None
+    )
+    result = adapter.parse(manifest, cap, YAHOO_CHART_BODY, req)
+
+    assert len(result.records) == 2
+    first = result.records[0]
+    assert first.data["symbol"] == "AAPL"
+    assert first.data["close"] == 345.5
+    assert first.data["date"].startswith("2026-")
+    assert first.source_url == "https://finance.yahoo.com/quote/AAPL/history"
+
+
+def test_yahoo_chart_pages_locally(registry):
+    manifest = registry.get("yahoo_finance")
+    cap = manifest.capabilities["history"]
+    adapter = get_adapter(cap.adapter)
+    req = adapter.prepare(manifest, cap, {"symbol": "AAPL", "limit": 1}, None)
+    result = adapter.parse(manifest, cap, YAHOO_CHART_BODY, req)
+
+    assert len(result.records) == 1
+    assert result.next_cursor == "1"

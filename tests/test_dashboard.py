@@ -150,7 +150,7 @@ def test_snapshot_endpoint(server):
     status, body, _ = get(server + "/api/snapshot")
     assert status == 200
     payload = json.loads(body)
-    assert payload["totals"]["providers"] == 129
+    assert payload["totals"]["providers"] == 131
     assert payload["totals"]["jurisdictions"] == 101
 
 

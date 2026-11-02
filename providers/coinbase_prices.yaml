@@ -1,0 +1,111 @@
+id: coinbase_prices
+title: Coinbase crypto prices
+category: finance
+domain: financial_sovereign
+sub_category: market_quotes
+adapter: rest_json
+base: https://api.coinbase.com
+regions: []
+description: >-
+  Coinbase's public spot prices and exchange rates: one trading pair
+  (BTC-USD) or the full rate table for a quote currency. Coinbase is the venue
+  for its own market, so the quote is primary rather than an index. Keyless.
+docs_url: https://docs.cdp.coinbase.com/
+keywords:
+  - bitcoin price
+  - ethereum price
+  - crypto price
+  - coinbase
+  - spot price
+  - cryptocurrency exchange rate
+  - solana price
+  - dogecoin price
+attribution: "Coinbase"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "Coinbase"
+  originator_domain: coinbase.com
+  provenance: commercial_platform
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://docs.cdp.coinbase.com/
+    verified_at: 2026-11-02
+  rate_limit: {per_min: 60, burst: 10, concurrency: 3}
+cache_ttl: 60
+limits:
+  rps: 2
+capabilities:
+  spot:
+    description: >-
+      Spot price for one trading pair. Returns the amount, base asset and quote
+      currency, e.g. BTC-USD. For the full table of quoted assets, use the other
+      capability.
+    path: /v2/prices/{pair}/spot
+    params:
+      pair:
+        type: string
+        required: true
+        description: Trading pair, e.g. BTC-USD, ETH-USD or BTC-EUR.
+    id_template: "{base}-{currency}"
+    source_url_template: "https://api.coinbase.com/v2/prices/{pair}/spot"
+    fields:
+      base: data.base
+      currency: data.currency
+      amount: data.amount
+    patterns:
+      - "spot price"
+      - "bitcoin price"
+      - "crypto price"
+    query_map: {identifier: pair}
+    exemplars:
+      - what is the price of bitcoin
+      - ethereum price in dollars
+      - how much is solana worth
+      - BTC USD spot price
+    example:
+      pair: BTC-USD
+  exchange_rates:
+    description: >-
+      The full exchange-rate table for a quote currency: every asset Coinbase
+      quotes against it. Returns the asset code, rate and quote currency. `q`
+      filters the table by asset code.
+    adapter: coinbase_rates
+    path: /v2/exchange-rates
+    params:
+      currency:
+        type: string
+        description: Quote currency (default USD).
+        default: USD
+      q:
+        type: string
+        description: Asset-code filter applied locally, e.g. BTC or ETH.
+      limit:
+        type: integer
+        description: Rows per page (1-100, default 20).
+        default: 20
+    pagination: {mode: offset, default_limit: 20, max_limit: 100}
+    local_window: true
+    id_template: "{currency}:{asset}"
+    source_url_template: "https://api.coinbase.com/v2/exchange-rates?currency={currency}"
+    fields:
+      asset: asset
+      rate: rate
+      currency: currency
+    patterns:
+      - "exchange rates"
+      - "rate table"
+      - "crypto rates"
+    query_map: {text: q, limit: limit}
+    exemplars:
+      - crypto exchange rates in USD
+      - list coinbase rates
+      - bitcoin and ethereum exchange rate table
+    example:
+      currency: USD
+      q: BTC
+      limit: 5

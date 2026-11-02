@@ -191,6 +191,22 @@ def test_blocked_secondary_hosts_fail():
     assert "blocked_secondary_host" in codes(audit_manifest(manifest, today=TODAY))
 
 
+def test_blocked_secondary_hosts_pass_as_an_explicit_exception():
+    manifest = base_manifest()
+    manifest.base = "https://www.reuters.com"
+    manifest.docs_url = "https://www.reuters.com/docs"
+    manifest.source.originator_domain = "reuters.com"
+    manifest.source.auth_policy.evidence_url = "https://www.reuters.com/docs"
+    manifest.source.is_primary = False
+    manifest.source.provenance = "aggregator_exception"
+    manifest.source.exception_reason = "Test aggregator with a recorded reason."
+
+    findings = audit_manifest(manifest, today=TODAY)
+    blocked = [f for f in findings if f.code == "blocked_secondary_host"]
+    assert blocked
+    assert all(f.severity == "warning" for f in blocked)
+
+
 def test_cluster_requires_a_query_map():
     manifest = base_manifest()
     manifest.capabilities["search"].query_map = {}
