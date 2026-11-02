@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+
 import pytest
 
 from mouseion.adapters import get_adapter
@@ -212,6 +214,79 @@ def test_tfl_status_flattens_nested_line_statuses(registry):
     assert closed.source_url == "https://tfl.gov.uk/modes/tube/"
     assert closed.data["reason"] == "Service will resume later."
     assert closed.data["is_now"] is True
+
+
+def test_podcast_index_signs_requests(registry, monkeypatch):
+    monkeypatch.setenv("PODCAST_INDEX_KEY", "key")
+    monkeypatch.setenv("PODCAST_INDEX_SECRET", "secret")
+    manifest = registry.get("podcast_index")
+    cap = manifest.capabilities["search"]
+    req = prepare(manifest, cap, {"q": "javascript", "max": 3})
+
+    stamp = req.headers["X-Auth-Date"]
+    assert stamp.isdigit()
+    assert req.headers["X-Auth-Key"] == "key"
+    expected = hashlib.sha1(f"keysecret{stamp}".encode()).hexdigest()
+    assert req.headers["Authorization"] == expected
+
+
+def test_podcast_index_requires_both_credentials(registry, monkeypatch):
+    monkeypatch.delenv("PODCAST_INDEX_KEY", raising=False)
+    monkeypatch.delenv("PODCAST_INDEX_SECRET", raising=False)
+    manifest = registry.get("podcast_index")
+    cap = manifest.capabilities["search"]
+
+    with pytest.raises(ProviderError, match="credentials"):
+        prepare(manifest, cap, {"q": "javascript", "max": 3})
+
+
+def test_podcast_index_projects_feeds_and_episodes(registry, monkeypatch):
+    monkeypatch.setenv("PODCAST_INDEX_KEY", "key")
+    monkeypatch.setenv("PODCAST_INDEX_SECRET", "secret")
+    manifest = registry.get("podcast_index")
+    adapter = get_adapter(manifest.adapter)
+
+    search = manifest.capabilities["search"]
+    feeds = {
+        "status": "true",
+        "feeds": [
+            {
+                "id": 920666,
+                "title": "JS Party",
+                "link": "https://changelog.com/jsparty",
+                "url": "https://changelog.com/jsparty/feed",
+                "author": "Changelog",
+                "description": "A weekly celebration of JavaScript.",
+                "categories": {"Technology": 20},
+            }
+        ],
+    }
+    result = adapter.parse(manifest, search, feeds, prepare(manifest, search, {"q": "js"}))
+    assert result.records[0].data["id"] == 920666
+    assert result.records[0].data["feed"] == "https://changelog.com/jsparty/feed"
+    assert result.records[0].source_url == "https://changelog.com/jsparty"
+
+    episodes = manifest.capabilities["episodes"]
+    items = {
+        "status": "true",
+        "items": [
+            {
+                "id": 42,
+                "feedId": 920666,
+                "feedTitle": "JS Party",
+                "title": "Episode 300",
+                "link": "https://changelog.com/jsparty/300",
+                "datePublished": 1793000000,
+                "duration": 3600,
+                "enclosureUrl": "https://cdn.example/300.mp3",
+            }
+        ],
+    }
+    result = adapter.parse(
+        manifest, episodes, items, prepare(manifest, episodes, {"id": "920666"})
+    )
+    assert result.records[0].data["audio"] == "https://cdn.example/300.mp3"
+    assert result.records[0].data["published"] == 1793000000
 
 
 def test_projection_field_fallbacks(registry):

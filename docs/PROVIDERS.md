@@ -1,6 +1,6 @@
 # Source inventory
 
-The full registry: **123 providers and 174 capabilities across ten domains**.
+The full registry: **125 providers and 178 capabilities across ten domains**.
 `none` means keyless; every other value names the credential the manifest
 declares. The authoritative live view is `mouseion providers` or the dashboard's
 Sources tab. This page is the stable inventory for reading and review.
@@ -42,10 +42,12 @@ directory of every API on the internet.
 | Library of Congress | none | `search` |
 | FIFA | none | `matches`, `competitions` |
 | Premier League | none | `fixtures`, `competitions` |
+| Podcast Index | free key + secret | `search`, `episodes` |
 | LALIGA | none | `matches`, `standings` |
 | Bundesliga | none | `matches`, `standings` |
 | Caltrain news | none | `announcements` |
 | Serie A | none | `matches`, `standings` |
+| Stack Exchange | none | `search`, `question` |
 | Ligue 1 | none | `matches`, `standings`, `calendar` |
 | FAA Airport Status | none | `status` |
 | FDA press releases | none | `announcements` |

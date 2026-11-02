@@ -1,0 +1,131 @@
+id: podcast_index
+title: Podcast Index
+category: entertainment
+domain: reference
+sub_category: podcasts
+adapter: podcast_index
+base: https://api.podcastindex.org
+regions: []
+description: >-
+  Podcast Index's directory of podcasts and episodes: search shows by term, and
+  list a show's recent episodes with titles, dates, durations and enclosure
+  links. Free API key and secret (signed request), no card. The directory is an
+  index; each result cites the publisher's own feed and site.
+docs_url: https://podcastindex-org.github.io/docs-api/
+keywords:
+  - podcast
+  - podcast index
+  - podcast episode
+  - podcast search
+  - show notes
+  - rss feed
+  - listen
+attribution: "Podcast Index"
+auth:
+  type: api_key
+  env: PODCAST_INDEX_KEY
+  param: X-Auth-Key
+  signup_url: https://api.podcastindex.org/
+source:
+  is_primary: false
+  originator: "Podcast Index"
+  originator_domain: podcastindex.org
+  provenance: aggregator_exception
+  exception_reason: >-
+    Podcast Index indexes publisher-owned feeds; each record links to the
+    publisher's site and RSS. It is a directory, not the originator.
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://api.podcastindex.org/
+    verified_at: 2026-11-02
+  rate_limit: {per_min: 60, burst: 10, concurrency: 3}
+cache_ttl: 3600
+limits:
+  rps: 2
+capabilities:
+  search:
+    description: >-
+      Search podcasts by term. Returns the show id, title, site link, feed URL,
+      author, owner, description, categories, language, episode count and last
+      update. Use the id with the episodes capability.
+    path: /api/1.0/search/byterm
+    params:
+      q:
+        type: string
+        required: true
+        description: Search term, e.g. "javascript" or "history".
+      max:
+        type: integer
+        description: Results to return (1-100, default 20).
+        default: 20
+    record_path: feeds
+    id_field: id
+    source_url_template: "{link}"
+    fields:
+      id: id
+      title: title
+      link: [link, url]
+      feed: url
+      original_feed: originalUrl
+      description: description
+      author: author
+      owner: ownerName
+      image: image
+      artwork: artwork
+      categories: categories
+      language: language
+      episodes: episodeCount
+      last_update: lastUpdateTime
+    strip_html: [description, title]
+    query_map: {text: q, limit: max}
+    exemplars:
+      - find a podcast about javascript
+      - podcast search for history shows
+      - what podcasts cover astronomy
+      - look up a podcast by name
+    example: {q: javascript, max: 5}
+  episodes:
+    description: >-
+      Recent episodes for a podcast by its Podcast Index feed id. Returns the
+      episode id, title, link, description, publication date, duration, season
+      and episode number, and the audio enclosure URL.
+    path: /api/1.0/episodes/byfeedid
+    params:
+      id:
+        type: string
+        required: true
+        description: Podcast Index feed id from the search capability.
+      max:
+        type: integer
+        description: Episodes to return (1-100, default 20).
+        default: 20
+    record_path: items
+    id_field: id
+    source_url_template: "{link}"
+    fields:
+      id: id
+      feed_id: feedId
+      feed_title: feedTitle
+      title: title
+      link: link
+      description: description
+      published: datePublished
+      duration: duration
+      season: season
+      episode: episode
+      audio: enclosureUrl
+      image: image
+    strip_html: [description, title]
+    query_map: {identifier: id, limit: max}
+    patterns:
+      - "feed id \\d+"
+    exemplars:
+      - latest episodes of a podcast
+      - recent episodes from a show
+      - podcast episode list by feed id
+      - when was the last episode published
+      - list episodes for feed id 920666
+    example: {id: "920666", max: 5}

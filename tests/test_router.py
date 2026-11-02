@@ -147,12 +147,21 @@ def test_tfl_status_and_arrivals_split(registry, cache):
     assert run(router.route("next train from oxford circus"))[0].capability == "arrivals"
 
 
+def test_podcast_index_splits_search_and_episodes(registry, cache):
+    router = Router(registry, cache)
+    assert run(router.route("find a podcast about javascript"))[0].capability == "search"
+    assert (
+        run(router.route("recent episodes from podcast feed id 920666"))[0].capability
+        == "episodes"
+    )
+
+
 def test_eval_baseline_holds(registry, cache):
     index = JurisdictionIndex(load_jurisdictions(ROOT / "jurisdictions.yaml"))
     report = run(evaluate(Router(registry, cache, jurisdictions=index), load_cases()))
-    assert report["total"] == 150
-    assert report["top1"] >= 133, report["misses"]
-    assert report["top3"] >= 143, report["misses"]
+    assert report["total"] == 158
+    assert report["top1"] >= 141, report["misses"]
+    assert report["top3"] >= 151, report["misses"]
     assert report["top3"] >= report["top1"]
 
 

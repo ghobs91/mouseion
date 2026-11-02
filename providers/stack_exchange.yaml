@@ -1,0 +1,161 @@
+id: stack_exchange
+title: Stack Exchange
+category: developer
+domain: developer_infrastructure
+sub_category: technical_qa
+adapter: rest_json
+base: https://api.stackexchange.com
+regions: []
+description: >-
+  Stack Exchange's official API: search questions across Stack Overflow and the
+  network, and fetch a question with its body. Returns the title, link, score,
+  answer count, tags, owner and dates. Keyless; a free key raises the daily
+  quota from 300 to 10,000. Content is CC BY-SA.
+docs_url: https://api.stackexchange.com/docs
+keywords:
+  - stack overflow
+  - stackexchange
+  - programming question
+  - error message
+  - how do i fix
+  - code example
+  - accepted answer
+  - developer q&a
+  - debugging help
+attribution: "Stack Exchange, Inc. (CC BY-SA 4.0)"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "Stack Exchange, Inc."
+  originator_domain: stackexchange.com
+  provenance: commercial_platform
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://api.stackexchange.com/docs
+    verified_at: 2026-11-02
+  rate_limit: {per_min: 60, burst: 10, concurrency: 3}
+cache_ttl: 3600
+limits:
+  rps: 2
+  note: "Keyless quota is 300 requests/day per IP; a free key raises it to 10,000."
+capabilities:
+  search:
+    description: >-
+      Search questions by free text and tags on Stack Overflow or another Stack
+      Exchange site. Returns the question title, link, score, answer count,
+      accepted answer, tags, owner, views and dates.
+    path: /2.3/search/advanced
+    params:
+      q:
+        type: string
+        description: Free-text search, e.g. "attempted relative import".
+      tagged:
+        type: string
+        description: Semicolon-separated tags, e.g. "python;docker".
+      site:
+        type: string
+        description: Stack Exchange site (default stackoverflow).
+        default: stackoverflow
+      sort:
+        type: string
+        enum: [relevance, votes, activity, creation]
+        default: relevance
+        description: Sort order.
+      order:
+        type: string
+        enum: [desc, asc]
+        default: desc
+        description: Sort direction.
+      limit:
+        type: integer
+        description: Questions per page (1-100, default 20).
+        default: 20
+    pagination:
+      mode: page
+      param: page
+      limit_param: pagesize
+      has_next_field: has_more
+      default_limit: 20
+      max_limit: 100
+      start: 1
+    record_path: items
+    id_field: question_id
+    source_url_template: "{link}"
+    fields:
+      question_id: question_id
+      title: title
+      link: link
+      score: score
+      answers: answer_count
+      answered: is_answered
+      accepted_answer: accepted_answer_id
+      views: view_count
+      tags: tags
+      owner: owner.display_name
+      created: creation_date
+      last_activity: last_activity_date
+    strip_html: [title]
+    query_map: {text: q, limit: limit}
+    exemplars:
+      - how do I fix a python import error
+      - stack overflow answer about javascript closures
+      - why is my docker build failing
+      - pandas groupby example
+    example: {q: "attempted relative import", limit: 5}
+  question:
+    description: >-
+      Fetch one or more questions by id, including the body. Returns the title,
+      body text, link, score, answer count, tags, owner and dates. Pass ids
+      separated by semicolons.
+    path: /2.3/questions/{ids}
+    params:
+      ids:
+        type: string
+        required: true
+        description: Question id or semicolon-separated ids, e.g. 11227809.
+      site:
+        type: string
+        description: Stack Exchange site (default stackoverflow).
+        default: stackoverflow
+      limit:
+        type: integer
+        description: Questions to return (1-100, default 20).
+        default: 20
+    defaults:
+      filter: withbody
+    pagination:
+      mode: page
+      param: page
+      limit_param: pagesize
+      has_next_field: has_more
+      default_limit: 20
+      max_limit: 100
+      start: 1
+    record_path: items
+    id_field: question_id
+    source_url_template: "{link}"
+    fields:
+      question_id: question_id
+      title: title
+      body: body
+      link: link
+      score: score
+      answers: answer_count
+      answered: is_answered
+      accepted_answer: accepted_answer_id
+      views: view_count
+      tags: tags
+      owner: owner.display_name
+      created: creation_date
+      last_activity: last_activity_date
+    strip_html: [title, body]
+    query_map: {identifier: ids, limit: limit}
+    exemplars:
+      - read the body of a stack overflow question
+      - stack overflow question 11227809
+      - what does this stack exchange question say
+    example: {ids: "11227809"}

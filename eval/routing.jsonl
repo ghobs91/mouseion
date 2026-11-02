@@ -190,3 +190,13 @@
 {"query": "are there delays on the elizabeth line", "expect": "tfl_transit"}
 {"query": "next train from oxford circus", "expect": "tfl_transit"}
 {"query": "find the naptan id for paddington station", "expect": "tfl_transit"}
+
+{"query": "how do I fix attempted relative import in python", "expect": "stack_exchange"}
+{"query": "stack overflow question about javascript closures", "expect": "stack_exchange"}
+{"query": "why does my docker build fail with no space left", "expect": "stack_exchange"}
+{"query": "read stack overflow question 11227809", "expect": "stack_exchange"}
+
+{"query": "podcast shows about ancient history", "expect": "podcast_index"}
+{"query": "latest episodes of the daily", "expect": "podcast_index"}
+{"query": "search for a podcast on astronomy", "expect": "podcast_index"}
+{"query": "recent episodes from podcast feed id 920666", "expect": "podcast_index"}

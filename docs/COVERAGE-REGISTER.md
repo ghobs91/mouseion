@@ -19,7 +19,7 @@ recently discussed source. Update the status columns when a provider lands.
 
 ## Current state
 
-**123 providers / 174 capabilities.** Domain distribution is deliberately uneven:
+**125 providers / 178 capabilities.** Domain distribution is deliberately uneven:
 depth where the sources are good, not an even split.
 
 | Domain | Providers | Strong at | Weak at |
@@ -28,9 +28,9 @@ depth where the sources are good, not an even split.
 | `financial_sovereign` | 17 | central banks, regulators, filings, statistics | sanctions, market quotes |
 | `academic_scientific` | 14 | literature, biology, chemistry, clinical trials | global health, structures, genomes |
 | `geo_earth_observation` | 14 | geocoding, hazards, hydrology, alerts | **forecast**, real-time conditions |
-| `reference` | 13 | sports, music, film, jobs, encyclopedia | podcasts, games, people |
+| `reference` | 14 | sports, music, film, jobs, encyclopedia, podcasts | games, people |
 | `governance_legislative` | 20 | legislation, courts, federal agencies, state governors and attorneys general | — |
-| `developer_infrastructure` | 9 | package registries, vulnerabilities, code | Q&A, containers |
+| `developer_infrastructure` | 10 | package registries, vulnerabilities, code, Q&A | containers |
 | `transport_infrastructure` | 8 | airports, flight status, transit news, London live status | US real-time transit (GTFS-RT) |
 | `archives_web_state` | 5 | web and national archives | — |
 | `commerce` | 2 | Shopify catalogue, food products | barcodes, non-food products |
@@ -60,12 +60,12 @@ depth where the sources are good, not an even split.
 | Real-time transit | partial | TfL line status and arrivals; US GTFS-RT remains |
 | Jobs and occupations | partial | USAJobs; O*NET, Arbeitnow missing |
 | Packages, vulnerabilities, source code | covered | npm, PyPI, crates, Go, Maven, GitHub, NVD |
-| Developer Q&A | gap | Stack Exchange |
+| Developer Q&A | covered | Stack Exchange |
 | Macroeconomic statistics | covered | FRED, BLS, ECB, World Bank, Treasury |
 | IMF / OECD / BIS series | gap | SDMX endpoints, adapter already exists |
 | Sports results | covered | MLB, UEFA, FIFA, five leagues |
 | Music, film, TV | partial | MusicBrainz, TMDB |
-| Podcasts | gap | Podcast Index |
+| Podcasts | partial | Podcast Index scaffolded; data calls need a free key and secret |
 | Video games | gap | IGDB |
 | Breaking news headlines | partial | 10 agency press feeds; no cross-source index |
 | Consumer reviews, coupons, brand pages, social profiles | excluded | commercial or navigational, not primary records |
@@ -99,8 +99,8 @@ stated, not hidden.
 | 6 | OFAC sanctions screening | 4 | 4 | 5 | 3 | 3.95 | high |
 | 7 | O*NET occupations | 3 | 4 | 5 | 4 | 3.95 | low |
 | 8 | IMF / OECD / BIS SDMX | 3 | 3 | 5 | 5 | 3.85 | low |
-| 9 | Podcast Index and IGDB | 3 | 5 | 4 | 3 | 3.80 | low |
-| 10 | Stack Exchange | 4 | 4 | 3 | 4 | 3.75 | low |
+| ~~9~~ | ~~Podcast Index and IGDB~~ — Podcast Index scaffolded; IGDB blocked | 3 | 5 | 4 | 3 | 3.80 | low |
+| ~~10~~ | ~~Stack Exchange~~ — shipped | 4 | 4 | 3 | 4 | 3.75 | low |
 
 **Shipped: #1 (NWS forecast), #2 (state government announcements), #3
 (restaurant inspections) and #5 (real-time transit for London).** #5 used TfL's
@@ -111,6 +111,11 @@ one authority without a new binary adapter; US agencies still need GTFS-RT.
 (`ghoapi.azureedge.net`) returned 500/502 on every path on 2026-11-01, including
 root and `$metadata`. Re-check before scheduling it; do not ship a manifest
 against a dead endpoint.
+
+**Blocked: IGDB.** It needs Twitch client credentials, and its OAuth token flow
+does not fit the current auth model (`client_credentials` is restricted to
+remote-MCP transports). Its Apicalypse query is a raw POST body, which the client
+does not send today. Treat it as an auth-model project, not a manifest.
 
 **Next by the same rule: #7, O*NET.** It ties #6 (OFAC) on raw impact and is the
 cheaper one; #6 needs bulk sanctions parsing.

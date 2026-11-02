@@ -40,7 +40,7 @@ Captured 2026-10-31 from the Alexandria directory page.
 
 ## Where mouseion stands
 
-123 providers across ten routing domains. The counts below are providers, not
+125 providers across ten routing domains. The counts below are providers, not
 capabilities; one provider often covers several capabilities.
 
 | Domain | Providers | What is already strong |
@@ -50,11 +50,11 @@ capabilities; one provider often covers several capabilities.
 | `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS alerts and forecasts, EONET, GeoNames |
 | `governance_legislative` | 20 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener, FDA press, state governors and attorneys general |
 | `financial_sovereign` | 17 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF; central-bank and regulator press |
-| `developer_infrastructure` | 9 | npm, PyPI, crates, Go, Maven, GitHub, NVD, Hugging Face |
+| `developer_infrastructure` | 10 | npm, PyPI, crates, Go, Maven, GitHub, NVD, Hugging Face, Stack Exchange |
 | `archives_web_state` | 5 | Wayback, Internet Archive, LoC, UK National Archives |
 | `commerce` | 2 | Shopify catalog, Open Food Facts |
 | `transport_infrastructure` | 8 | OurAirports, FAA status, Schiphol flights, MBTA, SFMTA, Caltrain news, TfL live status |
-| `reference` | 13 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, UEFA, FIFA, Premier League, LALIGA, Bundesliga, Serie A, Ligue 1, football-data |
+| `reference` | 14 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, UEFA, FIFA, Premier League, LALIGA, Bundesliga, Serie A, Ligue 1, football-data, Podcast Index |
 
 ## Gap matrix
 
@@ -72,7 +72,7 @@ card.
 | Health (32) | openFDA, CMS, ClinicalTrials, NIH, PubMed | WHO, NHS, state health | WHO GHO (OData), NHS Digital, state health Socrata | 1 |
 | Life sciences (31) | UniProt, PubChem, PMC, GBIF | structures, genomes | RCSB PDB, Ensembl, bioRxiv, KEGG (academic) | 1 |
 | Places (23) | Nominatim, Overpass, USGS, **GeoNames** | hierarchy, timezone, population | **GeoNames** ✅, Who's On First, USGS GNIS | 2 / 1 |
-| Developer (21) | 9 providers | package registries, Q&A | **Hugging Face** ✅, Docker Hub, Stack Exchange | 1 |
+| Developer (21) | 10 providers | package registries, Q&A | **Hugging Face** ✅, **Stack Exchange** ✅, Docker Hub | 1 |
 | Travel (21) | OurAirports, FAA, Schiphol | routes, rail | **OurAirports** ✅, **FAA NAS** ✅, **Schiphol** ✅, OpenFlights | 1 / 2 |
 | News (16) | ten agency and transit press feeds, plus official registers | global news index | more agency press releases via RSS; GDELT (aggregator exception), Media Cloud | 1 / 2 |
 | Research (16) | 14 providers | citation graph, preprints | Semantic Scholar, CORE, bioRxiv/medRxiv | 2 / 1 |
@@ -81,7 +81,7 @@ card.
 | AI models (12) | **Hugging Face** | model catalogues | **Hugging Face** ✅, OpenRouter (commercial) | 1 |
 | People (12) | Wikidata, GLEIF, SEC insiders | sanctions, officers | OpenSanctions, Companies House officers | 2 |
 | Restaurant (10) | Overpass (OSM); NYC, Chicago, King County and NY State inspections | menus, more cities | more city health-inspection Socrata datasets; menu data has no primary API | 1 |
-| Entertainment (8) | MusicBrainz, TMDB | podcasts | **MusicBrainz** ✅, **TMDB** ✅, Podcast Index | 1 / 2 |
+| Entertainment (8) | MusicBrainz, TMDB, **Podcast Index** | podcasts (shipped, key pending) | **MusicBrainz** ✅, **TMDB** ✅, **Podcast Index** ✅ | 1 / 2 |
 | Marketing (8) | none | — | **do not target**: commercial only | — |
 | Apps (6) | none | — | **do not target**: no official store API | — |
 | Social (6) | none | — | **do not target**: commercial platforms | — |
