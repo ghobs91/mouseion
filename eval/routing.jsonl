@@ -205,3 +205,16 @@
 {"query": "O*NET code 29-1292.00", "expect": "onet_occupations"}
 {"query": "what are the duties of a physical therapist", "expect": "onet_occupations"}
 {"query": "occupational profile for a civil engineer", "expect": "onet_occupations"}
+
+{"query": "who is the parent company of Apple", "expect": "gleif"}
+{"query": "who ultimately owns this company", "expect": "gleif"}
+{"query": "what companies does Apple own", "expect": "gleif"}
+
+{"query": "registered agent for a New York corporation", "expect": "ny_business_registry"}
+{"query": "who owns a business in New York", "expect": "ny_business_registry"}
+
+{"query": "who owns this building in Albany", "expect": "ny_property_assessments"}
+{"query": "property owner for a parcel in New York", "expect": "ny_property_assessments"}
+
+{"query": "who owns a property in Collin County", "expect": "collin_county_property"}
+{"query": "property owner in Plano Texas", "expect": "collin_county_property"}

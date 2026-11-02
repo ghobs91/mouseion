@@ -1058,3 +1058,77 @@ def test_onet_occupations_pages_locally(registry):
 
     assert len(result.records) == 1
     assert result.next_cursor == "1"
+
+
+GLEIF_ENTITY_BODY = {
+    "data": {
+        "type": "lei-records",
+        "id": "X",
+        "attributes": {
+            "lei": "HWUPKR0MPOU8FGXBT394",
+            "entity": {
+                "legalName": {"name": "APPLE INC."},
+                "jurisdiction": "US-CA",
+                "legalAddress": {"addressLines": ["ONE APPLE PARK WAY"], "city": "CUPERTINO", "country": "US"},
+            },
+            "registration": {"status": "ISSUED"},
+        },
+        "relationships": {"direct-parent": {"links": {}}},
+        "links": {"self": "x"},
+    }
+}
+
+
+def test_gleif_entity_unwraps_the_single_resource(registry):
+    manifest = registry.get("gleif")
+    cap = manifest.capabilities["entity"]
+    adapter = get_adapter(manifest.adapter)
+    result = adapter.parse(
+        manifest, cap, GLEIF_ENTITY_BODY, prepare(manifest, cap, {"lei": "HWUPKR0MPOU8FGXBT394"})
+    )
+
+    assert len(result.records) == 1
+    assert result.records[0].data["name"] == "APPLE INC."
+    assert result.records[0].data["country"] == "US"
+
+
+GLEIF_PARENT_BODY = {
+    "data": {
+        "type": "relationship-records",
+        "id": "X",
+        "attributes": {
+            "validFrom": "2026-05-20T00:00:00Z",
+            "validTo": None,
+            "relationship": {
+                "startNode": {"id": "CHILD-LEI"},
+                "endNode": {"id": "PARENT-LEI"},
+                "type": "IS_DIRECTLY_CONSOLIDATED_BY",
+                "status": "ACTIVE",
+            },
+        },
+        "relationships": {},
+    }
+}
+
+
+def test_gleif_parent_relationship_projects_nodes(registry):
+    manifest = registry.get("gleif")
+    cap = manifest.capabilities["direct_parent"]
+    adapter = get_adapter(manifest.adapter)
+    result = adapter.parse(
+        manifest, cap, GLEIF_PARENT_BODY, prepare(manifest, cap, {"lei": "CHILD-LEI"})
+    )
+
+    assert result.records[0].data["parent_lei"] == "PARENT-LEI"
+    assert result.records[0].source_url == "https://search.gleif.org/#/record/PARENT-LEI"
+
+
+def test_gleif_parent_relationship_is_empty_when_absent(registry):
+    manifest = registry.get("gleif")
+    cap = manifest.capabilities["direct_parent"]
+    adapter = get_adapter(manifest.adapter)
+    result = adapter.parse(
+        manifest, cap, {}, prepare(manifest, cap, {"lei": "CHILD-LEI"})
+    )
+
+    assert result.records == []

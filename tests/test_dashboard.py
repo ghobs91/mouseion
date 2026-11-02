@@ -65,6 +65,8 @@ def test_jurisdictions_are_joined_with_the_coverage_probe(snapshot):
         "ny_campaign_finance",
         "ny_campaign_filers",
         "ny_food_inspections",
+        "ny_business_registry",
+        "ny_property_assessments",
     }
 
     los_angeles = next(
@@ -148,7 +150,7 @@ def test_snapshot_endpoint(server):
     status, body, _ = get(server + "/api/snapshot")
     assert status == 200
     payload = json.loads(body)
-    assert payload["totals"]["providers"] == 126
+    assert payload["totals"]["providers"] == 129
     assert payload["totals"]["jurisdictions"] == 101
 
 

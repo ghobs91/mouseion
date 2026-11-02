@@ -159,9 +159,9 @@ def test_podcast_index_splits_search_and_episodes(registry, cache):
 def test_eval_baseline_holds(registry, cache):
     index = JurisdictionIndex(load_jurisdictions(ROOT / "jurisdictions.yaml"))
     report = run(evaluate(Router(registry, cache, jurisdictions=index), load_cases()))
-    assert report["total"] == 162
-    assert report["top1"] >= 144, report["misses"]
-    assert report["top3"] >= 155, report["misses"]
+    assert report["total"] == 171
+    assert report["top1"] >= 153, report["misses"]
+    assert report["top3"] >= 164, report["misses"]
     assert report["top3"] >= report["top1"]
 
 

@@ -13,3 +13,7 @@
 {"query": "which local candidates support housing reform", "expect": null}
 {"query": "measured tokens per second for an LLM on my exact Apple Silicon chip (MLX / llama.cpp benchmark DB)", "expect": null}
 {"query": "what open model fits and runs well on a given Mac configuration (unified memory + bandwidth fit table)", "expect": null}
+{"query": "Asus AiMesh local only no cloud account privacy UniFi cloud optional", "expect": null}
+{"query": "Firewalla AP7 local first access point no cloud OpenWrt mesh 802.11s roaming", "expect": null}
+{"query": "GL.iNet router mesh OpenWrt no cloud account privacy local admin", "expect": null}
+{"query": "Linksys Velop Micro 7 no account no app local web interface privacy review", "expect": null}

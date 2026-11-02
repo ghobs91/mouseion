@@ -89,3 +89,141 @@ capabilities:
     example:
       name: Barclays
       limit: 5
+  entity:
+    description: >-
+      Fetch one LEI record by LEI: legal name, jurisdiction, legal form,
+      registration status and registered address. Use it to resolve the parent or
+      child LEI returned by the relationship capabilities.
+    path: /lei-records/{lei}
+    params:
+      lei:
+        type: string
+        required: true
+        description: 20-character LEI, e.g. HWUPKR0MPOU8FGXBT394.
+    record_path: data
+    map_exclude: [type, id, relationships, links]
+    id_field: lei
+    source_url_template: "https://search.gleif.org/#/record/{lei}"
+    fields:
+      lei: lei
+      name: entity.legalName.name
+      jurisdiction: entity.jurisdiction
+      legal_form: entity.legalForm.id
+      status: registration.status
+      registered_at: registration.registeredAt
+      address: entity.legalAddress.addressLines.0
+      city: entity.legalAddress.city
+      country: entity.legalAddress.country
+    exemplars:
+      - look up an LEI record
+      - legal name for an LEI
+      - who is registered under this LEI
+    example:
+      lei: HWUPKR0MPOU8FGXBT394
+  direct_parent:
+    description: >-
+      The direct parent relationship for an LEI: the parent LEI, relationship
+      type and status. Returns an empty result when the entity reports no direct
+      parent, so the absence is explicit rather than an error.
+    path: /lei-records/{lei}/direct-parent-relationship
+    params:
+      lei:
+        type: string
+        required: true
+        description: LEI of the entity whose parent you want.
+    empty_on_404: true
+    record_path: data
+    map_exclude: [type, id, relationships, links]
+    id_template: "{child_lei}:{parent_lei}:{relationship}"
+    source_url_template: "https://search.gleif.org/#/record/{parent_lei}"
+    fields:
+      child_lei: relationship.startNode.id
+      parent_lei: relationship.endNode.id
+      relationship: relationship.type
+      status: relationship.status
+      valid_from: validFrom
+      valid_to: validTo
+    patterns:
+      - "parent company"
+      - "parent of"
+    exemplars:
+      - who is the parent company of this LEI
+      - direct parent of a legal entity
+      - is this company owned by another company
+    example:
+      lei: 2549008YU9EOMHFUA249
+  ultimate_parent:
+    description: >-
+      The ultimate parent relationship for an LEI: the highest consolidating
+      parent, its relationship type and status. Returns an empty result when no
+      ultimate parent is reported.
+    path: /lei-records/{lei}/ultimate-parent-relationship
+    params:
+      lei:
+        type: string
+        required: true
+        description: LEI of the entity whose ultimate parent you want.
+    empty_on_404: true
+    record_path: data
+    map_exclude: [type, id, relationships, links]
+    id_template: "{child_lei}:{parent_lei}:{relationship}"
+    source_url_template: "https://search.gleif.org/#/record/{parent_lei}"
+    fields:
+      child_lei: relationship.startNode.id
+      parent_lei: relationship.endNode.id
+      relationship: relationship.type
+      status: relationship.status
+      valid_from: validFrom
+      valid_to: validTo
+    patterns:
+      - "ultimately owns"
+      - "ultimate parent"
+      - "ultimate owner"
+    exemplars:
+      - ultimate parent of a company
+      - who ultimately owns this entity
+      - top level parent LEI
+    example:
+      lei: 2549008YU9EOMHFUA249
+  children:
+    description: >-
+      Entities directly consolidated by an LEI (its direct children). Returns
+      each child's LEI, legal name, jurisdiction, registration status and country.
+    path: /lei-records/{lei}/direct-children
+    params:
+      lei:
+        type: string
+        required: true
+        description: LEI of the parent entity.
+      limit:
+        type: integer
+        description: Records per page (1-100, default 10).
+        default: 10
+    pagination:
+      mode: page
+      param: "page[number]"
+      limit_param: "page[size]"
+      total_pages_field: meta.pagination.lastPage
+      default_limit: 10
+      max_limit: 100
+      start: 1
+    record_path: data
+    id_field: child_lei
+    source_url_template: "https://search.gleif.org/#/record/{child_lei}"
+    fields:
+      child_lei: attributes.lei
+      name: attributes.entity.legalName.name
+      jurisdiction: attributes.entity.jurisdiction
+      status: attributes.registration.status
+      country: attributes.entity.legalAddress.country
+    patterns:
+      - "subsidiaries of"
+      - "what companies .* own"
+      - "companies does .* own"
+    exemplars:
+      - what companies does this entity own
+      - subsidiaries of a parent company
+      - direct children of an LEI
+    example:
+      lei: HWUPKR0MPOU8FGXBT394
+      limit: 5

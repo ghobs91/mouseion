@@ -1,0 +1,112 @@
+id: ny_business_registry
+title: New York business registry
+category: company
+domain: financial_sovereign
+sub_category: company_registry
+adapter: socrata
+base: https://data.ny.gov
+regions: [US]
+jurisdictions: [US-NY]
+description: >-
+  New York Department of State active corporation records: DOS id, legal name,
+  entity type, county, jurisdiction, filing date, the chief executive or chairman
+  on file, the registered agent and the process address. Keyless; active entities
+  only.
+docs_url: https://data.ny.gov/Government/Active-Corporations-Beginning-1800/n9v6-gdp6
+keywords:
+  - new york business
+  - new york corporation
+  - new york llc
+  - dos id
+  - registered agent
+  - company lookup
+  - business owner
+  - secretary of state new york
+attribution: "New York State Department of State"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "New York State Department of State"
+  originator_domain: ny.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.ny.gov/Government/Active-Corporations-Beginning-1800/n9v6-gdp6
+    verified_at: 2026-11-02
+  rate_limit: {per_min: 300, burst: 10, concurrency: 4}
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  entities:
+    description: >-
+      Query active New York corporations by name, county or filing date. Returns
+      the DOS id, legal name, entity type, county, jurisdiction, filing date, the
+      chairman or chief executive on file, the registered agent and the process
+      address. Use `where` for SoQL and `q` for free text.
+    path: /resource/n9v6-gdp6.json
+    params:
+      where:
+        type: string
+        description: >-
+          SoQL filter, e.g. "county = 'Westchester'" or
+          "upper(current_entity_name) like '%WINE%'".
+      q:
+        type: string
+        description: Free-text search across all columns, e.g. a business name.
+      order:
+        type: string
+        description: SoQL order clause.
+      limit:
+        type: integer
+        description: Rows per page (1-1000, default 20).
+        default: 20
+    defaults:
+      select: >-
+        dos_id,current_entity_name,entity_type,county,jurisdiction,initial_dos_filing_date,chairman_name,chairman_address_1,chairman_city,chairman_state,chairman_zip,registered_agent_name,registered_agent_address_1,registered_agent_city,registered_agent_state,registered_agent_zip,dos_process_name,dos_process_address_1,dos_process_city,dos_process_state,dos_process_zip,location_name,location_address_1,location_city,location_state,location_zip
+      order: initial_dos_filing_date DESC
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    id_field: dos_id
+    source_url_template: "https://data.ny.gov/resource/n9v6-gdp6/{dos_id}.json"
+    fields:
+      dos_id: dos_id
+      name: current_entity_name
+      entity_type: entity_type
+      county: county
+      jurisdiction: jurisdiction
+      filed: initial_dos_filing_date
+      chairman: chairman_name
+      chairman_address: chairman_address_1
+      chairman_city: chairman_city
+      chairman_state: chairman_state
+      chairman_zip: chairman_zip
+      registered_agent: registered_agent_name
+      agent_address: registered_agent_address_1
+      agent_city: registered_agent_city
+      agent_state: registered_agent_state
+      agent_zip: registered_agent_zip
+      process: dos_process_name
+      process_address: dos_process_address_1
+      process_city: dos_process_city
+      process_state: dos_process_state
+      process_zip: dos_process_zip
+      location: location_name
+      location_address: location_address_1
+    query_map: {text: q, limit: limit}
+    exemplars:
+      - who owns a business in New York
+      - registered agent for a New York corporation
+      - New York company lookup by name
+      - who is the CEO of a New York corporation
+    example:
+      where: "upper(current_entity_name) like '%WINE%'"
+      limit: 5

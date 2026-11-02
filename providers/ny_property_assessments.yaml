@@ -1,0 +1,112 @@
+id: ny_property_assessments
+title: New York property assessments
+category: places
+domain: civic_local
+sub_category: property_assessments
+adapter: socrata
+base: https://data.ny.gov
+regions: [US]
+jurisdictions: [US-NY]
+description: >-
+  New York State local assessment rolls: the owner of record, parcel address,
+  mailing address, deed book and page, property class and assessed values for
+  each parcel. Keyless. The dataset is statewide and large, so a `where` filter
+  is required to keep the query bounded.
+docs_url: https://data.ny.gov/Government/Property-Assessment-Data-from-Local-Assessment-/7vem-aaz7
+keywords:
+  - property owner
+  - who owns this property
+  - who owns this building
+  - new york property
+  - assessment roll
+  - parcel
+  - deed book
+  - property tax
+attribution: "New York State Department of Taxation and Finance"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "New York State Department of Taxation and Finance"
+  originator_domain: ny.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.ny.gov/Government/Property-Assessment-Data-from-Local-Assessment-/7vem-aaz7
+    verified_at: 2026-11-02
+  rate_limit: {per_min: 300, burst: 10, concurrency: 4}
+cache_ttl: 86400
+timeout_s: 90
+limits:
+  rps: 5
+capabilities:
+  parcels:
+    description: >-
+      Query New York assessment-roll parcels by county, owner or address. Returns
+      the roll year and parcel id, property class, parcel address, owner names,
+      mailing address, deed book and page, market value and assessed value.
+      `where` is required; give it a county or owner predicate.
+    path: /resource/7vem-aaz7.json
+    params:
+      where:
+        type: string
+        required: true
+        description: >-
+          SoQL filter, e.g. "county_name = 'Albany' AND
+          upper(primary_owner_last_name) = 'SMITH'".
+      order:
+        type: string
+        description: SoQL order clause.
+      limit:
+        type: integer
+        description: Rows per page (1-1000, default 20).
+        default: 20
+    defaults:
+      select: >-
+        roll_year,county_name,municipality_name,swis_code,print_key_code,property_class,property_class_description,parcel_address_number,parcel_address_street,parcel_address_suff,primary_owner_first_name,primary_owner_last_name,primary_owner_suffix,additional_owner_1_first,additional_owner_1_last_name,mailing_address_number,mailing_address_street,mailing_address_suff,mailing_address_city,mailing_address_state,mailing_address_zip,deed_book,page,full_market_value,assessment_total
+      order: roll_year DESC
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    id_template: "{roll_year}:{swis_code}:{print_key_code}"
+    source_url_template: "https://data.ny.gov/Government/Property-Assessment-Data-from-Local-Assessment-/7vem-aaz7"
+    fields:
+      roll_year: roll_year
+      county: county_name
+      municipality: municipality_name
+      swis: swis_code
+      parcel: print_key_code
+      property_class: property_class
+      property_class_description: property_class_description
+      address_number: parcel_address_number
+      address_street: parcel_address_street
+      address_suffix: parcel_address_suff
+      owner_first: primary_owner_first_name
+      owner_last: primary_owner_last_name
+      owner_suffix: primary_owner_suffix
+      co_owner_first: additional_owner_1_first
+      co_owner_last: additional_owner_1_last_name
+      mailing_number: mailing_address_number
+      mailing_street: mailing_address_street
+      mailing_suffix: mailing_address_suff
+      mailing_city: mailing_address_city
+      mailing_state: mailing_address_state
+      mailing_zip: mailing_address_zip
+      deed_book: deed_book
+      deed_page: page
+      market_value: full_market_value
+      assessed_value: assessment_total
+    exemplars:
+      - who owns this property in Albany
+      - property owner for a parcel in New York
+      - New York assessment roll owner lookup
+      - who owns this building in upstate New York
+    example:
+      where: "county_name = 'Albany' AND upper(primary_owner_last_name) = 'SMITH'"
+      limit: 5

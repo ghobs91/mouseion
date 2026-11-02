@@ -1,0 +1,105 @@
+id: collin_county_property
+title: Collin County property owners
+category: places
+domain: civic_local
+sub_category: property_ownership
+adapter: socrata
+base: https://data.texas.gov
+regions: [US]
+description: >-
+  Collin Central Appraisal District's owner property list, published on the Texas
+  open data portal: parcel id, situs address, legal description, property type and
+  the owner's name and mailing address. Keyless. Covers Plano, McKinney, Frisco,
+  Allen and the rest of Collin County, Texas.
+docs_url: https://data.texas.gov/dataset/Collin-CAD-Owner-Prop-List/ahis-pci3
+keywords:
+  - collin county property
+  - plano property owner
+  - mckinney property owner
+  - frisco property owner
+  - allen texas property
+  - property owner
+  - who owns this building
+  - cad owner lookup
+attribution: "Collin Central Appraisal District (Texas Open Data Portal)"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "Collin Central Appraisal District (via Texas Open Data Portal)"
+  originator_domain: texas.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.texas.gov/dataset/Collin-CAD-Owner-Prop-List/ahis-pci3
+    verified_at: 2026-11-02
+  rate_limit: {per_min: 300, burst: 10, concurrency: 4}
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  owners:
+    description: >-
+      Query Collin County parcels by owner name, address or parcel id. Returns the
+      parcel id and geo id, situs address, legal description, property type and
+      subtype, owner name and mailing address. Use `where` for SoQL and `q` for
+      free text.
+    path: /resource/ahis-pci3.json
+    params:
+      where:
+        type: string
+        description: >-
+          SoQL filter, e.g. "upper(ownername) like '%SMITH%'" or
+          "propid = '2286'".
+      q:
+        type: string
+        description: Free-text search across all columns, e.g. an owner or street.
+      order:
+        type: string
+        description: SoQL order clause.
+      limit:
+        type: integer
+        description: Rows per page (1-1000, default 20).
+        default: 20
+    defaults:
+      select: >-
+        propid,geoid,situsconcat,legaldescription,proptype,propsubtype,ownerid,ownername,ownernameaddtl,owneraddrline1,owneraddrline2,owneraddrcity,owneraddrstate,owneraddrzip,owneraddrcountry,ownereffdate,datadate
+      order: datadate DESC
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    id_field: propid
+    source_url_template: "https://data.texas.gov/resource/ahis-pci3/{propid}.json"
+    fields:
+      propid: propid
+      geoid: geoid
+      address: situsconcat
+      legal_description: legaldescription
+      property_type: proptype
+      property_subtype: propsubtype
+      owner_id: ownerid
+      owner_name: ownername
+      owner_name_additional: ownernameaddtl
+      owner_address_1: owneraddrline1
+      owner_address_2: owneraddrline2
+      owner_city: owneraddrcity
+      owner_state: owneraddrstate
+      owner_zip: owneraddrzip
+      owner_country: owneraddrcountry
+      owner_effective: ownereffdate
+      data_date: datadate
+    query_map: {text: q, limit: limit}
+    exemplars:
+      - who owns a property in Collin County
+      - property owner for a Plano address
+      - Collin CAD owner lookup
+      - who owns this building in McKinney
+    example:
+      where: "upper(ownername) like '%SMITH%'"
+      limit: 5

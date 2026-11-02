@@ -93,11 +93,11 @@ A manifest declares one of ten domains and a finer `sub_category`:
 
 | Domain | Providers | Examples |
 |---|---:|---|
-| `civic_local` | 21 | campaign finance, election results, elected officials, restaurant inspections |
+| `civic_local` | 23 | campaign finance, election results, elected officials, restaurant inspections, property owners |
 | `academic_scientific` | 14 | arXiv, Crossref, OpenAlex, PubMed, PMC, UniProt, GBIF |
 | `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS alerts and forecasts, GeoNames, FEMA |
 | `reference` | 15 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, UEFA, FIFA, five soccer leagues, Podcast Index, O*NET |
-| `financial_sovereign` | 17 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF, Companies House; central-bank and regulator press |
+| `financial_sovereign` | 18 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF (with ownership), Companies House, NY registry; central-bank and regulator press |
 | `governance_legislative` | 20 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener, FDA press; state governors and attorneys general |
 | `developer_infrastructure` | 10 | npm, PyPI, crates.io, Go, Maven, GitHub, NVD, Hugging Face, Stack Exchange |
 | `archives_web_state` | 5 | Wayback, Internet Archive, Library of Congress, UK National Archives |
@@ -200,7 +200,7 @@ its own catalogue, not a public-record originator.
 
 ## Coverage
 
-**126 providers, 179 capabilities, ten domains.** The full inventory is in
+**129 providers, 186 capabilities, ten domains.** The full inventory is in
 [`docs/PROVIDERS.md`](docs/PROVIDERS.md). The demand-shaped gap analysis, using
 Firecrawl Alexandria's categories as a reference, is in
 [`docs/PROVIDER-TARGETS.md`](docs/PROVIDER-TARGETS.md).
@@ -232,6 +232,9 @@ Highlights:
   routing works without them, data calls need the credentials).
 - **Occupations** — O*NET's occupation taxonomy: SOC code, title and description
   for about a thousand US occupations, from the Department of Labor's bulk CSV.
+- **Ownership** — GLEIF parent and subsidiary relationships, New York's business
+  registry, New York assessment-roll owners and Collin County (TX) property
+  owners: the two halves of "who owns this building or business".
 - **Soccer** — the Premier League, UEFA, FIFA, LALIGA, Bundesliga, Serie A and
   Ligue 1 read from their own site backends, with football-data.org kept as an
   explicit fallback.
@@ -392,7 +395,7 @@ than a directory of every API.
 ## Repository map
 
 ```
-providers/        126 YAML manifests, one per source
+providers/        129 YAML manifests, one per source
 mouseion/
   manifest.py     schema: domain, source policy, auth, capabilities, projection
   registry.py     loading, lexical scoring, provider cards

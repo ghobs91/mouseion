@@ -1,6 +1,6 @@
 # Source inventory
 
-The full registry: **126 providers and 179 capabilities across ten domains**.
+The full registry: **129 providers and 186 capabilities across ten domains**.
 `none` means keyless; every other value names the credential the manifest
 declares. The authoritative live view is `mouseion providers` or the dashboard's
 Sources tab. This page is the stable inventory for reading and review.
@@ -36,7 +36,7 @@ directory of every API on the internet.
 | FRED | free key | `search_series`, `series_observations` |
 | GBIF | none | `search_occurrences` |
 | Georgia governor news | none | `announcements` |
-| GLEIF | none | `search_lei` |
+| GLEIF | none | `search_lei`, `entity`, `direct_parent`, `ultimate_parent`, `children` |
 | GitHub | free token | `search_repositories`, `repository`, `releases`, `commits` |
 | Internet Archive | none | `search`, `metadata` |
 | Library of Congress | none | `search` |
@@ -80,6 +80,8 @@ directory of every API on the internet.
 | Maven Central | none | `search` |
 | MBTA news | none | `announcements` |
 | New York Campaign Finance | none | `disclosures` |
+| New York business registry | none | `entities` |
+| New York property assessments | none | `parcels` |
 | New York State food inspections | none | `inspections` |
 | New York Campaign Filers | none | `filers` |
 | New York City Campaign Finance | none | `contributions` |
@@ -122,6 +124,7 @@ directory of every API on the internet.
 | King County Election Results | none | `results` (73 elections, 2004–2026) |
 | King County food inspections | none | `inspections` |
 | Colorado Campaign Finance | none | `contributions`, `expenditures` (bulk ZIP) |
+| Collin County property owners | none | `owners` |
 | El Paso Elected Officials | none | `city_council`, `municipal_court` (HTML table) |
 | Rhode Island Recent Filings | none | `recent` (HTML table) |
 | Ramsey County Election Results | none | `results` |

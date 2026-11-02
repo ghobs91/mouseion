@@ -19,13 +19,13 @@ recently discussed source. Update the status columns when a provider lands.
 
 ## Current state
 
-**126 providers / 179 capabilities.** Domain distribution is deliberately uneven:
+**129 providers / 186 capabilities.** Domain distribution is deliberately uneven:
 depth where the sources are good, not an even split.
 
 | Domain | Providers | Strong at | Weak at |
 |---|---:|---|---|
-| `civic_local` | 21 | campaign finance, election results, restaurant inspections | candidates, ballots, local notices |
-| `financial_sovereign` | 17 | central banks, regulators, filings, statistics | sanctions, market quotes |
+| `civic_local` | 23 | campaign finance, election results, restaurant inspections, property owners | candidates, ballots, most county assessors |
+| `financial_sovereign` | 18 | central banks, regulators, filings, entity ownership, statistics | sanctions, market quotes |
 | `academic_scientific` | 14 | literature, biology, chemistry, clinical trials | global health, structures, genomes |
 | `geo_earth_observation` | 14 | geocoding, hazards, hydrology, alerts | **forecast**, real-time conditions |
 | `reference` | 15 | sports, music, film, jobs, occupations, encyclopedia, podcasts | games, people |
@@ -52,7 +52,9 @@ depth where the sources are good, not an even split.
 | Local election results and money | covered | 17 civic providers, 101 jurisdictions |
 | Candidates and ballots | gap | 5 explicit demand signals in `eval/coverage-gaps.jsonl` |
 | Restaurant inspections | covered | NYC, Chicago, King County, NY State |
-| Company registration and officers | partial | SEC, GLEIF, ROR, Companies House; no officers |
+| Company registration and officers | partial | SEC, GLEIF ownership chains, ROR, Companies House, NY registry; most state registries and officers remain |
+| Who owns this building | partial | NYC parcels, NY assessment rolls, Collin County TX; most county assessors remain |
+| Who owns this business | partial | SEC and GLEIF ownership, Companies House, NY registry; most state registries remain |
 | Sanctions and people screening | gap | OFAC SDN, EU and UK lists |
 | Product barcodes and non-food goods | partial | Open Food Facts; Open Products Facts missing |
 | Air travel status | covered | FAA, Schiphol, OurAirports |
