@@ -125,6 +125,28 @@ is a bulk file that needs local search, and the other sanctions lists (EU, UK)
 have different schemas. If a cheaper win is preferred, #8 (IMF/OECD/BIS SDMX) is
 keyless and reuses the existing SDMX adapter.
 
+## LLM web-search demand
+
+The backlog above weighs general demand. When the goal is specifically the
+questions an agent reaches for a search engine to answer, recency, prices and
+official documentation dominate, while compliance and macro series are rarer.
+Scored on the same axes, with demand read as "how often an LLM searches this":
+
+| Candidate | Demand | Gap | Policy | Leverage | Impact | Note |
+|---|---:|---:|---:|---:|---:|---|
+| **Market quotes: Coinbase + Nasdaq** | 5 | 5 | 3 | 4 | **4.40** | Coinbase documented and keyless; Nasdaq is exchange-native but UA-gated and undocumented |
+| Official docs: MDN | 5 | 4 | 4 | 4 | 4.35 | highest coding-agent demand; covers the web platform only |
+| General news: GDELT | 5 | 4 | 2 | 5 | 4.15 | aggregator exception; one API covers every topic |
+| US real-time transit (GTFS-RT) | 4 | 5 | 5 | 2 | 4.05 | high effort |
+| OFAC sanctions | 3 | 4 | 5 | 3 | 3.65 | compliance, not volume |
+
+**Pick: market quotes.** FRED already carries index levels and ECB carries daily
+FX, so the missing pieces are single-name equities and crypto spot — both
+venue-native. Coinbase is the clean half; Nasdaq carries a policy risk because
+its public endpoint is undocumented and rejects non-browser User-Agents. If
+Nasdaq is excluded, the tranche drops to ~4.15 and general news becomes the
+better pick.
+
 ## Maintenance
 
 - When a provider lands, move its row from `gap`/`partial` to `covered` and add it
