@@ -185,3 +185,8 @@
 
 {"query": "Florida Department of Health advisory", "expect": "fl_health_news"}
 {"query": "Florida health department outbreak notice", "expect": "fl_health_news"}
+
+{"query": "is the tube running normally", "expect": "tfl_transit"}
+{"query": "are there delays on the elizabeth line", "expect": "tfl_transit"}
+{"query": "next train from oxford circus", "expect": "tfl_transit"}
+{"query": "find the naptan id for paddington station", "expect": "tfl_transit"}

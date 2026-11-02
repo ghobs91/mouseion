@@ -19,7 +19,7 @@ recently discussed source. Update the status columns when a provider lands.
 
 ## Current state
 
-**122 providers / 171 capabilities.** Domain distribution is deliberately uneven:
+**123 providers / 174 capabilities.** Domain distribution is deliberately uneven:
 depth where the sources are good, not an even split.
 
 | Domain | Providers | Strong at | Weak at |
@@ -31,7 +31,7 @@ depth where the sources are good, not an even split.
 | `reference` | 13 | sports, music, film, jobs, encyclopedia | podcasts, games, people |
 | `governance_legislative` | 20 | legislation, courts, federal agencies, state governors and attorneys general | — |
 | `developer_infrastructure` | 9 | package registries, vulnerabilities, code | Q&A, containers |
-| `transport_infrastructure` | 7 | airports, flight status, transit news | real-time transit, routing |
+| `transport_infrastructure` | 8 | airports, flight status, transit news, London live status | US real-time transit (GTFS-RT) |
 | `archives_web_state` | 5 | web and national archives | — |
 | `commerce` | 2 | Shopify catalogue, food products | barcodes, non-food products |
 
@@ -57,7 +57,7 @@ depth where the sources are good, not an even split.
 | Product barcodes and non-food goods | partial | Open Food Facts; Open Products Facts missing |
 | Air travel status | covered | FAA, Schiphol, OurAirports |
 | Transit service announcements | partial | MBTA, SFMTA, Caltrain news |
-| Real-time transit | gap | GTFS-RT |
+| Real-time transit | partial | TfL line status and arrivals; US GTFS-RT remains |
 | Jobs and occupations | partial | USAJobs; O*NET, Arbeitnow missing |
 | Packages, vulnerabilities, source code | covered | npm, PyPI, crates, Go, Maven, GitHub, NVD |
 | Developer Q&A | gap | Stack Exchange |
@@ -95,21 +95,25 @@ stated, not hidden.
 | ~~2~~ | ~~State government announcement tranche~~ — shipped | 4 | 4 | 5 | 5 | 4.45 | low |
 | ~~3~~ | ~~Restaurant inspection capabilities~~ — shipped | 4 | 5 | 5 | 4 | 4.45 | medium |
 | 4 | WHO Global Health Observatory | 4 | 5 | 5 | 4 | 4.45 | low |
-| 5 | GTFS-RT for major agencies | 4 | 5 | 5 | 2 | 4.10 | high |
+| ~~5~~ | ~~Real-time transit~~ — partially shipped (TfL); US GTFS-RT remains | 4 | 5 | 5 | 2 | 4.10 | high |
 | 6 | OFAC sanctions screening | 4 | 4 | 5 | 3 | 3.95 | high |
 | 7 | O*NET occupations | 3 | 4 | 5 | 4 | 3.95 | low |
 | 8 | IMF / OECD / BIS SDMX | 3 | 3 | 5 | 5 | 3.85 | low |
 | 9 | Podcast Index and IGDB | 3 | 5 | 4 | 3 | 3.80 | low |
 | 10 | Stack Exchange | 4 | 4 | 3 | 4 | 3.75 | low |
 
-**Shipped: #1 (NWS forecast), #2 (state government announcements) and #3
-(restaurant inspections).** #2 used the RSS adapter and 8 of the verified state
-feeds; #3 closed a zero-coverage category with four health departments and no new
-adapter.
+**Shipped: #1 (NWS forecast), #2 (state government announcements), #3
+(restaurant inspections) and #5 (real-time transit for London).** #5 used TfL's
+JSON Unified API rather than a protobuf GTFS-RT feed, so it closed the topic for
+one authority without a new binary adapter; US agencies still need GTFS-RT.
 
-**Next by the same rule: #4, the WHO Global Health Observatory.** It ties the
-shipped items on raw impact and is the cheapest remaining gap, since its OData
-responses fit the existing REST adapter.
+**Blocked: #4, the WHO Global Health Observatory.** Its documented OData endpoint
+(`ghoapi.azureedge.net`) returned 500/502 on every path on 2026-11-01, including
+root and `$metadata`. Re-check before scheduling it; do not ship a manifest
+against a dead endpoint.
+
+**Next by the same rule: #7, O*NET.** It ties #6 (OFAC) on raw impact and is the
+cheaper one; #6 needs bulk sanctions parsing.
 
 ## Maintenance
 

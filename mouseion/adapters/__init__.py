@@ -11,6 +11,7 @@ from .rest_json import RestJsonAdapter
 from .rss import RssAdapter
 from .sdmx_json import SdmxJsonAdapter
 from .socrata import SocrataAdapter
+from .tfl_status import TflStatusAdapter
 
 ADAPTERS: dict[str, Adapter] = {
     adapter.name: adapter
@@ -24,6 +25,7 @@ ADAPTERS: dict[str, Adapter] = {
         CsvAdapter(),
         HtmlTableAdapter(),
         NwsForecastAdapter(),
+        TflStatusAdapter(),
         FaaNasAdapter(),
     )
 }

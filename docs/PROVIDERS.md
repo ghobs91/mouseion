@@ -1,6 +1,6 @@
 # Source inventory
 
-The full registry: **122 providers and 171 capabilities across ten domains**.
+The full registry: **123 providers and 174 capabilities across ten domains**.
 `none` means keyless; every other value names the credential the manifest
 declares. The authoritative live view is `mouseion providers` or the dashboard's
 Sources tab. This page is the stable inventory for reading and review.
@@ -60,6 +60,7 @@ directory of every API on the internet.
 | OurAirports | none | `airports` |
 | TMDB | free key | `search_movies`, `movie` |
 | Texas governor news | none | `announcements` |
+| Transport for London live status | none | `line_status`, `arrivals`, `stop_search` |
 | USAJobs | free key + email | `search` |
 | Companies House | free key (Basic) | `search`, `company` |
 | GeoNames | free username | `search` |

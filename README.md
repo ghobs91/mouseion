@@ -101,7 +101,7 @@ A manifest declares one of ten domains and a finer `sub_category`:
 | `governance_legislative` | 20 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener, FDA press; state governors and attorneys general |
 | `developer_infrastructure` | 9 | npm, PyPI, crates.io, Go, Maven, GitHub, NVD, Hugging Face |
 | `archives_web_state` | 5 | Wayback, Internet Archive, Library of Congress, UK National Archives |
-| `transport_infrastructure` | 7 | OurAirports, FAA airport status, Schiphol flights, MBTA, SFMTA, Caltrain news |
+| `transport_infrastructure` | 8 | OurAirports, FAA airport status, Schiphol flights, MBTA, SFMTA, Caltrain news, TfL live status |
 | `commerce` | 2 | Shopify Global Catalog, Open Food Facts |
 
 Routing runs in three passes:
@@ -200,7 +200,7 @@ its own catalogue, not a public-record originator.
 
 ## Coverage
 
-**122 providers, 171 capabilities, ten domains.** The full inventory is in
+**123 providers, 174 capabilities, ten domains.** The full inventory is in
 [`docs/PROVIDERS.md`](docs/PROVIDERS.md). The demand-shaped gap analysis, using
 Firecrawl Alexandria's categories as a reference, is in
 [`docs/PROVIDER-TARGETS.md`](docs/PROVIDER-TARGETS.md).
@@ -224,6 +224,8 @@ Highlights:
 - **State government** — the California, Georgia, Washington, North Carolina and
   Texas governors, the Pennsylvania and Washington attorneys general, and the
   Florida Department of Health publish their own news feeds.
+- **Live transit** — Transport for London line status, stop arrivals and stop
+  lookup from the Unified API, keyless.
 - **Soccer** — the Premier League, UEFA, FIFA, LALIGA, Bundesliga, Serie A and
   Ligue 1 read from their own site backends, with football-data.org kept as an
   explicit fallback.
@@ -384,7 +386,7 @@ than a directory of every API.
 ## Repository map
 
 ```
-providers/        122 YAML manifests, one per source
+providers/        123 YAML manifests, one per source
 mouseion/
   manifest.py     schema: domain, source policy, auth, capabilities, projection
   registry.py     loading, lexical scoring, provider cards

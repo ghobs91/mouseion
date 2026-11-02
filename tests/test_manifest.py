@@ -108,6 +108,7 @@ def test_all_manifests_load(registry):
         "rhode_island_recent_filings",
         "schiphol_flights",
         "shopify_catalog",
+        "tfl_transit",
         "tmdb",
         "tx_governor_news",
         "uefa",

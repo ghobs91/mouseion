@@ -167,6 +167,53 @@ def test_nws_forecast_pages_locally(registry):
     assert result.next_cursor == "1"
 
 
+TFL_STATUS_BODY = [
+    {
+        "id": "victoria",
+        "name": "Victoria",
+        "modeName": "tube",
+        "lineStatuses": [
+            {
+                "statusSeverity": 10,
+                "statusSeverityDescription": "Good Service",
+                "reason": None,
+                "validityPeriods": [],
+            }
+        ],
+    },
+    {
+        "id": "bakerloo",
+        "name": "Bakerloo",
+        "modeName": "tube",
+        "lineStatuses": [
+            {
+                "statusSeverity": 20,
+                "statusSeverityDescription": "Service Closed",
+                "reason": "  Service will resume  later.  ",
+                "validityPeriods": [
+                    {"fromDate": "2026-11-02T00:41:31Z", "toDate": "2026-11-02T04:33:06Z", "isNow": True}
+                ],
+            }
+        ],
+    },
+]
+
+
+def test_tfl_status_flattens_nested_line_statuses(registry):
+    manifest = registry.get("tfl_transit")
+    cap = manifest.capabilities["line_status"]
+    adapter = get_adapter(cap.adapter)
+    req = prepare(manifest, cap, {"modes": "tube", "limit": 10})
+    result = adapter.parse(manifest, cap, TFL_STATUS_BODY, req)
+
+    assert len(result.records) == 2
+    closed = result.records[1]
+    assert closed.source_record_id == "bakerloo:20:Service Closed"
+    assert closed.source_url == "https://tfl.gov.uk/modes/tube/"
+    assert closed.data["reason"] == "Service will resume later."
+    assert closed.data["is_now"] is True
+
+
 def test_projection_field_fallbacks(registry):
     manifest = registry.get("wikidata")
     cap = manifest.capabilities["entity"]

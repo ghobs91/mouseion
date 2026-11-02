@@ -1,0 +1,152 @@
+id: tfl_transit
+title: Transport for London live status
+category: places
+domain: transport_infrastructure
+sub_category: transit_realtime
+adapter: rest_json
+base: https://api.tfl.gov.uk
+regions: [GB]
+description: >-
+  Transport for London's Unified API: live line status for the Tube, DLR,
+  Overground and Elizabeth line, next arrivals at a stop, and stop lookup by
+  name. Official TfL service data, keyless (an app key raises the rate limit but
+  is not required).
+docs_url: https://api.tfl.gov.uk/
+keywords:
+  - tfl
+  - transport for london
+  - london underground
+  - tube status
+  - london train
+  - dlr
+  - elizabeth line
+  - oxford circus
+  - london transit delay
+attribution: "Transport for London"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "Transport for London"
+  originator_domain: tfl.gov.uk
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://api.tfl.gov.uk/
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 60, burst: 10, concurrency: 3}
+cache_ttl: 300
+limits:
+  rps: 2
+capabilities:
+  line_status:
+    description: >-
+      Live status for London transit lines. Returns one row per line status with
+      the line, mode, severity, status text, the published reason and the
+      validity period. Use `modes` to narrow to tube, dlr, overground,
+      elizabeth-line, bus or a comma-separated list.
+    adapter: tfl_status
+    path: /Line/Mode/{modes}/Status
+    params:
+      modes:
+        type: string
+        description: >-
+          Comma-separated modes, e.g. "tube" or
+          "tube,dlr,overground,elizabeth-line".
+        default: "tube,dlr,overground,elizabeth-line"
+      limit:
+        type: integer
+        description: Rows per page (1-100, default 50).
+        default: 50
+    pagination: {mode: offset, default_limit: 50, max_limit: 100}
+    local_window: true
+    id_template: "{line_id}:{severity}:{status}"
+    source_url_template: "https://tfl.gov.uk/modes/{mode}/"
+    fields:
+      line_id: line_id
+      line: line
+      mode: mode
+      severity: severity
+      status: status
+      reason: reason
+      valid_from: valid_from
+      valid_to: valid_to
+      is_now: is_now
+    exemplars:
+      - is the london underground running normally
+      - tube line status right now
+      - are there delays on the elizabeth line
+      - london transport service disruption
+    example: {modes: tube, limit: 10}
+  arrivals:
+    description: >-
+      Next arrivals at a London stop by NaPTAN id (use stop_search to find it).
+      Returns the line, destination, platform, expected arrival, time to station
+      and vehicle.
+    path: /StopPoint/{stop}/Arrivals
+    params:
+      stop:
+        type: string
+        required: true
+        description: NaPTAN stop id, e.g. 940GZZLUOXC for Oxford Circus.
+      limit:
+        type: integer
+        description: Rows per page (1-100, default 20).
+        default: 20
+    pagination: {mode: offset, default_limit: 20, max_limit: 100}
+    local_window: true
+    id_field: id
+    source_url_template: "https://api.tfl.gov.uk/StopPoint/{stop}/Arrivals"
+    fields:
+      id: id
+      line: lineName
+      line_id: lineId
+      destination: destinationName
+      towards: towards
+      platform: platformName
+      expected: expectedArrival
+      time_to_station: timeToStation
+      direction: direction
+      vehicle: vehicleId
+      station: stationName
+      mode: modeName
+    exemplars:
+      - next train from oxford circus
+      - when is the next tube at kings cross
+      - london bus arrivals at a stop
+      - next dlr train from bank
+    example: {stop: 940GZZLUOXC, limit: 5}
+  stop_search:
+    description: >-
+      Find London stops by name. Returns the NaPTAN id, name, modes, zone and
+      coordinates. Use the id with the arrivals capability.
+    path: /StopPoint/Search/{query}
+    params:
+      query:
+        type: string
+        required: true
+        description: Stop name, e.g. "Oxford Circus" or "King's Cross".
+      limit:
+        type: integer
+        description: Rows per page (1-50, default 10).
+        default: 10
+    pagination: {mode: offset, default_limit: 10, max_limit: 50}
+    local_window: true
+    record_path: matches
+    id_field: id
+    source_url_template: "https://api.tfl.gov.uk/StopPoint/{id}"
+    fields:
+      id: id
+      name: name
+      modes: modes
+      zone: zone
+      latitude: lat
+      longitude: lon
+    exemplars:
+      - find the stop id for kings cross
+      - london stop search oxford circus
+      - which naptan id is paddington station
+    example: {query: "Oxford Circus", limit: 5}

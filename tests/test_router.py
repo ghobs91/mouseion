@@ -141,12 +141,18 @@ def test_forecast_prefers_the_forecast_capability(registry, cache):
     assert candidates[0].capability == "forecast"
 
 
+def test_tfl_status_and_arrivals_split(registry, cache):
+    router = Router(registry, cache)
+    assert run(router.route("is the tube running normally"))[0].capability == "line_status"
+    assert run(router.route("next train from oxford circus"))[0].capability == "arrivals"
+
+
 def test_eval_baseline_holds(registry, cache):
     index = JurisdictionIndex(load_jurisdictions(ROOT / "jurisdictions.yaml"))
     report = run(evaluate(Router(registry, cache, jurisdictions=index), load_cases()))
-    assert report["total"] == 146
-    assert report["top1"] >= 129, report["misses"]
-    assert report["top3"] >= 139, report["misses"]
+    assert report["total"] == 150
+    assert report["top1"] >= 133, report["misses"]
+    assert report["top3"] >= 143, report["misses"]
     assert report["top3"] >= report["top1"]
 
 
