@@ -1,0 +1,77 @@
+id: fl_health_news
+title: Florida Department of Health news
+category: health
+domain: governance_legislative
+sub_category: state_government_announcements
+adapter: rss
+base: https://floridahealth.gov
+regions: [US]
+jurisdictions: [US-FL]
+description: >-
+  The Florida Department of Health's official news feed: public health
+  advisories, inspections, program announcements and emergency responses, as
+  the department publishes them. Returns title, link, publication date and
+  summary. Keyless.
+docs_url: https://floridahealth.gov/newsroom/
+keywords:
+  - florida department of health
+  - florida health advisory
+  - florida public health
+  - tallahassee health department
+  - florida disease outbreak
+  - florida health inspection
+attribution: "Florida Department of Health"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "Florida Department of Health"
+  originator_domain: floridahealth.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://floridahealth.gov/newsroom/
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 600
+limits:
+  rps: 1
+capabilities:
+  announcements:
+    description: >-
+      Recent Florida Department of Health announcements, newest first. Returns
+      the title, link, publication date and summary. `query` filters the current
+      window by keyword across title and summary.
+    path: /feed
+    params:
+      query:
+        type: string
+        description: >-
+          Keyword filter applied locally, e.g. 'advisory' or 'outbreak'.
+      limit:
+        type: integer
+        description: Records per page (1-50, default 20).
+        default: 20
+    pagination: {mode: offset, default_limit: 20, max_limit: 50}
+    local_window: true
+    id_field: id
+    fields:
+      id: id
+      title: title
+      link: link
+      published: published
+      summary: summary
+      author: author
+      categories: categories
+    strip_html: [summary]
+    source_url_template: "{link}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - what did the Florida Department of Health announce
+      - Florida public health advisory
+      - Florida disease outbreak notice
+      - Tallahassee health department news
+    example: {limit: 5}

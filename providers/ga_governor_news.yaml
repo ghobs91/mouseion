@@ -1,0 +1,78 @@
+id: ga_governor_news
+title: Georgia governor news
+category: government
+domain: governance_legislative
+sub_category: state_government_announcements
+adapter: rss
+base: https://gov.georgia.gov
+regions: [US]
+jurisdictions: [US-GA]
+description: >-
+  The Office of the Governor of Georgia's official news feed: economic
+  development announcements, appointments, executive actions and statements, as
+  the office publishes them. Returns title, link, publication date and summary.
+  Keyless.
+docs_url: https://gov.georgia.gov/press-releases
+keywords:
+  - georgia governor
+  - governor kemp
+  - georgia executive order
+  - georgia economic development
+  - georgia appointments
+  - atlanta state government
+attribution: "Office of the Governor of Georgia"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "Office of the Governor of Georgia"
+  originator_domain: georgia.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://gov.georgia.gov/press-releases
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 600
+limits:
+  rps: 1
+capabilities:
+  announcements:
+    description: >-
+      Recent Georgia governor announcements, newest first. Returns the title,
+      link, publication date and summary. `query` filters the current window by
+      keyword across title and summary.
+    path: /rss.xml
+    params:
+      query:
+        type: string
+        description: >-
+          Keyword filter applied locally, e.g. 'economic development' or
+          'appointment'.
+      limit:
+        type: integer
+        description: Records per page (1-50, default 20).
+        default: 20
+    pagination: {mode: offset, default_limit: 20, max_limit: 50}
+    local_window: true
+    id_field: id
+    fields:
+      id: id
+      title: title
+      link: link
+      published: published
+      summary: summary
+      author: author
+      categories: categories
+    strip_html: [summary]
+    source_url_template: "{link}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - what did the Georgia governor announce
+      - Georgia economic development announcement
+      - governor kemp executive action
+      - Georgia state appointments
+    example: {limit: 5}

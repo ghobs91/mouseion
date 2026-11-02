@@ -87,7 +87,7 @@ class RssAdapter(RestJsonAdapter):
                     "id": _text(item, "guid") or link,
                     "title": _text(item, "title"),
                     "link": link,
-                    "published": _text(item, "pubDate"),
+                    "published": _text(item, "pubDate") or _text(item, f"{DC}date"),
                     "summary": _text(item, "description"),
                     "author": _text(item, "author") or _text(item, f"{DC}creator"),
                     "categories": [

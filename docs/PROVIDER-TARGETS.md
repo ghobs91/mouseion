@@ -40,7 +40,7 @@ Captured 2026-10-31 from the Alexandria directory page.
 
 ## Where mouseion stands
 
-114 providers across ten routing domains. The counts below are providers, not
+122 providers across ten routing domains. The counts below are providers, not
 capabilities; one provider often covers several capabilities.
 
 | Domain | Providers | What is already strong |
@@ -48,7 +48,7 @@ capabilities; one provider often covers several capabilities.
 | `civic_local` | 21 | campaign finance, election results and restaurant inspections across 11 jurisdictions |
 | `academic_scientific` | 14 | arXiv, Crossref, OpenAlex, DataCite, PMC, PubMed, UniProt, GBIF |
 | `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS alerts and forecasts, EONET, GeoNames |
-| `governance_legislative` | 12 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener, FDA press |
+| `governance_legislative` | 20 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener, FDA press, state governors and attorneys general |
 | `financial_sovereign` | 17 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF; central-bank and regulator press |
 | `developer_infrastructure` | 9 | npm, PyPI, crates, Go, Maven, GitHub, NVD, Hugging Face |
 | `archives_web_state` | 5 | Wayback, Internet Archive, LoC, UK National Archives |
@@ -121,10 +121,13 @@ explicit-use fallback.
 
 **Agency announcements — started:** the Federal Reserve, SEC, FDIC, CFTC, ECB,
 Bank of England, FDA, MBTA, SFMTA and Caltrain publish their own press feeds, now
-read directly as RSS with a local keyword filter. This is the in-policy
-alternative to a news aggregator: the feed is the originator's own publication,
-so no `aggregator_exception` is needed. The remaining work is breadth — roughly
-230 federal and state agency feeds are available — not new plumbing.
+read directly as RSS with a local keyword filter. The **state tranche** adds the
+California, Georgia, Washington, North Carolina and Texas governors, the
+Pennsylvania and Washington attorneys general, and the Florida Department of
+Health. This is the in-policy alternative to a news aggregator: the feed is the
+originator's own publication, so no `aggregator_exception` is needed. The
+remaining work is breadth — roughly 230 federal and state agency feeds are
+available — not new plumbing.
 
 **P2 — depth and long tail:**
 

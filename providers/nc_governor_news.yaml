@@ -1,0 +1,77 @@
+id: nc_governor_news
+title: North Carolina governor news
+category: government
+domain: governance_legislative
+sub_category: state_government_announcements
+adapter: rss
+base: https://governor.nc.gov
+regions: [US]
+jurisdictions: [US-NC]
+description: >-
+  The Office of the Governor of North Carolina's official news feed:
+  appointments, executive orders, budget proposals, disaster declarations and
+  statements, as the office publishes them. Returns title, link, publication
+  date and summary. Keyless.
+docs_url: https://governor.nc.gov/news
+keywords:
+  - north carolina governor
+  - governor stein
+  - north carolina executive order
+  - raleigh state government
+  - north carolina appointments
+  - north carolina budget
+attribution: "Office of the Governor of North Carolina"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "Office of the Governor of North Carolina"
+  originator_domain: nc.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://governor.nc.gov/news
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 600
+limits:
+  rps: 1
+capabilities:
+  announcements:
+    description: >-
+      Recent North Carolina governor announcements, newest first. Returns the
+      title, link, publication date and summary. `query` filters the current
+      window by keyword across title and summary.
+    path: /news/feed/
+    params:
+      query:
+        type: string
+        description: >-
+          Keyword filter applied locally, e.g. 'executive order' or 'disaster'.
+      limit:
+        type: integer
+        description: Records per page (1-50, default 20).
+        default: 20
+    pagination: {mode: offset, default_limit: 20, max_limit: 50}
+    local_window: true
+    id_field: id
+    fields:
+      id: id
+      title: title
+      link: link
+      published: published
+      summary: summary
+      author: author
+      categories: categories
+    strip_html: [summary]
+    source_url_template: "{link}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - what did the North Carolina governor announce
+      - North Carolina executive order
+      - governor stein appointment
+      - Raleigh state government announcement
+    example: {limit: 5}

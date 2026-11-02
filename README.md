@@ -98,7 +98,7 @@ A manifest declares one of ten domains and a finer `sub_category`:
 | `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS alerts and forecasts, GeoNames, FEMA |
 | `reference` | 13 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, UEFA, FIFA, five soccer leagues |
 | `financial_sovereign` | 17 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF, Companies House; central-bank and regulator press |
-| `governance_legislative` | 12 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener, FDA press |
+| `governance_legislative` | 20 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener, FDA press; state governors and attorneys general |
 | `developer_infrastructure` | 9 | npm, PyPI, crates.io, Go, Maven, GitHub, NVD, Hugging Face |
 | `archives_web_state` | 5 | Wayback, Internet Archive, Library of Congress, UK National Archives |
 | `transport_infrastructure` | 7 | OurAirports, FAA airport status, Schiphol flights, MBTA, SFMTA, Caltrain news |
@@ -200,7 +200,7 @@ its own catalogue, not a public-record originator.
 
 ## Coverage
 
-**114 providers, 163 capabilities, ten domains.** The full inventory is in
+**122 providers, 171 capabilities, ten domains.** The full inventory is in
 [`docs/PROVIDERS.md`](docs/PROVIDERS.md). The demand-shaped gap analysis, using
 Firecrawl Alexandria's categories as a reference, is in
 [`docs/PROVIDER-TARGETS.md`](docs/PROVIDER-TARGETS.md).
@@ -221,6 +221,9 @@ Highlights:
 - **Restaurant inspections** — NYC, Chicago, King County and New York State
   publish inspection results with scores, grades and violation text; the record
   cites the health department, not a review site.
+- **State government** — the California, Georgia, Washington, North Carolina and
+  Texas governors, the Pennsylvania and Washington attorneys general, and the
+  Florida Department of Health publish their own news feeds.
 - **Soccer** — the Premier League, UEFA, FIFA, LALIGA, Bundesliga, Serie A and
   Ligue 1 read from their own site backends, with football-data.org kept as an
   explicit fallback.
@@ -381,7 +384,7 @@ than a directory of every API.
 ## Repository map
 
 ```
-providers/        114 YAML manifests, one per source
+providers/        122 YAML manifests, one per source
 mouseion/
   manifest.py     schema: domain, source policy, auth, capabilities, projection
   registry.py     loading, lexical scoring, provider cards

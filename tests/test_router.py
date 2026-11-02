@@ -144,9 +144,9 @@ def test_forecast_prefers_the_forecast_capability(registry, cache):
 def test_eval_baseline_holds(registry, cache):
     index = JurisdictionIndex(load_jurisdictions(ROOT / "jurisdictions.yaml"))
     report = run(evaluate(Router(registry, cache, jurisdictions=index), load_cases()))
-    assert report["total"] == 130
-    assert report["top1"] >= 114, report["misses"]
-    assert report["top3"] >= 123, report["misses"]
+    assert report["total"] == 146
+    assert report["top1"] >= 129, report["misses"]
+    assert report["top3"] >= 139, report["misses"]
     assert report["top3"] >= report["top1"]
 
 

@@ -19,7 +19,7 @@ recently discussed source. Update the status columns when a provider lands.
 
 ## Current state
 
-**114 providers / 163 capabilities.** Domain distribution is deliberately uneven:
+**122 providers / 171 capabilities.** Domain distribution is deliberately uneven:
 depth where the sources are good, not an even split.
 
 | Domain | Providers | Strong at | Weak at |
@@ -29,7 +29,7 @@ depth where the sources are good, not an even split.
 | `academic_scientific` | 14 | literature, biology, chemistry, clinical trials | global health, structures, genomes |
 | `geo_earth_observation` | 14 | geocoding, hazards, hydrology, alerts | **forecast**, real-time conditions |
 | `reference` | 13 | sports, music, film, jobs, encyclopedia | podcasts, games, people |
-| `governance_legislative` | 12 | legislation, courts, agencies, health regulation | state government |
+| `governance_legislative` | 20 | legislation, courts, federal agencies, state governors and attorneys general | — |
 | `developer_infrastructure` | 9 | package registries, vulnerabilities, code | Q&A, containers |
 | `transport_infrastructure` | 7 | airports, flight status, transit news | real-time transit, routing |
 | `archives_web_state` | 5 | web and national archives | — |
@@ -48,7 +48,7 @@ depth where the sources are good, not an even split.
 | Global health statistics | gap | WHO GHO |
 | Protein structures, genomes | gap | RCSB PDB, Ensembl |
 | Federal law, rules, court opinions | covered | Congress, GovInfo, Federal Register, CourtListener |
-| State government announcements | gap | 125 verified state feeds; no manifests |
+| State government announcements | covered | 7 states: CA, GA, WA, NC, TX, PA, FL |
 | Local election results and money | covered | 17 civic providers, 101 jurisdictions |
 | Candidates and ballots | gap | 5 explicit demand signals in `eval/coverage-gaps.jsonl` |
 | Restaurant inspections | covered | NYC, Chicago, King County, NY State |
@@ -92,7 +92,7 @@ stated, not hidden.
 | Rank | Step | Demand | Gap | Policy | Leverage | Impact | Effort |
 |---:|---|---:|---:|---:|---:|---:|---|
 | ~~1~~ | ~~NWS forecast capability~~ — shipped | 5 | 4 | 5 | 4 | **4.55** | medium |
-| 2 | State government announcement tranche | 4 | 4 | 5 | 5 | 4.45 | low |
+| ~~2~~ | ~~State government announcement tranche~~ — shipped | 4 | 4 | 5 | 5 | 4.45 | low |
 | ~~3~~ | ~~Restaurant inspection capabilities~~ — shipped | 4 | 5 | 5 | 4 | 4.45 | medium |
 | 4 | WHO Global Health Observatory | 4 | 5 | 5 | 4 | 4.45 | low |
 | 5 | GTFS-RT for major agencies | 4 | 5 | 5 | 2 | 4.10 | high |
@@ -102,13 +102,14 @@ stated, not hidden.
 | 9 | Podcast Index and IGDB | 3 | 5 | 4 | 3 | 3.80 | low |
 | 10 | Stack Exchange | 4 | 4 | 3 | 4 | 3.75 | low |
 
-**Shipped: #1 (NWS forecast) and #3 (restaurant inspections).** #3 closed a
-zero-coverage category — restaurant results were previously answerable only
-through OpenStreetMap points — with four authorities and no new adapter.
+**Shipped: #1 (NWS forecast), #2 (state government announcements) and #3
+(restaurant inspections).** #2 used the RSS adapter and 8 of the verified state
+feeds; #3 closed a zero-coverage category with four health departments and no new
+adapter.
 
-**Next by the same rule: #2, the state government announcement tranche.** It ties
-#4 (WHO) on raw impact and wins on effort, because 125 verified state feeds and
-the RSS adapter already exist.
+**Next by the same rule: #4, the WHO Global Health Observatory.** It ties the
+shipped items on raw impact and is the cheapest remaining gap, since its OData
+responses fit the existing REST adapter.
 
 ## Maintenance
 

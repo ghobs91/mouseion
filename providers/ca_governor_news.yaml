@@ -1,0 +1,78 @@
+id: ca_governor_news
+title: California governor news
+category: government
+domain: governance_legislative
+sub_category: state_government_announcements
+adapter: rss
+base: https://www.gov.ca.gov
+regions: [US]
+jurisdictions: [US-CA]
+description: >-
+  The Office of the Governor of California's official news feed: proclamations,
+  executive actions, budget proposals, appointments and statements, as the
+  office publishes them. Returns title, link, publication date and summary.
+  Keyless.
+docs_url: https://www.gov.ca.gov/newsroom/
+keywords:
+  - california governor
+  - governor newsom
+  - california executive order
+  - california proclamation
+  - state budget
+  - california appointments
+  - sacramento
+attribution: "Office of the Governor of California"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "Office of the Governor of California"
+  originator_domain: ca.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.gov.ca.gov/newsroom/
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 600
+limits:
+  rps: 1
+capabilities:
+  announcements:
+    description: >-
+      Recent California governor announcements, newest first. Returns the title,
+      link, publication date and summary. `query` filters the current window by
+      keyword across title and summary.
+    path: /feed/
+    params:
+      query:
+        type: string
+        description: >-
+          Keyword filter applied locally, e.g. 'executive order' or 'budget'.
+      limit:
+        type: integer
+        description: Records per page (1-50, default 20).
+        default: 20
+    pagination: {mode: offset, default_limit: 20, max_limit: 50}
+    local_window: true
+    id_field: id
+    fields:
+      id: id
+      title: title
+      link: link
+      published: published
+      summary: summary
+      author: author
+      categories: categories
+    strip_html: [summary]
+    source_url_template: "{link}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - what did the California governor announce today
+      - California executive order
+      - governor newsom statement
+      - California state budget proposal
+    example: {limit: 5}

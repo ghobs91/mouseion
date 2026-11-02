@@ -56,8 +56,9 @@ def test_jurisdictions_are_joined_with_the_coverage_probe(snapshot):
     california = next(row for row in snapshot["jurisdictions"] if row["id"] == "US-CA")
     assert california["election"]["format"] == "html"
     assert california["campaign_finance"]["format"] == "html"
-    # Coverage is exact: an LA-only provider does not claim the whole state.
-    assert california["providers"] == []
+    # Coverage is exact: an LA-only provider does not claim the whole state, and a
+    # state-level provider claims only the state.
+    assert california["providers"] == ["ca_governor_news"]
 
     new_york = next(row for row in snapshot["jurisdictions"] if row["id"] == "US-NY")
     assert set(new_york["providers"]) == {
@@ -147,7 +148,7 @@ def test_snapshot_endpoint(server):
     status, body, _ = get(server + "/api/snapshot")
     assert status == 200
     payload = json.loads(body)
-    assert payload["totals"]["providers"] == 114
+    assert payload["totals"]["providers"] == 122
     assert payload["totals"]["jurisdictions"] == 101
 
 

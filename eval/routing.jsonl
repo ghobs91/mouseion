@@ -161,3 +161,27 @@
 
 {"query": "New York state restaurant inspection in Albany", "expect": "ny_food_inspections"}
 {"query": "upstate New York food service inspection critical violations", "expect": "ny_food_inspections"}
+
+{"query": "what did Gavin Newsom announce today", "expect": "ca_governor_news"}
+{"query": "California governor signs an executive order", "expect": "ca_governor_news"}
+
+{"query": "what did Brian Kemp announce", "expect": "ga_governor_news"}
+{"query": "Georgia governor economic development deal", "expect": "ga_governor_news"}
+
+{"query": "what did Bob Ferguson announce", "expect": "wa_governor_news"}
+{"query": "Washington state governor appointment", "expect": "wa_governor_news"}
+
+{"query": "what did Josh Stein announce", "expect": "nc_governor_news"}
+{"query": "North Carolina governor disaster declaration", "expect": "nc_governor_news"}
+
+{"query": "what did Greg Abbott announce", "expect": "tx_governor_news"}
+{"query": "Texas governor appointments", "expect": "tx_governor_news"}
+
+{"query": "Pennsylvania attorney general files a lawsuit", "expect": "pa_attorney_general_news"}
+{"query": "PA attorney general consumer alert", "expect": "pa_attorney_general_news"}
+
+{"query": "Washington attorney general sues", "expect": "wa_attorney_general_news"}
+{"query": "Washington AG consumer protection action", "expect": "wa_attorney_general_news"}
+
+{"query": "Florida Department of Health advisory", "expect": "fl_health_news"}
+{"query": "Florida health department outbreak notice", "expect": "fl_health_news"}

@@ -1,6 +1,6 @@
 # Source inventory
 
-The full registry: **114 providers and 163 capabilities across ten domains**.
+The full registry: **122 providers and 171 capabilities across ten domains**.
 `none` means keyless; every other value names the credential the manifest
 declares. The authoritative live view is `mouseion providers` or the dashboard's
 Sources tab. This page is the stable inventory for reading and review.
@@ -18,6 +18,7 @@ directory of every API on the internet.
 | Chicago food inspections | none | `inspections` |
 | CFTC Commitments of Traders | none | `legacy_futures_only` |
 | CFTC press releases | none | `announcements` |
+| California governor news | none | `announcements` |
 | CISA KEV | none | `catalog` |
 | ClinicalTrials.gov | none | `search`, `get` |
 | CMS Care Compare | none | `hospitals` |
@@ -34,6 +35,7 @@ directory of every API on the internet.
 | Federal Reserve Board press releases | none | `announcements` |
 | FRED | free key | `search_series`, `series_observations` |
 | GBIF | none | `search_occurrences` |
+| Georgia governor news | none | `announcements` |
 | GLEIF | none | `search_lei` |
 | GitHub | free token | `search_repositories`, `repository`, `releases`, `commits` |
 | Internet Archive | none | `search`, `metadata` |
@@ -48,6 +50,7 @@ directory of every API on the internet.
 | FAA Airport Status | none | `status` |
 | FDA press releases | none | `announcements` |
 | FDIC press releases | none | `announcements` |
+| Florida Department of Health news | none | `announcements` |
 | football-data.org (fallback) | free key | `competitions`, `matches`, `standings` |
 | Schiphol Flights | free app id + key | `flights`, `flight` |
 | UEFA Match Centre | none | `matches`, `match` |
@@ -56,6 +59,7 @@ directory of every API on the internet.
 | MusicBrainz | none | `search_artists`, `search_releases`, `artist` |
 | OurAirports | none | `airports` |
 | TMDB | free key | `search_movies`, `movie` |
+| Texas governor news | none | `announcements` |
 | USAJobs | free key + email | `search` |
 | Companies House | free key (Basic) | `search`, `company` |
 | GeoNames | free username | `search` |
@@ -84,6 +88,7 @@ directory of every API on the internet.
 | Nominatim | none | `search`, `reverse` |
 | npm | none | `search`, `package` |
 | NWS alerting | none | `active_alerts`, `forecast` |
+| North Carolina governor news | none | `announcements` |
 | NYC Open Data | none | `parcels` |
 | NYC restaurant inspections | none | `inspections` |
 | OpenAlex | none | `search_works` |
@@ -93,6 +98,7 @@ directory of every API on the internet.
 | OpenLibrary | none | `search_books` |
 | Overpass | none | `query` |
 | PMC | none | `search`, `summaries` |
+| Pennsylvania attorney general news | none | `announcements` |
 | PubChem | none | `search_compounds`, `compound` |
 | PubMed | none | `search`, `summaries` |
 | PyPI | none | `package`, `release` |
@@ -123,5 +129,7 @@ directory of every API on the internet.
 | USGS water services | none | `instantaneous_values` |
 | Wayback | none | `snapshots` |
 | Wikidata | none | `search_entities`, `entity` |
+| Washington attorney general news | none | `announcements` |
+| Washington governor news | none | `announcements` |
 | World Bank | none | `indicator` |
 | Zenodo | none | `search_records` |
