@@ -1,0 +1,106 @@
+id: nyc_restaurant_inspections
+title: NYC restaurant inspections
+category: health
+domain: civic_local
+sub_category: restaurant_inspections
+adapter: socrata
+base: https://data.cityofnewyork.us
+regions: [US]
+jurisdictions: [US-NY-NEW-YORK]
+description: >-
+  New York City Department of Health and Mental Hygiene restaurant inspection
+  results: every cited violation with the inspection date, score, letter grade,
+  critical flag, cuisine and address. Keyless; one row per violation.
+docs_url: https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j
+keywords:
+  - nyc restaurant
+  - new york city restaurant
+  - restaurant inspection
+  - health inspection
+  - food safety
+  - restaurant grade
+  - violation
+  - manhattan
+  - brooklyn
+  - queens
+  - bronx
+  - staten island
+attribution: "NYC Department of Health and Mental Hygiene"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "New York City Department of Health and Mental Hygiene"
+  originator_domain: cityofnewyork.us
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 300, burst: 10, concurrency: 4}
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  inspections:
+    description: >-
+      Query NYC restaurant inspection violations by name, borough or date.
+      Returns the restaurant, address, cuisine, inspection date, action, score,
+      grade, critical flag and the violation text. Use `where` for SoQL and `q`
+      for free text.
+    path: /resource/43nn-pn8j.json
+    params:
+      where:
+        type: string
+        description: >-
+          SoQL filter, e.g. "upper(dba) like '%JOE%'" or "boro = 'Manhattan'".
+      q:
+        type: string
+        description: Free-text search across all columns, e.g. a restaurant name.
+      order:
+        type: string
+        description: SoQL order clause.
+      limit:
+        type: integer
+        description: Rows per page (1-1000, default 20).
+        default: 20
+    defaults:
+      select: >-
+        :id,camis,dba,boro,building,street,zipcode,cuisine_description,inspection_date,action,violation_code,violation_description,critical_flag,score,grade
+      order: inspection_date DESC
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    id_field: row_id
+    source_url_template: "https://data.cityofnewyork.us/resource/43nn-pn8j/{row_id}.json"
+    fields:
+      row_id: ":id"
+      camis: camis
+      restaurant: dba
+      borough: boro
+      building: building
+      street: street
+      zip: zipcode
+      cuisine: cuisine_description
+      inspection_date: inspection_date
+      action: action
+      violation_code: violation_code
+      violation: violation_description
+      critical: critical_flag
+      score: score
+      grade: grade
+    query_map: {text: q, limit: limit}
+    exemplars:
+      - how did Joe's Pizza score on its health inspection
+      - NYC restaurant letter grade
+      - food safety violations at a Manhattan restaurant
+      - was this restaurant closed by the health department
+    example:
+      where: "upper(dba) like '%PIZZA%'"
+      limit: 5

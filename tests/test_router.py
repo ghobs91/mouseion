@@ -144,9 +144,9 @@ def test_forecast_prefers_the_forecast_capability(registry, cache):
 def test_eval_baseline_holds(registry, cache):
     index = JurisdictionIndex(load_jurisdictions(ROOT / "jurisdictions.yaml"))
     report = run(evaluate(Router(registry, cache, jurisdictions=index), load_cases()))
-    assert report["total"] == 122
-    assert report["top1"] >= 109, report["misses"]
-    assert report["top3"] >= 117, report["misses"]
+    assert report["total"] == 130
+    assert report["top1"] >= 114, report["misses"]
+    assert report["top3"] >= 123, report["misses"]
     assert report["top3"] >= report["top1"]
 
 
@@ -191,7 +191,9 @@ def test_uncovered_local_jurisdiction_abstains(registry, cache):
     index = JurisdictionIndex(load_jurisdictions(ROOT / "jurisdictions.yaml"))
     router = Router(registry, cache, jurisdictions=index)
 
-    assert run(router.route("who is running for city council in Chicago")) == []
+    # Detroit still has no provider; Chicago now does (restaurant inspections),
+    # so it no longer demonstrates an uncovered jurisdiction.
+    assert run(router.route("who is running for city council in Detroit")) == []
     assert run(router.route("who funded a Boston mayoral campaign")) == []
 
 

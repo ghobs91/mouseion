@@ -1,0 +1,102 @@
+id: chicago_food_inspections
+title: Chicago food inspections
+category: health
+domain: civic_local
+sub_category: restaurant_inspections
+adapter: socrata
+base: https://data.cityofchicago.org
+regions: [US]
+jurisdictions: [US-IL-CHICAGO]
+description: >-
+  Chicago Department of Public Health food establishment inspections: pass, fail
+  and conditional results with the risk tier, facility type, address, inspection
+  date, violation text and coordinates. Keyless; one row per inspection.
+docs_url: https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5
+keywords:
+  - chicago restaurant
+  - chicago food inspection
+  - restaurant inspection
+  - health inspection
+  - food safety
+  - restaurant grade
+  - violation
+attribution: "Chicago Department of Public Health"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "Chicago Department of Public Health"
+  originator_domain: cityofchicago.org
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.cityofchicago.org/Health-Human-Services/Food-Inspections/4ijn-s7e5
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 300, burst: 10, concurrency: 4}
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  inspections:
+    description: >-
+      Query Chicago food inspections by name, result or date. Returns the
+      facility, address, risk tier, inspection date and type, result, violation
+      text and coordinates. Use `where` for SoQL and `q` for free text.
+    path: /resource/4ijn-s7e5.json
+    params:
+      where:
+        type: string
+        description: >-
+          SoQL filter, e.g. "results = 'Fail'" or
+          "upper(dba_name) like '%PIZZA%'".
+      q:
+        type: string
+        description: Free-text search across all columns, e.g. a restaurant name.
+      order:
+        type: string
+        description: SoQL order clause.
+      limit:
+        type: integer
+        description: Rows per page (1-1000, default 20).
+        default: 20
+    defaults:
+      select: >-
+        inspection_id,dba_name,aka_name,license_,facility_type,risk,address,city,state,zip,inspection_date,inspection_type,results,violations,latitude,longitude
+      order: inspection_date DESC
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    id_field: inspection_id
+    source_url_template: "https://data.cityofchicago.org/resource/4ijn-s7e5/{inspection_id}.json"
+    fields:
+      inspection_id: inspection_id
+      restaurant: dba_name
+      aka: aka_name
+      license: license_
+      facility_type: facility_type
+      risk: risk
+      address: address
+      city: city
+      state: state
+      zip: zip
+      inspection_date: inspection_date
+      inspection_type: inspection_type
+      result: results
+      violations: violations
+      latitude: latitude
+      longitude: longitude
+    query_map: {text: q, limit: limit}
+    exemplars:
+      - Chicago food inspection results
+      - did a Chicago restaurant fail its health inspection
+      - food safety violations in Chicago
+      - when was a restaurant last inspected in Chicago
+    example:
+      q: pizza
+      limit: 5

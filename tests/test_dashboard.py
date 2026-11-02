@@ -60,7 +60,11 @@ def test_jurisdictions_are_joined_with_the_coverage_probe(snapshot):
     assert california["providers"] == []
 
     new_york = next(row for row in snapshot["jurisdictions"] if row["id"] == "US-NY")
-    assert set(new_york["providers"]) == {"ny_campaign_finance", "ny_campaign_filers"}
+    assert set(new_york["providers"]) == {
+        "ny_campaign_finance",
+        "ny_campaign_filers",
+        "ny_food_inspections",
+    }
 
     los_angeles = next(
         row for row in snapshot["jurisdictions"] if row["id"] == "US-CA-LOS-ANGELES"
@@ -143,7 +147,7 @@ def test_snapshot_endpoint(server):
     status, body, _ = get(server + "/api/snapshot")
     assert status == 200
     payload = json.loads(body)
-    assert payload["totals"]["providers"] == 110
+    assert payload["totals"]["providers"] == 114
     assert payload["totals"]["jurisdictions"] == 101
 
 

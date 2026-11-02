@@ -1,6 +1,6 @@
 # Source inventory
 
-The full registry: **110 providers and 159 capabilities across ten domains**.
+The full registry: **114 providers and 163 capabilities across ten domains**.
 `none` means keyless; every other value names the credential the manifest
 declares. The authoritative live view is `mouseion providers` or the dashboard's
 Sources tab. This page is the stable inventory for reading and review.
@@ -15,6 +15,7 @@ directory of every API on the internet.
 | BLS | none | `series_observations` |
 | Bank of England news | none | `announcements` |
 | Census Geocoder | none | `geocode_address` |
+| Chicago food inspections | none | `inspections` |
 | CFTC Commitments of Traders | none | `legacy_futures_only` |
 | CFTC press releases | none | `announcements` |
 | CISA KEV | none | `catalog` |
@@ -71,6 +72,7 @@ directory of every API on the internet.
 | Maven Central | none | `search` |
 | MBTA news | none | `announcements` |
 | New York Campaign Finance | none | `disclosures` |
+| New York State food inspections | none | `inspections` |
 | New York Campaign Filers | none | `filers` |
 | New York City Campaign Finance | none | `contributions` |
 | NASA EONET | none | `events` |
@@ -83,6 +85,7 @@ directory of every API on the internet.
 | npm | none | `search`, `package` |
 | NWS alerting | none | `active_alerts`, `forecast` |
 | NYC Open Data | none | `parcels` |
+| NYC restaurant inspections | none | `inspections` |
 | OpenAlex | none | `search_works` |
 | openFDA | none | `drug_recalls`, `drug_labels`, `device_recalls` |
 | FEC (openFEC) | shared DEMO_KEY | `committees` |
@@ -107,6 +110,7 @@ directory of every API on the internet.
 | Dallas Campaign Finance | none | `transactions` |
 | Fulton County Election Results | none | `results` |
 | King County Election Results | none | `results` (73 elections, 2004–2026) |
+| King County food inspections | none | `inspections` |
 | Colorado Campaign Finance | none | `contributions`, `expenditures` (bulk ZIP) |
 | El Paso Elected Officials | none | `city_council`, `municipal_court` (HTML table) |
 | Rhode Island Recent Filings | none | `recent` (HTML table) |

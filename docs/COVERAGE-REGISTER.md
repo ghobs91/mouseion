@@ -19,12 +19,12 @@ recently discussed source. Update the status columns when a provider lands.
 
 ## Current state
 
-**110 providers / 159 capabilities.** Domain distribution is deliberately uneven:
+**114 providers / 163 capabilities.** Domain distribution is deliberately uneven:
 depth where the sources are good, not an even split.
 
 | Domain | Providers | Strong at | Weak at |
 |---|---:|---|---|
-| `civic_local` | 17 | campaign finance, election results | candidates, ballots, local notices |
+| `civic_local` | 21 | campaign finance, election results, restaurant inspections | candidates, ballots, local notices |
 | `financial_sovereign` | 17 | central banks, regulators, filings, statistics | sanctions, market quotes |
 | `academic_scientific` | 14 | literature, biology, chemistry, clinical trials | global health, structures, genomes |
 | `geo_earth_observation` | 14 | geocoding, hazards, hydrology, alerts | **forecast**, real-time conditions |
@@ -51,7 +51,7 @@ depth where the sources are good, not an even split.
 | State government announcements | gap | 125 verified state feeds; no manifests |
 | Local election results and money | covered | 17 civic providers, 101 jurisdictions |
 | Candidates and ballots | gap | 5 explicit demand signals in `eval/coverage-gaps.jsonl` |
-| Restaurant inspections | gap | city health Socrata datasets |
+| Restaurant inspections | covered | NYC, Chicago, King County, NY State |
 | Company registration and officers | partial | SEC, GLEIF, ROR, Companies House; no officers |
 | Sanctions and people screening | gap | OFAC SDN, EU and UK lists |
 | Product barcodes and non-food goods | partial | Open Food Facts; Open Products Facts missing |
@@ -93,7 +93,7 @@ stated, not hidden.
 |---:|---|---:|---:|---:|---:|---:|---|
 | ~~1~~ | ~~NWS forecast capability~~ — shipped | 5 | 4 | 5 | 4 | **4.55** | medium |
 | 2 | State government announcement tranche | 4 | 4 | 5 | 5 | 4.45 | low |
-| 3 | Restaurant inspection capabilities | 4 | 5 | 5 | 4 | 4.45 | medium |
+| ~~3~~ | ~~Restaurant inspection capabilities~~ — shipped | 4 | 5 | 5 | 4 | 4.45 | medium |
 | 4 | WHO Global Health Observatory | 4 | 5 | 5 | 4 | 4.45 | low |
 | 5 | GTFS-RT for major agencies | 4 | 5 | 5 | 2 | 4.10 | high |
 | 6 | OFAC sanctions screening | 4 | 4 | 5 | 3 | 3.95 | high |
@@ -102,13 +102,13 @@ stated, not hidden.
 | 9 | Podcast Index and IGDB | 3 | 5 | 4 | 3 | 3.80 | low |
 | 10 | Stack Exchange | 4 | 4 | 3 | 4 | 3.75 | low |
 
-**Shipped: #1, the NWS forecast capability.** It was the highest-demand question
-the registry could not answer at all, and it needed one adapter plus one
-capability rather than a new tranche.
+**Shipped: #1 (NWS forecast) and #3 (restaurant inspections).** #3 closed a
+zero-coverage category — restaurant results were previously answerable only
+through OpenStreetMap points — with four authorities and no new adapter.
 
-**Next by the same rule: #2, the state government announcement tranche.** After
-weather, it has the highest impact with the lowest effort, because 125 verified
-state feeds and the RSS adapter already exist.
+**Next by the same rule: #2, the state government announcement tranche.** It ties
+#4 (WHO) on raw impact and wins on effort, because 125 verified state feeds and
+the RSS adapter already exist.
 
 ## Maintenance
 

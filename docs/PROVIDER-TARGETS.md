@@ -40,12 +40,12 @@ Captured 2026-10-31 from the Alexandria directory page.
 
 ## Where mouseion stands
 
-110 providers across ten routing domains. The counts below are providers, not
+114 providers across ten routing domains. The counts below are providers, not
 capabilities; one provider often covers several capabilities.
 
 | Domain | Providers | What is already strong |
 |---|---|---|
-| `civic_local` | 17 | campaign finance and election results across 11 jurisdictions |
+| `civic_local` | 21 | campaign finance, election results and restaurant inspections across 11 jurisdictions |
 | `academic_scientific` | 14 | arXiv, Crossref, OpenAlex, DataCite, PMC, PubMed, UniProt, GBIF |
 | `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS alerts and forecasts, EONET, GeoNames |
 | `governance_legislative` | 12 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener, FDA press |
@@ -80,7 +80,7 @@ card.
 | Jobs (13) | USAJobs | occupations | **USAJobs** ✅, O*NET, Arbeitnow | 2 / 1 |
 | AI models (12) | **Hugging Face** | model catalogues | **Hugging Face** ✅, OpenRouter (commercial) | 1 |
 | People (12) | Wikidata, GLEIF, SEC insiders | sanctions, officers | OpenSanctions, Companies House officers | 2 |
-| Restaurant (10) | Overpass (OSM) | inspections, menus | city health-inspection Socrata datasets | 1 |
+| Restaurant (10) | Overpass (OSM); NYC, Chicago, King County and NY State inspections | menus, more cities | more city health-inspection Socrata datasets; menu data has no primary API | 1 |
 | Entertainment (8) | MusicBrainz, TMDB | podcasts | **MusicBrainz** ✅, **TMDB** ✅, Podcast Index | 1 / 2 |
 | Marketing (8) | none | — | **do not target**: commercial only | — |
 | Apps (6) | none | — | **do not target**: no official store API | — |
@@ -134,7 +134,8 @@ so no `aggregator_exception` is needed. The remaining work is breadth — roughl
 12. **Life sciences**: RCSB PDB and Ensembl.
 13. **Research**: Semantic Scholar and CORE.
 14. **People**: OpenSanctions.
-15. **Restaurant**: city health-inspection datasets.
+15. **Restaurant**: more city health-inspection datasets. NYC, Chicago, King
+    County and New York State shipped from their own Socrata datasets.
 16. **News**: GDELT as an `aggregator_exception`, never automatic.
 
 **Do not target:** marketing, apps, social, web analytics. They are commercial

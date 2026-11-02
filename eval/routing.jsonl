@@ -149,3 +149,15 @@
 {"query": "will it rain in Chicago this weekend", "expect": "nws"}
 {"query": "do I need an umbrella in Boston tomorrow", "expect": "nws"}
 {"query": "high temperature in Phoenix today", "expect": "nws"}
+
+{"query": "restaurant inspection results for a Chicago pizzeria", "expect": "chicago_food_inspections"}
+{"query": "did this restaurant in Chicago fail its health inspection", "expect": "chicago_food_inspections"}
+
+{"query": "NYC restaurant grade for a pizzeria", "expect": "nyc_restaurant_inspections"}
+{"query": "health inspection score for a Manhattan restaurant", "expect": "nyc_restaurant_inspections"}
+
+{"query": "Seattle restaurant health inspection score", "expect": "king_county_food_inspections"}
+{"query": "King County food establishment violations", "expect": "king_county_food_inspections"}
+
+{"query": "New York state restaurant inspection in Albany", "expect": "ny_food_inspections"}
+{"query": "upstate New York food service inspection critical violations", "expect": "ny_food_inspections"}

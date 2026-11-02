@@ -93,7 +93,7 @@ A manifest declares one of ten domains and a finer `sub_category`:
 
 | Domain | Providers | Examples |
 |---|---:|---|
-| `civic_local` | 17 | campaign finance, election results, elected officials |
+| `civic_local` | 21 | campaign finance, election results, elected officials, restaurant inspections |
 | `academic_scientific` | 14 | arXiv, Crossref, OpenAlex, PubMed, PMC, UniProt, GBIF |
 | `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS alerts and forecasts, GeoNames, FEMA |
 | `reference` | 13 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, UEFA, FIFA, five soccer leagues |
@@ -200,7 +200,7 @@ its own catalogue, not a public-record originator.
 
 ## Coverage
 
-**110 providers, 159 capabilities, ten domains.** The full inventory is in
+**114 providers, 163 capabilities, ten domains.** The full inventory is in
 [`docs/PROVIDERS.md`](docs/PROVIDERS.md). The demand-shaped gap analysis, using
 Firecrawl Alexandria's categories as a reference, is in
 [`docs/PROVIDER-TARGETS.md`](docs/PROVIDER-TARGETS.md).
@@ -218,6 +218,9 @@ Highlights:
 - **Weather** — NWS alerts and a seven-day forecast for any US coordinate, with
   the period label, high/low, precipitation probability and the forecaster's own
   narrative.
+- **Restaurant inspections** — NYC, Chicago, King County and New York State
+  publish inspection results with scores, grades and violation text; the record
+  cites the health department, not a review site.
 - **Soccer** — the Premier League, UEFA, FIFA, LALIGA, Bundesliga, Serie A and
   Ligue 1 read from their own site backends, with football-data.org kept as an
   explicit fallback.
@@ -378,7 +381,7 @@ than a directory of every API.
 ## Repository map
 
 ```
-providers/        110 YAML manifests, one per source
+providers/        114 YAML manifests, one per source
 mouseion/
   manifest.py     schema: domain, source policy, auth, capabilities, projection
   registry.py     loading, lexical scoring, provider cards

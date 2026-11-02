@@ -1,0 +1,109 @@
+id: ny_food_inspections
+title: New York State food inspections
+category: health
+domain: civic_local
+sub_category: restaurant_inspections
+adapter: socrata
+base: https://health.data.ny.gov
+regions: [US]
+jurisdictions: [US-NY]
+description: >-
+  New York State Department of Health food service establishment inspections
+  outside New York City: the most recent inspection with the facility, county,
+  inspection type, critical and non-critical violation counts and the violation
+  text. Keyless; one row per facility.
+docs_url: https://health.data.ny.gov/Health/Food-Service-Establishment-Last-Inspection/cnih-y5dw
+keywords:
+  - new york state restaurant
+  - nys restaurant
+  - restaurant inspection
+  - health inspection
+  - food service establishment
+  - food safety
+  - violation
+  - albany
+  - buffalo
+  - rochester
+  - syracuse
+attribution: "New York State Department of Health"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "New York State Department of Health"
+  originator_domain: ny.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://health.data.ny.gov/Health/Food-Service-Establishment-Last-Inspection/cnih-y5dw
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 300, burst: 10, concurrency: 4}
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  inspections:
+    description: >-
+      Query the last inspection of a New York State food service establishment
+      by name, county or date. New York City facilities are covered by the NYC
+      provider instead. Returns the facility, address, inspection date and type,
+      critical and non-critical violation counts, violation text and the local
+      health department.
+    path: /resource/cnih-y5dw.json
+    params:
+      where:
+        type: string
+        description: >-
+          SoQL filter, e.g. "county = 'ALBANY'" or
+          "upper(facility) like '%PIZZA%'".
+      q:
+        type: string
+        description: Free-text search across all columns, e.g. a restaurant name.
+      order:
+        type: string
+        description: SoQL order clause.
+      limit:
+        type: integer
+        description: Rows per page (1-1000, default 20).
+        default: 20
+    defaults:
+      select: >-
+        facility,address,date,violations,total_critical_violations,total_crit_not_corrected,total_noncritical_violations,description,local_health_department,county,city,zip_code,operation_name,nys_health_operation_id,inspection_type,inspection_comments
+      order: date DESC
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    id_field: operation_id
+    source_url_template: "https://health.data.ny.gov/resource/cnih-y5dw/{operation_id}.json"
+    fields:
+      operation_id: nys_health_operation_id
+      restaurant: facility
+      address: address
+      city: city
+      zip: zip_code
+      county: county
+      inspection_date: date
+      inspection_type: inspection_type
+      violations: violations
+      critical_violations: total_critical_violations
+      critical_not_corrected: total_crit_not_corrected
+      noncritical_violations: total_noncritical_violations
+      facility_type: description
+      health_department: local_health_department
+      operation_name: operation_name
+      comments: inspection_comments
+    query_map: {text: q, limit: limit}
+    exemplars:
+      - New York state food service inspection
+      - did a restaurant in Albany pass its health inspection
+      - critical violations at a food establishment in Buffalo
+      - upstate New York restaurant inspection results
+    example:
+      q: pizza
+      limit: 5

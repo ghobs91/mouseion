@@ -1,0 +1,105 @@
+id: king_county_food_inspections
+title: King County food inspections
+category: health
+domain: civic_local
+sub_category: restaurant_inspections
+adapter: socrata
+base: https://data.kingcounty.gov
+regions: [US]
+jurisdictions: [US-WA-KING, US-WA-SEATTLE]
+description: >-
+  Public Health – Seattle & King County food establishment inspections: routine
+  and follow-up results with the score, grade, risk category, violation points,
+  address and business id. Keyless; one row per inspection.
+docs_url: https://data.kingcounty.gov/Health-Wellness/Food-Establishment-Inspection-Data/r878-4sxa
+keywords:
+  - king county restaurant
+  - seattle restaurant
+  - seattle food inspection
+  - restaurant inspection
+  - health inspection
+  - food safety
+  - restaurant grade
+  - violation
+attribution: "Public Health – Seattle & King County"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "Public Health – Seattle & King County"
+  originator_domain: kingcounty.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://data.kingcounty.gov/Health-Wellness/Food-Establishment-Inspection-Data/r878-4sxa
+    verified_at: 2026-11-01
+  rate_limit: {per_min: 300, burst: 10, concurrency: 4}
+cache_ttl: 86400
+limits:
+  rps: 5
+capabilities:
+  inspections:
+    description: >-
+      Query King County food inspections by name, city or result. Returns the
+      business, classification, address, inspection date and type, score,
+      result, grade, risk category and violation points. Use `where` for SoQL
+      and `q` for free text.
+    path: /resource/r878-4sxa.json
+    params:
+      where:
+        type: string
+        description: >-
+          SoQL filter, e.g. "inspection_result = 'Unsatisfactory'" or
+          "upper(name) like '%PIZZA%'".
+      q:
+        type: string
+        description: Free-text search across all columns, e.g. a restaurant name.
+      order:
+        type: string
+        description: SoQL order clause.
+      limit:
+        type: integer
+        description: Rows per page (1-1000, default 20).
+        default: 20
+    defaults:
+      select: >-
+        name,inspection_date,classification,address,city,zip_code,inspection_type,inspection_score,inspection_result,inspection_closed_business,seating_range,risk_category,violation_points,grade,parcel_number,business_id,inspection_serial_num
+      order: inspection_date DESC
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    id_field: inspection_id
+    source_url_template: "https://data.kingcounty.gov/resource/r878-4sxa/{inspection_id}.json"
+    fields:
+      inspection_id: inspection_serial_num
+      restaurant: name
+      classification: classification
+      address: address
+      city: city
+      zip: zip_code
+      inspection_date: inspection_date
+      inspection_type: inspection_type
+      score: inspection_score
+      result: inspection_result
+      closed: inspection_closed_business
+      seating: seating_range
+      risk: risk_category
+      violation_points: violation_points
+      grade: grade
+      parcel: parcel_number
+      business_id: business_id
+    query_map: {text: q, limit: limit}
+    exemplars:
+      - King County restaurant inspection score
+      - Seattle restaurant health rating
+      - food establishment violations in King County
+      - did a Bellevue restaurant pass inspection
+    example:
+      q: pizza
+      limit: 5
