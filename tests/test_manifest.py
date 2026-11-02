@@ -57,6 +57,7 @@ def test_all_manifests_load(registry):
         "nws",
         "nyc_open_data",
         "nyc_restaurant_inspections",
+        "onet_occupations",
         "openalex",
         "openfda",
         "openfec",

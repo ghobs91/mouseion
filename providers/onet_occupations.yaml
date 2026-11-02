@@ -1,0 +1,75 @@
+id: onet_occupations
+title: O*NET occupations
+category: jobs
+domain: reference
+sub_category: occupations
+adapter: onet_occupations
+base: https://www.onetcenter.org
+regions: [US]
+description: >-
+  The O*NET database of US occupations: SOC code, title and description for about
+  a thousand occupations, from the Department of Labor's occupational taxonomy.
+  A bulk CSV with no server-side search, so `q` filters the downloaded rows
+  locally. Keyless; the file is pinned to database release 31.0.
+docs_url: https://www.onetcenter.org/database.html
+keywords:
+  - occupation
+  - o*net
+  - soc code
+  - job duties
+  - career profile
+  - what does a do
+  - occupational taxonomy
+  - job description
+attribution: "O*NET (U.S. Department of Labor)"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "National Center for O*NET Development (U.S. Department of Labor)"
+  originator_domain: onetcenter.org
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.onetcenter.org/database.html
+    verified_at: 2026-11-02
+  rate_limit: {per_min: 6, burst: 2, concurrency: 1}
+cache_ttl: 604800
+max_body_bytes: 2000000
+limits:
+  rps: 1
+capabilities:
+  search:
+    description: >-
+      Search O*NET occupations by title, description or SOC code. Returns the
+      SOC code, title and description. The file is read once and paged locally;
+      `q` matches any field.
+    path: /dl_files/database/db_31_0_csv/occupation_data.csv
+    params:
+      q:
+        type: string
+        description: >-
+          Text to match against the SOC code, title or description, e.g.
+          "dental hygienist" or "11-1011.00".
+      limit:
+        type: integer
+        description: Rows per page (1-100, default 20).
+        default: 20
+    pagination: {mode: offset, default_limit: 20, max_limit: 100}
+    local_window: true
+    id_field: soc_code
+    source_url_template: "https://www.onetonline.org/link/summary/{soc_code}"
+    fields:
+      soc_code: "O*NET-SOC Code"
+      title: Title
+      description: Description
+    query_map: {text: q, limit: limit}
+    exemplars:
+      - what does a dental hygienist do
+      - O*NET occupation profile for chief executives
+      - job duties for a registered nurse
+      - SOC code 11-1011.00
+    example: {q: "dental hygienist", limit: 5}

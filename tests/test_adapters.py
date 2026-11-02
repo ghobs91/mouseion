@@ -1023,3 +1023,38 @@ def test_faa_nas_flattens_delay_types_into_airport_rows():
     assert [record.data["airport"] for record in result.records] == ["SBY", "ORD"]
     assert result.records[0].data["type"] == "Airport Closures"
     assert result.records[0].data["reason"] == "closed"
+
+
+ONET_CSV = {
+    "_raw_text": (
+        "O*NET-SOC Code,Title,Description\n"
+        "11-1011.00,Chief Executives,Determine and formulate policies.\n"
+        "29-1292.00,Dental Hygienists,Administer oral hygiene care to patients.\n"
+        "29-1141.00,Registered Nurses,Assess patient health problems and needs.\n"
+    )
+}
+
+
+def test_onet_occupations_filters_the_bulk_csv(registry):
+    manifest = registry.get("onet_occupations")
+    cap = manifest.capabilities["search"]
+    adapter = get_adapter(manifest.adapter)
+    req = prepare(manifest, cap, {"q": "dental"})
+    result = adapter.parse(manifest, cap, ONET_CSV, req)
+
+    assert len(result.records) == 1
+    record = result.records[0]
+    assert record.data["soc_code"] == "29-1292.00"
+    assert record.data["title"] == "Dental Hygienists"
+    assert record.source_url == "https://www.onetonline.org/link/summary/29-1292.00"
+
+
+def test_onet_occupations_pages_locally(registry):
+    manifest = registry.get("onet_occupations")
+    cap = manifest.capabilities["search"]
+    adapter = get_adapter(manifest.adapter)
+    req = prepare(manifest, cap, {"limit": 1})
+    result = adapter.parse(manifest, cap, ONET_CSV, req)
+
+    assert len(result.records) == 1
+    assert result.next_cursor == "1"

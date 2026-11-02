@@ -1,6 +1,6 @@
 # Source inventory
 
-The full registry: **125 providers and 178 capabilities across ten domains**.
+The full registry: **126 providers and 179 capabilities across ten domains**.
 `none` means keyless; every other value names the credential the manifest
 declares. The authoritative live view is `mouseion providers` or the dashboard's
 Sources tab. This page is the stable inventory for reading and review.
@@ -67,6 +67,7 @@ directory of every API on the internet.
 | Companies House | free key (Basic) | `search`, `company` |
 | GeoNames | free username | `search` |
 | Hugging Face Hub | none | `search_models` |
+| O*NET occupations | none | `search` |
 | Open Food Facts | none | `search_products` |
 | Maryland Lobbyist Contributions | none | `contributions` |
 | Oakland Campaign Finance | none | `contributions` |

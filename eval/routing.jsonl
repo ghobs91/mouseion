@@ -200,3 +200,8 @@
 {"query": "latest episodes of the daily", "expect": "podcast_index"}
 {"query": "search for a podcast on astronomy", "expect": "podcast_index"}
 {"query": "recent episodes from podcast feed id 920666", "expect": "podcast_index"}
+
+{"query": "job description for a pharmacy technician", "expect": "onet_occupations"}
+{"query": "O*NET code 29-1292.00", "expect": "onet_occupations"}
+{"query": "what are the duties of a physical therapist", "expect": "onet_occupations"}
+{"query": "occupational profile for a civil engineer", "expect": "onet_occupations"}

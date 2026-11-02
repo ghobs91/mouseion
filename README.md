@@ -96,7 +96,7 @@ A manifest declares one of ten domains and a finer `sub_category`:
 | `civic_local` | 21 | campaign finance, election results, elected officials, restaurant inspections |
 | `academic_scientific` | 14 | arXiv, Crossref, OpenAlex, PubMed, PMC, UniProt, GBIF |
 | `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS alerts and forecasts, GeoNames, FEMA |
-| `reference` | 14 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, UEFA, FIFA, five soccer leagues, Podcast Index |
+| `reference` | 15 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, UEFA, FIFA, five soccer leagues, Podcast Index, O*NET |
 | `financial_sovereign` | 17 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF, Companies House; central-bank and regulator press |
 | `governance_legislative` | 20 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener, FDA press; state governors and attorneys general |
 | `developer_infrastructure` | 10 | npm, PyPI, crates.io, Go, Maven, GitHub, NVD, Hugging Face, Stack Exchange |
@@ -200,7 +200,7 @@ its own catalogue, not a public-record originator.
 
 ## Coverage
 
-**125 providers, 178 capabilities, ten domains.** The full inventory is in
+**126 providers, 179 capabilities, ten domains.** The full inventory is in
 [`docs/PROVIDERS.md`](docs/PROVIDERS.md). The demand-shaped gap analysis, using
 Firecrawl Alexandria's categories as a reference, is in
 [`docs/PROVIDER-TARGETS.md`](docs/PROVIDER-TARGETS.md).
@@ -230,6 +230,8 @@ Highlights:
   search plus the question body, keyless and CC BY-SA.
 - **Podcasts** — Podcast Index search and episode lists (free key and secret;
   routing works without them, data calls need the credentials).
+- **Occupations** — O*NET's occupation taxonomy: SOC code, title and description
+  for about a thousand US occupations, from the Department of Labor's bulk CSV.
 - **Soccer** — the Premier League, UEFA, FIFA, LALIGA, Bundesliga, Serie A and
   Ligue 1 read from their own site backends, with football-data.org kept as an
   explicit fallback.
@@ -390,7 +392,7 @@ than a directory of every API.
 ## Repository map
 
 ```
-providers/        125 YAML manifests, one per source
+providers/        126 YAML manifests, one per source
 mouseion/
   manifest.py     schema: domain, source policy, auth, capabilities, projection
   registry.py     loading, lexical scoring, provider cards

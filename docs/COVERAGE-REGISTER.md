@@ -19,7 +19,7 @@ recently discussed source. Update the status columns when a provider lands.
 
 ## Current state
 
-**125 providers / 178 capabilities.** Domain distribution is deliberately uneven:
+**126 providers / 179 capabilities.** Domain distribution is deliberately uneven:
 depth where the sources are good, not an even split.
 
 | Domain | Providers | Strong at | Weak at |
@@ -28,7 +28,7 @@ depth where the sources are good, not an even split.
 | `financial_sovereign` | 17 | central banks, regulators, filings, statistics | sanctions, market quotes |
 | `academic_scientific` | 14 | literature, biology, chemistry, clinical trials | global health, structures, genomes |
 | `geo_earth_observation` | 14 | geocoding, hazards, hydrology, alerts | **forecast**, real-time conditions |
-| `reference` | 14 | sports, music, film, jobs, encyclopedia, podcasts | games, people |
+| `reference` | 15 | sports, music, film, jobs, occupations, encyclopedia, podcasts | games, people |
 | `governance_legislative` | 20 | legislation, courts, federal agencies, state governors and attorneys general | — |
 | `developer_infrastructure` | 10 | package registries, vulnerabilities, code, Q&A | containers |
 | `transport_infrastructure` | 8 | airports, flight status, transit news, London live status | US real-time transit (GTFS-RT) |
@@ -58,7 +58,7 @@ depth where the sources are good, not an even split.
 | Air travel status | covered | FAA, Schiphol, OurAirports |
 | Transit service announcements | partial | MBTA, SFMTA, Caltrain news |
 | Real-time transit | partial | TfL line status and arrivals; US GTFS-RT remains |
-| Jobs and occupations | partial | USAJobs; O*NET, Arbeitnow missing |
+| Jobs and occupations | covered | USAJobs postings, O*NET occupation profiles |
 | Packages, vulnerabilities, source code | covered | npm, PyPI, crates, Go, Maven, GitHub, NVD |
 | Developer Q&A | covered | Stack Exchange |
 | Macroeconomic statistics | covered | FRED, BLS, ECB, World Bank, Treasury |
@@ -97,7 +97,7 @@ stated, not hidden.
 | 4 | WHO Global Health Observatory | 4 | 5 | 5 | 4 | 4.45 | low |
 | ~~5~~ | ~~Real-time transit~~ — partially shipped (TfL); US GTFS-RT remains | 4 | 5 | 5 | 2 | 4.10 | high |
 | 6 | OFAC sanctions screening | 4 | 4 | 5 | 3 | 3.95 | high |
-| 7 | O*NET occupations | 3 | 4 | 5 | 4 | 3.95 | low |
+| ~~7~~ | ~~O*NET occupations~~ — shipped | 3 | 4 | 5 | 4 | 3.95 | low |
 | 8 | IMF / OECD / BIS SDMX | 3 | 3 | 5 | 5 | 3.85 | low |
 | ~~9~~ | ~~Podcast Index and IGDB~~ — Podcast Index scaffolded; IGDB blocked | 3 | 5 | 4 | 3 | 3.80 | low |
 | ~~10~~ | ~~Stack Exchange~~ — shipped | 4 | 4 | 3 | 4 | 3.75 | low |
@@ -117,8 +117,11 @@ does not fit the current auth model (`client_credentials` is restricted to
 remote-MCP transports). Its Apicalypse query is a raw POST body, which the client
 does not send today. Treat it as an auth-model project, not a manifest.
 
-**Next by the same rule: #7, O*NET.** It ties #6 (OFAC) on raw impact and is the
-cheaper one; #6 needs bulk sanctions parsing.
+**Next by the same rule: #6, OFAC sanctions screening.** It is the highest-impact
+unshipped item (3.95). It is also the most expensive remaining one: the SDN list
+is a bulk file that needs local search, and the other sanctions lists (EU, UK)
+have different schemas. If a cheaper win is preferred, #8 (IMF/OECD/BIS SDMX) is
+keyless and reuses the existing SDMX adapter.
 
 ## Maintenance
 

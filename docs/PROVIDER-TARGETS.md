@@ -40,7 +40,7 @@ Captured 2026-10-31 from the Alexandria directory page.
 
 ## Where mouseion stands
 
-125 providers across ten routing domains. The counts below are providers, not
+126 providers across ten routing domains. The counts below are providers, not
 capabilities; one provider often covers several capabilities.
 
 | Domain | Providers | What is already strong |
@@ -54,7 +54,7 @@ capabilities; one provider often covers several capabilities.
 | `archives_web_state` | 5 | Wayback, Internet Archive, LoC, UK National Archives |
 | `commerce` | 2 | Shopify catalog, Open Food Facts |
 | `transport_infrastructure` | 8 | OurAirports, FAA status, Schiphol flights, MBTA, SFMTA, Caltrain news, TfL live status |
-| `reference` | 14 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, UEFA, FIFA, Premier League, LALIGA, Bundesliga, Serie A, Ligue 1, football-data, Podcast Index |
+| `reference` | 15 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, O*NET, UEFA, FIFA, Premier League, LALIGA, Bundesliga, Serie A, Ligue 1, football-data, Podcast Index |
 
 ## Gap matrix
 
@@ -77,7 +77,7 @@ card.
 | News (16) | ten agency and transit press feeds, plus official registers | global news index | more agency press releases via RSS; GDELT (aggregator exception), Media Cloud | 1 / 2 |
 | Research (16) | 14 providers | citation graph, preprints | Semantic Scholar, CORE, bioRxiv/medRxiv | 2 / 1 |
 | Sports (14) | MLB, UEFA, Premier League, FIFA, LALIGA, Bundesliga, Serie A, Ligue 1, football-data | other leagues | **MLB** ✅, **UEFA** ✅, **Premier League** ✅, **FIFA** ✅, **LALIGA** ✅, **Bundesliga** ✅, **Serie A** ✅, **Ligue 1** ✅; football-data.org retained as an explicit-use fallback | 1 / 2 |
-| Jobs (13) | USAJobs | occupations | **USAJobs** ✅, O*NET, Arbeitnow | 2 / 1 |
+| Jobs (13) | USAJobs, O*NET | postings breadth | **USAJobs** ✅, **O*NET** ✅, Arbeitnow | 2 / 1 |
 | AI models (12) | **Hugging Face** | model catalogues | **Hugging Face** ✅, OpenRouter (commercial) | 1 |
 | People (12) | Wikidata, GLEIF, SEC insiders | sanctions, officers | OpenSanctions, Companies House officers | 2 |
 | Restaurant (10) | Overpass (OSM); NYC, Chicago, King County and NY State inspections | menus, more cities | more city health-inspection Socrata datasets; menu data has no primary API | 1 |
@@ -112,8 +112,8 @@ explicit-use fallback.
 
 **P1 — shipped:**
 
-5. **Jobs**: USAJobs (free key plus the registered email header) ✅. O*NET
-   still needs a key or its bulk database; it is the remaining P1 item.
+5. **Jobs**: USAJobs (free key plus the registered email header) ✅. O*NET is
+   shipped from its bulk database ✅, so the P1 jobs item is closed.
 6. **Sports**: MLB StatsAPI (official, keyless) ✅.
 7. **Entertainment**: MusicBrainz (keyless) and TMDB (free key) ✅.
 8. **Travel**: OurAirports (public-domain CSV) ✅.
