@@ -17,3 +17,7 @@
 {"query": "Firewalla AP7 local first access point no cloud OpenWrt mesh 802.11s roaming", "expect": null}
 {"query": "GL.iNet router mesh OpenWrt no cloud account privacy local admin", "expect": null}
 {"query": "Linksys Velop Micro 7 no account no app local web interface privacy review", "expect": null}
+{"query": "2010 Honda Civic window motor wiring harness parasitic battery drain", "expect": null}
+{"query": "2010 Honda Civic alternator replacement under $200 best brand", "expect": null}
+{"query": "live fetch of an arbitrary web page as readable text (blog post URL karthihegde.dev/posts/dns_tampering)", "expect": null, "gap": "capability:url_to_text", "note": "providers_search returned only wayback (archives_web_state/snapshots); no provider extracts live page content, so mouseion.fetch_url escape hatch was used", "ts": "2026-11-05T10:24:18+00:00"}
+{"query": "authoritative software documentation for a coding-agent harness (opencode skills discovery paths)", "expect": null, "gap": "capability:software_docs", "note": "fell back to web_extract for https://opencode.ai/docs/skills/; no provider indexes product docs (mouseion.fetch_url escape hatch would have served). Owning API: docs sites / repo markdown (opencode.ai/docs, raw GitHub). Tier 1 public, adapter cost low (sitemap+md), impact: medium (repeated for every harness/config question).", "ts": "2026-11-10T13:30:02+00:00"}
