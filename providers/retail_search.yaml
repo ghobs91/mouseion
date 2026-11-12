@@ -1,0 +1,75 @@
+id: retail_search
+title: Retail product search (Best Buy, Walmart, eBay, Costco)
+category: commerce
+domain: commerce
+sub_category: product_catalog
+transport: fanout
+members: [bestbuy_products, walmart_products, ebay_items, costco_products]
+member_capability: search
+base: ""
+regions: [US]
+description: >-
+  One product search across four retailer catalogues: Best Buy, Walmart, eBay and
+  Costco. Each offer keeps the retailer that published it, its price and
+  condition, and its own product URL, so a comparison never loses provenance.
+  `limit` is per retailer, so limit=5 returns up to 20 offers. A retailer that
+  fails is named in `missing` and the call still returns the others. Use the
+  individual providers for deeper pagination inside one retailer.
+docs_url: https://github.com/ghobs91/mouseion#readme
+keywords:
+  - compare prices
+  - across retailers
+  - in stock
+  - availability
+  - deal
+attribution: "Best Buy, Walmart, eBay and Costco"
+source:
+  is_primary: false
+  originator: "Best Buy, Walmart, eBay and Costco"
+  originator_domain: multi-retailer
+  provenance: aggregator_exception
+  tier: 2
+  exception_reason: >-
+    A fanout view, not an independent source: every offer comes from one of the
+    four named primary retailer catalogues. The engine must not treat this view
+    as a failover source for any single retailer.
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://github.com/ghobs91/mouseion/blob/main/docs/PROVIDERS.md
+    verified_at: 2026-11-02
+  rate_limit: {per_min: 60, burst: 8, concurrency: 4}
+cache_ttl: 300
+capabilities:
+  search:
+    description: >-
+      Search Best Buy, Walmart, eBay and Costco in parallel by keyword. Returns
+      one offer per item with retailer, title, cost in USD, currency, condition,
+      image, availability, rating and the retailer's listing URL. `limit` is per
+      retailer (max 25), not a total. Filter with `retailers`.
+    path: /
+    params:
+      query: {type: string, required: true, description: "product keywords"}
+      retailers:
+        type: array
+        description: >-
+          Optional subset of [bestbuy_products, walmart_products, ebay_items,
+          costco_products]; short names bestbuy, walmart, ebay and costco also work.
+      limit: {type: integer, default: 5, description: "offers per retailer (max 25)"}
+      sort:
+        type: string
+        default: relevance
+        enum: [relevance, price]
+        description: >-
+          relevance interleaves retailers; price orders every offer by price.
+          Condition is per offer, so compare like-for-like before calling one
+          listing cheaper.
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - compare prices for the same item across retailers
+      - where is an item cheapest online
+      - search several retailers for one item
+      - which big retailer has this in stock
+      - compare prices and availability across stores
+    example: {query: "wireless headphones", limit: 2}

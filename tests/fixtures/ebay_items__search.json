@@ -1,0 +1,64 @@
+{
+  "provider": "ebay_items",
+  "capability": "search",
+  "recorded_at": "2026-11-02T12:00:00+00:00",
+  "params": {"query": "sony camera lens", "limit": 3},
+  "expected_records": 3,
+  "body": {
+    "href": "https://api.ebay.com/buy/browse/v1/item_summary/search?q=sony%20camera%20lens&limit=3",
+    "total": 3,
+    "limit": 3,
+    "offset": 0,
+    "itemSummaries": [
+      {
+        "itemId": "v1|285123456789|0",
+        "legacyItemId": "285123456789",
+        "title": "Sony FE 24-70mm f/2.8 GM II Lens - Excellent Condition",
+        "itemWebUrl": "https://www.ebay.com/itm/285123456789",
+        "image": {"imageUrl": "https://i.ebayimg.com/images/g/abc/s-l1600.jpg"},
+        "price": {"value": "1899.99", "currency": "USD"},
+        "condition": "Used",
+        "buyingOptions": ["FIXED_PRICE"],
+        "shippingOptions": [
+          {
+            "shippingCost": {"value": "0.00", "currency": "USD"},
+            "minEstimatedDeliveryDate": "2026-11-05",
+            "maxEstimatedDeliveryDate": "2026-11-08"
+          }
+        ],
+        "seller": {"username": "lens_pro_shop", "feedbackPercentage": "99.6", "feedbackScore": 15230},
+        "shortDescription": "Sony G Master II zoom lens with original caps and hood."
+      },
+      {
+        "itemId": "v1|364987654321|0",
+        "legacyItemId": "364987654321",
+        "title": "Sony FE 85mm f/1.8 Prime Lens - New Open Box",
+        "itemWebUrl": "https://www.ebay.com/itm/364987654321",
+        "image": {"imageUrl": "https://i.ebayimg.com/images/g/def/s-l1600.jpg"},
+        "price": {"value": "449.00", "currency": "USD"},
+        "condition": "Open box",
+        "buyingOptions": ["FIXED_PRICE", "BEST_OFFER"],
+        "shippingOptions": [
+          {"shippingCost": {"value": "12.50", "currency": "USD"}}
+        ],
+        "seller": {"username": "camera_outlet", "feedbackPercentage": "98.9", "feedbackScore": 8021},
+        "shortDescription": "Open-box portrait lens, inspected and tested."
+      },
+      {
+        "itemId": "v1|126789012345|0",
+        "legacyItemId": "126789012345",
+        "title": "Sony E 55-210mm f/4.5-6.3 OSS Lens - Refurbished",
+        "itemWebUrl": "https://www.ebay.com/itm/126789012345",
+        "image": {"imageUrl": "https://i.ebayimg.com/images/g/ghi/s-l1600.jpg"},
+        "price": {"value": "179.95", "currency": "USD"},
+        "condition": "Certified - Refurbished",
+        "buyingOptions": ["FIXED_PRICE"],
+        "shippingOptions": [
+          {"shippingCost": {"value": "8.00", "currency": "USD"}}
+        ],
+        "seller": {"username": "refurb_lenses", "feedbackPercentage": "99.1", "feedbackScore": 4210},
+        "shortDescription": "Manufacturer-refurbished telephoto zoom with a 90-day warranty."
+      }
+    ]
+  }
+}

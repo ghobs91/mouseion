@@ -1,0 +1,90 @@
+id: costco_products
+title: Costco product search
+category: commerce
+domain: commerce
+sub_category: product_catalog
+transport: browser
+adapter: costco_grs
+base: https://gdx-api.costco.com
+regions: [US]
+description: >-
+  Search Costco's warehouse catalogue through its own search page: title, sale
+  and list price, brand, rating, review count, stock status and the costco.com
+  product page. Costco protects its search API with Kasada, so this provider
+  opens a headful Patchright browser, lets the page make its own request, and
+  intercepts the response. Prices reflect the warehouse the browser session is
+  currently set to. A visible Chrome window may appear briefly.
+docs_url: https://www.costco.com/
+keywords:
+  - costco
+  - warehouse
+  - membership
+  - bulk
+  - grocery
+  - appliance
+  - electronics
+  - product
+  - price
+  - retail
+attribution: "Costco"
+auth:
+  type: none
+source:
+  is_primary: true
+  originator: "Costco"
+  originator_domain: costco.com
+  provenance: commercial_platform
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.costco.com/
+    verified_at: 2026-11-03
+  rate_limit: {per_min: 10, burst: 2, concurrency: 1}
+cache_ttl: 300
+limits:
+  note: >-
+    Opens a headful Patchright browser and reuses a persistent profile under
+    .mouseion/browser. Headless Chromium is rejected by Costco's bot protection.
+capabilities:
+  search:
+    description: >-
+      Search Costco products by keyword through Costco's own search page.
+      Returns the title, sale and list price in USD, brand, rating, review
+      count, stock status and the costco.com product URL.
+    path: /catalog/search/api/v1/search
+    method: POST
+    params:
+      query: {type: string, required: true, description: "product keywords"}
+      limit: {type: integer, default: 5, description: "products to return (max 24)"}
+    browser_url: "https://www.costco.com/s?keyword={query}"
+    browser_response_match: "/catalog/search/api/v1/search"
+    record_path: searchResult.results
+    id_field: item_id
+    fields:
+      item_id: item_id
+      variant_id: variant_id
+      title: title
+      price: price
+      list_price: list_price
+      currency: currency
+      condition: condition
+      availability: availability
+      rating: rating
+      reviews: reviews
+      brand: brand
+      category: category
+      image: image
+      url: url
+      description: description
+    constants: {currency: USD, condition: new}
+    source_url_template: "{url}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - price of a vacuum at Costco
+      - is this item in stock at Costco
+      - Costco member price for a television
+      - find a Costco product by name
+      - compare Costco list price and sale price
+    example: {query: "electric snowblower", limit: 5}

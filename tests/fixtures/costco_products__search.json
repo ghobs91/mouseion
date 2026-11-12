@@ -1,0 +1,75 @@
+{
+  "provider": "costco_products",
+  "capability": "search",
+  "recorded_at": "2026-11-03T10:51:44+00:00",
+  "params": {"query": "electric snowblower", "limit": 2},
+  "expected_records": 2,
+  "body": {
+    "searchResultProvider": "GRS",
+    "locale": "en-US",
+    "client_id": "USBC",
+    "searchResult": {
+      "results": [
+        {
+          "id": "4000358874",
+          "product": {
+            "id": "4000358874",
+            "title": "Greenworks 80V 22” Snow Thrower (2) 4.0Ah Batteries & Dual Port Charger",
+            "uri": "https://www.costco.com/p/-/greenworks-80v-22-snow-thrower-2-40ah-batteries--dual-port-charger/4000358874",
+            "brands": ["Greenworks"],
+            "categories": [
+              "Patio, Lawn & Garden",
+              "Patio, Lawn & Garden > Outdoor Power Equipment",
+              "Patio, Lawn & Garden > Outdoor Power Equipment > Leaf & Snow Blowers"
+            ],
+            "attributes": {
+              "primary_image": {
+                "text": ["https://gdx-assets.costco.com/adobe/assets/urn:aaid:aem:8b9063a6/as/4000358874-847__1.avif"]
+              },
+              "buyable": {"text": [], "numbers": [1.0]}
+            },
+            "rating": {"averageRating": 3.0698, "ratingCount": 43},
+            "variants": [{"id": "1936691", "title": "Greenworks 80V 22” Snow Thrower", "variants": []}]
+          },
+          "variantRollupValues": {
+            "inventory(226-wh, price)": [699.99],
+            "inventory(847, price)": [699.99],
+            "originalPrice": [899.99],
+            "price": [899.99],
+            "inventory(226-wh, attributes.availability)": ["IN_STOCK"],
+            "variantId": ["1936691"]
+          }
+        },
+        {
+          "id": "4201031883",
+          "product": {
+            "id": "4201031883",
+            "title": "Greenworks 80V 20\" Brushless Snow Blower with 4.0Ah Battery, 2.0Ah Battery and Rapid Charger",
+            "uri": "https://www.costco.com/p/-/greenworks-80v-20-brushless-snow-blower-with-40ah-battery-20ah-battery-and-rapid-charger/4201031883",
+            "brands": ["Greenworks"],
+            "categories": [
+              "Patio, Lawn & Garden",
+              "Patio, Lawn & Garden > Outdoor Power Equipment",
+              "Patio, Lawn & Garden > Outdoor Power Equipment > Leaf & Snow Blowers"
+            ],
+            "attributes": {
+              "primary_image": {
+                "text": ["https://gdx-assets.costco.com/adobe/assets/urn:aaid:aem:b555f9bd/as/4201031883-847__1.avif"]
+              },
+              "buyable": {"text": [], "numbers": [1.0]}
+            },
+            "rating": {"averageRating": 4.3333, "ratingCount": 69},
+            "variants": [{"id": "2067624", "title": "Greenworks 80V 20\" Brushless Snow Blower", "variants": []}]
+          },
+          "variantRollupValues": {
+            "inventory(226-wh, price)": [649.99],
+            "originalPrice": [699.99],
+            "price": [699.99],
+            "inventory(226-wh, attributes.availability)": ["IN_STOCK"],
+            "variantId": ["2067624"]
+          }
+        }
+      ]
+    }
+  }
+}

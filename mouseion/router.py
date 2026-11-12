@@ -139,9 +139,10 @@ class Router:
                 best[doc.provider] = (candidate, coverage)
 
         ordered = sorted(
-            (candidate for candidate, _ in best.values()),
-            key=lambda c: (-c.score, c.provider),
+            best.values(),
+            key=lambda item: (-item[0].score, -item[1], item[0].provider),
         )
+        ordered = [candidate for candidate, _ in ordered]
         query_regions = detect_regions(query)
         if query_regions:
             ordered = [
@@ -190,7 +191,7 @@ class Router:
             doc = by_key.get((candidate.provider, candidate.capability))
             if doc is not None:
                 ranked.append((candidate.score, doc))
-        return self.registry.cards(ranked, limit)
+        return self.registry.cards(ranked, limit, query_tokens=frozenset(_tokens(query)))
 
     async def prime(self) -> int:
         """Embed every document up front. Returns how many docs are indexed."""

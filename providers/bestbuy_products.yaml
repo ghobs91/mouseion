@@ -1,0 +1,91 @@
+id: bestbuy_products
+title: Best Buy product search
+category: commerce
+domain: commerce
+sub_category: product_catalog
+transport: http
+adapter: rest_json
+base: https://api.bestbuy.com
+regions: [US]
+description: >-
+  Search Best Buy's own product catalogue: title, sale and regular price, model,
+  manufacturer, UPC, rating, review count, availability and the product page.
+  Best Buy is the retailer for these listings, so the price is the seller's own
+  rather than an index. Requires a free Best Buy developer API key.
+docs_url: https://developer.bestbuy.com/documentation/
+keywords:
+  - best buy
+  - bestbuy
+  - electronics
+  - appliance
+  - laptop
+  - tv
+  - product
+  - price
+  - sale
+  - retail
+  - buy
+attribution: "Best Buy"
+auth:
+  type: api_key
+  env: BESTBUY_API_KEY
+  param: apiKey
+  location: query
+  signup_url: https://developer.bestbuy.com/
+source:
+  is_primary: true
+  originator: "Best Buy"
+  originator_domain: bestbuy.com
+  provenance: commercial_platform
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://developer.bestbuy.com/documentation/
+    verified_at: 2026-11-02
+  rate_limit: {per_min: 120, burst: 5, concurrency: 2}
+cache_ttl: 300
+capabilities:
+  search:
+    description: >-
+      Search Best Buy products by keyword. Returns the product title, current and
+      regular price in USD, manufacturer, model, UPC, rating, review count,
+      availability and the bestbuy.com product URL.
+    path: /v1/products((search={query}))
+    defaults:
+      format: json
+      show: >-
+        sku,name,salePrice,regularPrice,onSale,url,image,largeFrontImage,thumbnailImage,mediumImage,customerReviewAverage,customerReviewCount,shortDescription,manufacturer,modelNumber,upc,categoryPath,freeShipping,onlineAvailability
+    params:
+      query: {type: string, required: true, description: "product keywords"}
+      limit: {type: integer, default: 5, description: "products to return"}
+    pagination: {mode: page, param: page, limit_param: pageSize, default_limit: 5, max_limit: 100, start: 1}
+    record_path: products
+    id_field: item_id
+    fields:
+      item_id: sku
+      title: name
+      price: salePrice
+      list_price: regularPrice
+      image: [largeFrontImage, image, mediumImage, thumbnailImage]
+      url: url
+      availability: onlineAvailability
+      rating: customerReviewAverage
+      reviews: customerReviewCount
+      brand: manufacturer
+      model: modelNumber
+      upc: upc
+      category: categoryPath.0.name
+      description: shortDescription
+      free_shipping: freeShipping
+    constants: {currency: USD, condition: new}
+    source_url_template: "{url}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - price of a television at Best Buy
+      - is this laptop in stock at Best Buy
+      - Best Buy sale on headphones
+      - compare Best Buy model numbers and prices
+      - find a Best Buy product by name
+    example: {query: "wireless headphones", limit: 3}

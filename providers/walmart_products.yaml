@@ -1,0 +1,88 @@
+id: walmart_products
+title: Walmart product search
+category: commerce
+domain: commerce
+sub_category: product_catalog
+transport: http
+adapter: rest_json
+base: https://developer.api.walmart.com
+regions: [US]
+description: >-
+  Search Walmart's own catalogue through the affiliate API: title, sale price,
+  list price, UPC, model, rating, review count, availability and the walmart.com
+  product page. Walmart is the retailer for these listings. Requires an approved
+  Walmart affiliate/developer account and an RSA key pair.
+docs_url: https://developer.walmart.com/
+keywords:
+  - walmart
+  - walmart.com
+  - grocery
+  - household
+  - electronics
+  - product
+  - price
+  - sale
+  - retail
+  - buy
+attribution: "Walmart"
+auth:
+  type: signed
+  signer: walmart
+  env: WALMART_CONSUMER_ID
+  private_key_env: WALMART_PRIVATE_KEY
+  key_version_env: WALMART_KEY_VERSION
+  key_version: "1"
+  signup_url: https://developer.walmart.com/
+source:
+  is_primary: true
+  originator: "Walmart"
+  originator_domain: walmart.com
+  provenance: commercial_platform
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://developer.walmart.com/
+    verified_at: 2026-11-02
+  rate_limit: {per_min: 60, burst: 5, concurrency: 2}
+cache_ttl: 300
+capabilities:
+  search:
+    description: >-
+      Search Walmart products by keyword. Returns the product title, sale and
+      list price in USD, brand, model, UPC, rating, review count, availability
+      and the walmart.com product URL.
+    path: /api-proxy/service/affil/product/v2/search
+    params:
+      query: {type: string, required: true, description: "product keywords"}
+      limit: {type: integer, default: 5, description: "products to return (max 25)"}
+    pagination: {mode: offset, param: start, limit_param: numItems, default_limit: 5, max_limit: 25, start: 1}
+    record_path: items
+    id_field: item_id
+    fields:
+      item_id: itemId
+      title: name
+      price: salePrice
+      list_price: msrp
+      image: [largeImage, mediumImage, thumbnailImage]
+      url: productUrl
+      availability: availableOnline
+      rating: customerRating
+      reviews: numReviews
+      brand: brandName
+      model: modelNumber
+      upc: upc
+      category: categoryPath
+      description: shortDescription
+      free_shipping: freeShippingOver35Dollars
+    constants: {currency: USD, condition: new}
+    source_url_template: "{url}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - price of an air fryer at Walmart
+      - is this item available online at Walmart
+      - Walmart grocery price for oat milk
+      - find a Walmart product by name
+      - compare Walmart list price and sale price
+    example: {query: "air fryer", limit: 3}

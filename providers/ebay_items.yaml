@@ -1,0 +1,87 @@
+id: ebay_items
+title: eBay item search
+category: commerce
+domain: commerce
+sub_category: product_catalog
+transport: http
+adapter: rest_json
+base: https://api.ebay.com/buy/browse/v1
+regions: [US]
+description: >-
+  Search eBay's marketplace with the Browse API: item title, price, condition,
+  buying options, shipping cost, seller and the listing URL. Covers new and used
+  listings from many sellers, so compare condition before comparing price.
+  Requires free eBay developer client credentials.
+docs_url: https://developer.ebay.com/api-docs/buy/browse/overview.html
+keywords:
+  - ebay
+  - marketplace
+  - used
+  - refurbished
+  - auction
+  - listing
+  - seller
+  - product
+  - price
+  - buy
+attribution: "eBay"
+auth:
+  type: client_credentials
+  token_url: https://api.ebay.com/identity/v1/oauth2/token
+  client_id_env: EBAY_CLIENT_ID
+  client_secret_env: EBAY_CLIENT_SECRET
+  scopes: [https://api.ebay.com/oauth/api_scope]
+  signup_url: https://developer.ebay.com/
+source:
+  is_primary: true
+  originator: "eBay"
+  originator_domain: ebay.com
+  provenance: commercial_platform
+  tier: 2
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://developer.ebay.com/
+    verified_at: 2026-11-02
+  rate_limit: {per_min: 60, burst: 5, concurrency: 2}
+cache_ttl: 300
+headers:
+  X-EBAY-C-MARKETPLACE-ID: EBAY_US
+capabilities:
+  search:
+    description: >-
+      Search eBay listings by keyword. Returns the title, price and currency,
+      condition, buying options, shipping cost, seller and the listing URL.
+      ``fieldgroups=EXTENDED`` adds the image and short description.
+    path: /item_summary/search
+    defaults:
+      fieldgroups: EXTENDED
+    params:
+      query: {type: string, required: true, description: "listing keywords"}
+      limit: {type: integer, default: 5, description: "listings to return (max 50)"}
+    pagination: {mode: offset, param: offset, limit_param: limit, default_limit: 5, max_limit: 50, start: 0}
+    record_path: itemSummaries
+    id_field: item_id
+    fields:
+      item_id: itemId
+      legacy_item_id: legacyItemId
+      title: title
+      price: price.value
+      currency: price.currency
+      condition: condition
+      buying_options: buyingOptions
+      image: [image.imageUrl, thumbnailImages.0.imageUrl]
+      url: [itemAffiliateWebUrl, itemWebUrl]
+      shipping_cost: shippingOptions.0.shippingCost.value
+      seller: seller.username
+      description: shortDescription
+    source_url_template: "{url}"
+    query_map: {text: query, limit: limit}
+    exemplars:
+      - find a used camera lens on eBay
+      - eBay listing price for a graphics card
+      - compare eBay new and refurbished listings
+      - how much is shipping for an eBay item
+      - find an eBay seller's listing
+    example: {query: "sony camera lens", limit: 3}

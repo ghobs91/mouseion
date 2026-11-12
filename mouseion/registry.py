@@ -166,23 +166,41 @@ class Registry:
             ][:limit]
         scores = self.lexical_scores(query)
         ranked = [(scores.get((d.provider, d.capability), 0.0), d) for d in self.documents(category)]
-        return self.cards([(score, doc) for score, doc in ranked if score > 0], limit)
+        return self.cards(
+            [(score, doc) for score, doc in ranked if score > 0],
+            limit,
+            query_tokens=frozenset(_tokens(query)),
+        )
 
     # -- presentation ---------------------------------------------------
 
-    def cards(self, ranked: list[tuple[float, ProviderDoc]], limit: int) -> list[dict[str, Any]]:
-        """Collapse capability hits to provider cards, best capability first."""
-        best: dict[str, tuple[float, ProviderDoc]] = {}
+    def cards(
+        self,
+        ranked: list[tuple[float, ProviderDoc]],
+        limit: int,
+        *,
+        query_tokens: frozenset[str] | None = None,
+    ) -> list[dict[str, Any]]:
+        """Collapse capability hits to provider cards, best capability first.
+
+        Ties are common once a domain has several similarly worded providers. Break
+        them on how much of the query the document covers, so a query naming three
+        retailers prefers the provider that covers all three over one that matches
+        a single name, then on title for a stable order.
+        """
+        best: dict[str, tuple[float, int, ProviderDoc]] = {}
         for score, doc in ranked:
+            coverage = len(query_tokens & doc.tokens) if query_tokens else 0
             current = best.get(doc.provider)
-            if current is None or score > current[0]:
-                best[doc.provider] = (score, doc)
+            if current is None or (score, coverage) > (current[0], current[1]):
+                best[doc.provider] = (score, coverage, doc)
 
         ordered = sorted(
-            best.values(), key=lambda item: (-item[0], self.manifests[item[1].provider].title)
+            best.values(),
+            key=lambda item: (-item[0], -item[1], self.manifests[item[2].provider].title),
         )
         out: list[dict[str, Any]] = []
-        for _, doc in ordered[:limit]:
+        for _, _, doc in ordered[:limit]:
             card = self.manifests[doc.provider].compact()
             card["capabilities"] = sorted(
                 card["capabilities"], key=lambda cap: cap["name"] != doc.capability
