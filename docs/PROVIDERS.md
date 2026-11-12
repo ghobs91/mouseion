@@ -1,6 +1,6 @@
 # Source inventory
 
-The full registry: **131 providers and 191 capabilities across ten domains**.
+The full registry: **144 providers and 248 capabilities across ten domains**.
 `none` means keyless; every other value names the credential the manifest
 declares. The authoritative live view is `mouseion providers` or the dashboard's
 Sources tab. This page is the stable inventory for reading and review.
@@ -33,12 +33,13 @@ directory of every API on the internet.
 | ECB press releases | none | `announcements` |
 | Federal Register | none | `search`, `get` |
 | Federal Reserve Board press releases | none | `announcements` |
-| FRED | free key | `search_series`, `series_observations` |
+| FRED | free key | `search_series`, `series`, `series_observations`, `series_categories`, `series_release`, `series_tags`, `series_vintage_dates`, `series_updates`, `series_by_tags`, `search_series_tags`, `search_series_related_tags`, `category`, `category_children`, `category_related`, `category_series`, `category_tags`, `category_related_tags`, `releases`, `release`, `release_dates`, `release_calendar`, `release_series`, `release_sources`, `release_tags`, `release_related_tags`, `release_tables`, `sources`, `source`, `source_releases`, `tags`, `related_tags` |
 | GBIF | none | `search_occurrences` |
 | Georgia governor news | none | `announcements` |
 | GLEIF | none | `search_lei`, `entity`, `direct_parent`, `ultimate_parent`, `children` |
 | GitHub | free token | `search_repositories`, `repository`, `releases`, `commits` |
 | Internet Archive | none | `search`, `metadata` |
+| Internet Archive Scholar (Fatcat) | none | `release_by_doi`, `release_by_pmid`, `release_by_pmcid`, `release_by_arxiv`, `release`, `files`, `venue`, `preserved_file` |
 | Library of Congress | none | `search` |
 | FIFA | none | `matches`, `competitions` |
 | Premier League | none | `fixtures`, `competitions` |
@@ -113,6 +114,11 @@ directory of every API on the internet.
 | SEC EDGAR | contact UA | `full_text_search`, `filings_by_cik` |
 | SEC press releases | contact UA | `announcements` |
 | Shopify Global Catalog | free client credentials | `tools` (runtime, read-only) |
+| Best Buy | free key | `search` |
+| Walmart | free affiliate key + RSA key | `search` |
+| eBay | free client credentials | `search` |
+| Costco | headful Patchright browser | `search` |
+| Retail product search (Best Buy, Walmart, eBay, Costco) | members' keys / browser | `search` (fan-out) |
 | DataSF | none | `police_incidents` |
 | SFMTA news | none | `announcements` |
 | US Treasury Fiscal Data | none | `debt_to_penny`, `avg_interest_rates` |
@@ -125,11 +131,18 @@ directory of every API on the internet.
 | King County Election Results | none | `results` (73 elections, 2004–2026) |
 | King County food inspections | none | `inspections` |
 | Colorado Campaign Finance | none | `contributions`, `expenditures` (bulk ZIP) |
+| California Election Results | none | `statewide`, `county` |
+| Georgia Election Results | none | `elections`, `ballot_items`, `contest` |
+| North Carolina Election Results | none | `results` (ZIP/TSV, 36 elections) |
+| Maryland Election Results | none | `precinct_results` (per-county CSV) |
 | Coinbase crypto prices | none | `spot`, `exchange_rates` |
 | Collin County property owners | none | `owners` |
 | El Paso Elected Officials | none | `city_council`, `municipal_court` (HTML table) |
 | Rhode Island Recent Filings | none | `recent` (HTML table) |
 | Ramsey County Election Results | none | `results` |
+| Virginia Election Results | none | `ballot_items`, `contest` |
+| Washington Election Results | none | `elections`, `ballot_items`, `contest` |
+| Utah Election Results | none | `elections`, `ballot_items`, `contest` |
 | UK National Archives | none | `search` |
 | UK Parliament | none | `bills` |
 | UniProt | none | `search`, `entry` |

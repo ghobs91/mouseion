@@ -402,7 +402,7 @@ spec's own examples plus the obvious adjacent authorities.
 | `archives_web_state` | 5 | 5 | Complete: Internet Archive, Wayback, Library of Congress, UK National Archives; existing OpenLibrary | P2 |
 | `transport_infrastructure` | 4 | 8 | 5–8 transit agencies with GTFS/GTFS-RT; State Dept travel; ISBN via OpenLibrary (exception) | P3 |
 | `governance_legislative` | 11 | 10 | Target met: Congress.gov, GovInfo, UK Parliament, CourtListener MCP (OAuth); existing CMS, CourtListener REST, data.gov.au, Federal Register, GOV.UK, Grants.gov, openFDA | P2 |
-| `commerce` | 2 | 1 | Shopify Global Catalog (read-only UCP MCP) | P2 |
+| `commerce` | 7 | 1 | Best Buy, Walmart, eBay and Costco fan-out; Shopify Global Catalog (read-only UCP MCP); Open Food Facts. Costco uses a headful Patchright browser because its API is Kasada-protected | P2 |
 | `reference` | 7 | general | Wikipedia (tertiary; aggregator exception, not used in automatic failover) | P2 |
 | `civic_local` | 17 | 50 states + DC + major cities | Registry + discovery built: 101 jurisdictions, 182 authority URLs probed; routing is jurisdiction-aware and abstains when uncovered. Wave 1 promoted 14 Socrata providers across 11 jurisdictions, including a consolidated King County results provider spanning 73 elections and a ZIP bulk provider for Colorado; 89 candidate datasets catalogued | P2 |
 

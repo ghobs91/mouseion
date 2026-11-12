@@ -40,7 +40,7 @@ Captured 2026-10-31 from the Alexandria directory page.
 
 ## Where mouseion stands
 
-131 providers across ten routing domains. The counts below are providers, not
+136 providers across ten routing domains. The counts below are providers, not
 capabilities; one provider often covers several capabilities.
 
 | Domain | Providers | What is already strong |
@@ -52,7 +52,7 @@ capabilities; one provider often covers several capabilities.
 | `financial_sovereign` | 20 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF ownership; Coinbase and Yahoo Finance quotes; central-bank and regulator press; NY business registry |
 | `developer_infrastructure` | 10 | npm, PyPI, crates, Go, Maven, GitHub, NVD, Hugging Face, Stack Exchange |
 | `archives_web_state` | 5 | Wayback, Internet Archive, LoC, UK National Archives |
-| `commerce` | 2 | Shopify catalog, Open Food Facts |
+| `commerce` | 7 | Best Buy, Walmart, eBay and Costco fan-out; Shopify catalog; Open Food Facts |
 | `transport_infrastructure` | 8 | OurAirports, FAA status, Schiphol flights, MBTA, SFMTA, Caltrain news, TfL live status |
 | `reference` | 15 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, O*NET, UEFA, FIFA, Premier League, LALIGA, Bundesliga, Serie A, Ligue 1, football-data, Podcast Index |
 

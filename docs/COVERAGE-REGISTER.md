@@ -19,7 +19,7 @@ recently discussed source. Update the status columns when a provider lands.
 
 ## Current state
 
-**131 providers / 191 capabilities.** Domain distribution is deliberately uneven:
+**136 providers / 196 capabilities.** Domain distribution is deliberately uneven:
 depth where the sources are good, not an even split.
 
 | Domain | Providers | Strong at | Weak at |
@@ -33,7 +33,7 @@ depth where the sources are good, not an even split.
 | `developer_infrastructure` | 10 | package registries, vulnerabilities, code, Q&A | containers |
 | `transport_infrastructure` | 8 | airports, flight status, transit news, London live status | US real-time transit (GTFS-RT) |
 | `archives_web_state` | 5 | web and national archives | — |
-| `commerce` | 2 | Shopify catalogue, food products | barcodes, non-food products |
+| `commerce` | 7 | Best Buy, Walmart, eBay, Costco, Shopify catalogue, food products | barcodes, non-food products outside these five catalogues |
 
 ## Topic status
 

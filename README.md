@@ -94,7 +94,7 @@ A manifest declares one of ten domains and a finer `sub_category`:
 | Domain | Providers | Examples |
 |---|---:|---|
 | `civic_local` | 23 | campaign finance, election results, elected officials, restaurant inspections, property owners |
-| `academic_scientific` | 14 | arXiv, Crossref, OpenAlex, PubMed, PMC, UniProt, GBIF |
+| `academic_scientific` | 15 | arXiv, Crossref, OpenAlex, PubMed, PMC, UniProt, GBIF, Internet Archive Scholar |
 | `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS alerts and forecasts, GeoNames, FEMA |
 | `reference` | 15 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, UEFA, FIFA, five soccer leagues, Podcast Index, O*NET |
 | `financial_sovereign` | 20 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF ownership, Companies House, NY registry, Coinbase, Yahoo Finance; central-bank and regulator press |
@@ -102,7 +102,7 @@ A manifest declares one of ten domains and a finer `sub_category`:
 | `developer_infrastructure` | 10 | npm, PyPI, crates.io, Go, Maven, GitHub, NVD, Hugging Face, Stack Exchange |
 | `archives_web_state` | 5 | Wayback, Internet Archive, Library of Congress, UK National Archives |
 | `transport_infrastructure` | 8 | OurAirports, FAA airport status, Schiphol flights, MBTA, SFMTA, Caltrain news, TfL live status |
-| `commerce` | 2 | Shopify Global Catalog, Open Food Facts |
+| `commerce` | 7 | Best Buy, Walmart, eBay, Costco, Shopify Global Catalog, Open Food Facts |
 
 Routing runs in three passes:
 
@@ -194,13 +194,15 @@ engine never uses them automatically:
 - **football-data.org** — aggregates league feeds and does not disclose upstreams.
 - **CourtListener, OpenAlex, GBIF, OpenLibrary** — indexes with an explicit
   exception where the primary endpoint is impractical.
+- **Retail fan-out** (`retail_search`) — a view that queries the four primary
+  retailer catalogues in parallel; it is never used in automatic failover.
 
 Commercial platforms are labelled `commercial_platform`: Shopify is primary for
 its own catalogue, not a public-record originator.
 
 ## Coverage
 
-**131 providers, 191 capabilities, ten domains.** The full inventory is in
+**144 providers, 248 capabilities, ten domains.** The full inventory is in
 [`docs/PROVIDERS.md`](docs/PROVIDERS.md). The demand-shaped gap analysis, using
 Firecrawl Alexandria's categories as a reference, is in
 [`docs/PROVIDER-TARGETS.md`](docs/PROVIDER-TARGETS.md).
@@ -210,7 +212,9 @@ Highlights:
 - **Local elections** — 17 providers across 18 jurisdictions, a registry of 101
   state, county and city jurisdictions, and a parallel discovery pipeline. A
   Chicago query abstains rather than reaching New York's disclosures.
-- **Commerce** — Shopify's read-only UCP catalogue and Open Food Facts.
+- **Commerce** — one fan-out search across Best Buy, Walmart, eBay and Costco,
+  plus Shopify's read-only UCP catalogue and Open Food Facts. The fan-out is an
+  explicit view: each offer names the retailer that published it.
 - **Agency announcements** — the Federal Reserve, SEC, FDIC, CFTC, ECB, Bank of
   England, FDA, MBTA, SFMTA and Caltrain publish their own press feeds; the RSS
   adapter reads them directly, filters by keyword locally, and cites the item
@@ -246,6 +250,9 @@ Highlights:
   operator rather than a tracker.
 - **Science and health** — arXiv, Crossref, OpenAlex, PubMed, PMC, UniProt,
   PubChem, ClinicalTrials.gov, openFDA, CMS.
+- **Archived full text** — Internet Archive Scholar's Fatcat v2 resolves a
+  DOI, PMID, PMCID or arXiv id to the work record and the preserved copies,
+  with checksums and the URLs where each copy is served.
 - **Money and law** — ECB, FRED, BLS, Treasury, SEC, FEC, Congress, GovInfo,
   Federal Register, UK Parliament.
 
@@ -268,6 +275,22 @@ uv sync --extra dev
 Credentials for providers that need them live in `.env` or in the dashboard.
 Environment variables win over the dashboard store; the dashboard labels which
 one is in use.
+
+### Browser-backed providers
+
+Costco's search API is Kasada-protected, so that provider drives a real Chrome
+window through Patchright and intercepts the page's own response. Install the
+optional browser extra and a Chromium binary once:
+
+```bash
+uv sync --extra browser
+patchright install chromium   # or install Google Chrome
+```
+
+The window is positioned offscreen by default. Headless Chromium is rejected by
+Costco; keep `MOUSEION_BROWSER_HEADLESS=0` unless a site explicitly works
+headless. The persistent profile lives under `.mouseion/browser/<provider>`.
+
 
 ### Dashboard
 
@@ -372,16 +395,21 @@ than a directory of every API.
 ## Honest limits
 
 - **Coverage is uneven.** Civic is deepest in 18 jurisdictions; the other 83
-  registry entries are seeded and probed, not all promoted. Transport has four
+  registry entries are seeded and probed, not all promoted. Transport has eight
   providers.
 - **Some feeds are undocumented.** The Premier League and the four domestic
   leagues use the same browser-facing backends their sites call. They need
   browser headers and can change without notice; season keys are manifest
   defaults, so a new season is a small edit.
 - **Keys still exist.** FRED, Congress, GovInfo, GitHub, CourtListener, SEC,
-  Shopify, Companies House, GeoNames, TMDB, USAJobs, Schiphol and
-  football-data.org need credentials or a contact header. The dashboard makes
-  them easier to manage; it does not remove them.
+  Shopify, Companies House, GeoNames, TMDB, USAJobs, Schiphol, Best Buy,
+  Walmart, eBay and football-data.org need credentials or a contact header.
+  The dashboard makes credentials easier to manage; it does not remove them.
+- **Costco uses a browser.** Costco's search API is behind Kasada. The provider
+  uses a headful Patchright session, lets Costco's own page make the request,
+  and intercepts the response. It opens a Chrome window (offscreen by default),
+  and headless Chromium is rejected. Keep the browser extra installed and a
+  persistent profile under `.mouseion/browser`.
 - **Embeddings are optional.** Without a backend the router is lexical, which is
   fine for identifiers and weaker for paraphrase.
 - **The eval is small.** It measures routing, not answer correctness.
@@ -399,7 +427,7 @@ than a directory of every API.
 ## Repository map
 
 ```
-providers/        131 YAML manifests, one per source
+providers/        144 YAML manifests, one per source plus one composite view
 mouseion/
   manifest.py     schema: domain, source policy, auth, capabilities, projection
   registry.py     loading, lexical scoring, provider cards
@@ -407,12 +435,15 @@ mouseion/
   engine.py       canonical query, cluster failover, rate limits, breaker
   client.py       prepare → cache → HTTP → normalize → envelope
   adapters/       rest_json, socrata, csv (+ZIP), html_table, atom, sdmx_json, cdx, faa_nas
+  fanout.py       parallel member calls, offer merge, per-member cursors
+  browser.py      Patchright transport: headful page + response interception
+  signing.py      RSA-signed requests (Walmart)
   remote_mcp.py   OAuth and client-credentials MCP, UCP profile injection
   civic.py        jurisdiction registry, coverage discovery, dataset catalogue
   dashboard.py    local dashboard and snapshot API
   web/            static dashboard
   credentials.py  local credential store
-tests/            488 offline tests; live contracts behind -m live
+tests/            619 offline tests; live contracts behind -m live
 eval/             routing cases, coverage matrix, dataset catalogue
 docs/             architecture, roadmap, targets, inventory
 ```
@@ -420,8 +451,8 @@ docs/             architecture, roadmap, targets, inventory
 ## Tests
 
 ```bash
-.venv/bin/pytest              # 488 offline: fixture replay
-.venv/bin/pytest -m live      # 146 live contracts: every upstream, manifest example
+.venv/bin/pytest              # 619 offline: fixture replay
+.venv/bin/pytest -m live      # 192 live contracts: every upstream, manifest example
 .venv/bin/mouseion audit      # source policy, evidence age, tier/auth, TTLs
 ```
 
