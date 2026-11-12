@@ -158,7 +158,17 @@ def audit_manifest(manifest: Manifest, *, today: date | None = None) -> list[Fin
         )
 
     # -- tier vs auth ---------------------------------------------------
-    if manifest.source.tier == 1:
+    fanout = manifest.transport == "fanout"
+    view = manifest.transport in {"fanout", "browser"}
+    if view:
+        # A fanout view or a browser transport has no credential of its own:
+        # members carry the former, and the browser profile carries the latter.
+        if manifest.auth.type != "none":
+            warn(
+                "view_auth_ignored",
+                f"a {manifest.transport} transport should leave auth.type=none",
+            )
+    elif manifest.source.tier == 1:
         if manifest.auth.type == "api_key":
             err("tier1_requires_key", "Tier 1 must be keyless; auth.type is api_key")
         if manifest.auth.type == "oauth":
@@ -178,10 +188,16 @@ def audit_manifest(manifest: Manifest, *, today: date | None = None) -> list[Fin
         if manifest.auth.type == "none" and manifest.auth.env:
             warn("tier1_unused_env", "auth.env is set but auth.type is none")
     else:
-        if manifest.auth.type not in {"api_key", "basic", "oauth", "client_credentials"}:
+        if manifest.auth.type not in {
+            "api_key",
+            "basic",
+            "oauth",
+            "client_credentials",
+            "signed",
+        }:
             err(
                 "tier2_not_api_key",
-                f"Tier 2 must use api_key, basic, oauth, or client_credentials; "
+                f"Tier 2 must use api_key, basic, oauth, client_credentials or signed; "
                 f"found '{manifest.auth.type}'",
             )
         if manifest.auth.type in {"api_key", "basic"} and not manifest.auth.env:
@@ -196,6 +212,16 @@ def audit_manifest(manifest: Manifest, *, today: date | None = None) -> list[Fin
                     "oauth_requires_remote_mcp",
                     "OAuth auth is only supported for transport=mcp_remote",
                 )
+        if manifest.auth.type == "signed":
+            if manifest.auth.signer != "walmart":
+                err("signed_unknown_signer", "signed auth currently supports signer=walmart")
+            if not manifest.auth.env:
+                err("signed_missing_env", "signed auth needs auth.env for the consumer id")
+            if not manifest.auth.private_key_env:
+                err(
+                    "signed_missing_key_env",
+                    "signed auth needs private_key_env for the RSA private key",
+                )
         if manifest.auth.type == "client_credentials":
             if not manifest.auth.token_url:
                 err("client_credentials_missing_token_url", "client_credentials needs token_url")
@@ -205,11 +231,6 @@ def audit_manifest(manifest: Manifest, *, today: date | None = None) -> list[Fin
                 err(
                     "client_credentials_missing_secret",
                     "client_credentials needs client_secret_env",
-                )
-            if manifest.transport != "mcp_remote":
-                err(
-                    "client_credentials_requires_remote_mcp",
-                    "client_credentials is only supported for transport=mcp_remote",
                 )
         policy = manifest.source.auth_policy
         if not policy.free:
@@ -224,7 +245,7 @@ def audit_manifest(manifest: Manifest, *, today: date | None = None) -> list[Fin
     evidence_host = _host(evidence)
     if not evidence.startswith("https://"):
         err("evidence_not_https", f"evidence_url must be https: {evidence}")
-    if not _domain_matches(evidence_host, manifest.source.originator_domain):
+    if not fanout and not _domain_matches(evidence_host, manifest.source.originator_domain):
         err(
             "evidence_domain_mismatch",
             f"evidence host '{evidence_host}' does not belong to "
@@ -240,34 +261,35 @@ def audit_manifest(manifest: Manifest, *, today: date | None = None) -> list[Fin
         warn("evidence_future", "auth policy evidence is dated in the future")
 
     # -- base domain and secondary-source blocklist ---------------------
-    base_host = _host(manifest.base)
-    if not _domain_matches(base_host, manifest.source.originator_domain):
-        err(
-            "base_domain_mismatch",
-            f"base host '{base_host}' does not belong to "
-            f"'{manifest.source.originator_domain}'",
-        )
-
-    for label, url in (
-        ("base", manifest.base),
-        ("docs_url", manifest.docs_url),
-        ("evidence_url", evidence),
-    ):
-        blocked = _blocked_by(_host(url))
-        if blocked:
-            message = (
-                f"{label} host '{_host(url)}' matches blocked secondary source '{blocked}'"
+    if not fanout:
+        base_host = _host(manifest.base)
+        if not _domain_matches(base_host, manifest.source.originator_domain):
+            err(
+                "base_domain_mismatch",
+                f"base host '{base_host}' does not belong to "
+                f"'{manifest.source.originator_domain}'",
             )
-            # The blocklist keeps a secondary source from being presented as primary.
-            # An explicit aggregator_exception is the sanctioned way to ship one, so
-            # the same host is a warning once that claim is made.
-            if (
-                manifest.source.provenance == "aggregator_exception"
-                and manifest.source.exception_reason
-            ):
-                warn("blocked_secondary_host", f"{message} (explicit aggregator exception)")
-            else:
-                err("blocked_secondary_host", message)
+
+        for label, url in (
+            ("base", manifest.base),
+            ("docs_url", manifest.docs_url),
+            ("evidence_url", evidence),
+        ):
+            blocked = _blocked_by(_host(url))
+            if blocked:
+                message = (
+                    f"{label} host '{_host(url)}' matches blocked secondary source '{blocked}'"
+                )
+                # The blocklist keeps a secondary source from being presented as primary.
+                # An explicit aggregator_exception is the sanctioned way to ship one, so
+                # the same host is a warning once that claim is made.
+                if (
+                    manifest.source.provenance == "aggregator_exception"
+                    and manifest.source.exception_reason
+                ):
+                    warn("blocked_secondary_host", f"{message} (explicit aggregator exception)")
+                else:
+                    err("blocked_secondary_host", message)
 
     if not manifest.docs_url:
         warn("docs_url_missing", "no docs_url; the model has no primary documentation link")
@@ -383,6 +405,50 @@ def audit_registry(
                     "the engine must skip non-primary members during failover",
                 )
             )
+
+    for manifest in registry.manifests.values():
+        if manifest.transport != "fanout":
+            continue
+        if len(set(manifest.members)) != len(manifest.members):
+            findings.append(
+                Finding(
+                    manifest.id,
+                    "fanout_duplicate_member",
+                    "error",
+                    "fanout members must be unique",
+                )
+            )
+        for member in manifest.members:
+            target = registry.manifests.get(member)
+            if target is None:
+                findings.append(
+                    Finding(
+                        manifest.id,
+                        "fanout_unknown_member",
+                        "error",
+                        f"fanout member '{member}' is not a registered provider",
+                    )
+                )
+                continue
+            if target.transport == "fanout":
+                findings.append(
+                    Finding(
+                        manifest.id,
+                        "fanout_nested",
+                        "error",
+                        f"fanout member '{member}' is itself a fanout provider",
+                    )
+                )
+            if manifest.member_capability not in target.capabilities:
+                findings.append(
+                    Finding(
+                        manifest.id,
+                        "fanout_missing_capability",
+                        "error",
+                        f"fanout member '{member}' has no capability "
+                        f"'{manifest.member_capability}'",
+                    )
+                )
 
     return sorted(findings, key=lambda f: (f.provider, f.severity, f.code))
 

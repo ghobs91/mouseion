@@ -93,8 +93,17 @@ class Pagination(BaseModel):
 class Auth(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    type: Literal["none", "api_key", "user_agent", "basic", "oauth", "client_credentials"] = "none"
-    #: Environment variable holding the credential (api_key/user_agent).
+    type: Literal[
+        "none",
+        "api_key",
+        "user_agent",
+        "basic",
+        "oauth",
+        "client_credentials",
+        "signed",
+    ] = "none"
+    #: Environment variable holding the credential (api_key/user_agent), or the
+    #: primary identity for signed requests (Walmart consumer id).
     env: str | None = None
     #: Query param or header name receiving the credential.
     param: str | None = None
@@ -104,10 +113,16 @@ class Auth(BaseModel):
     scopes: list[str] = Field(default_factory=list)
     redirect_uri: str | None = None
     client_name: str = "mouseion"
-    #: Client-credentials settings, used by machine-to-machine remote MCP providers.
+    #: Client-credentials settings, for MCP and HTTP providers.
     token_url: str | None = None
     client_id_env: str | None = None
     client_secret_env: str | None = None
+    #: Signed-request settings. `env` holds the consumer id; the private key and
+    #: key version come from their own variables.
+    signer: Literal["walmart"] | None = None
+    private_key_env: str | None = None
+    key_version_env: str | None = None
+    key_version: str = "1"
     #: Where a human obtains the credential, shown by the dashboard.
     signup_url: str | None = None
 
@@ -198,6 +213,10 @@ class Capability(BaseModel):
     #: Dotted paths to pull from the raw record. When present the record is projected.
     #: A value may be a list of paths; the first non-null path wins (language fallback).
     fields: dict[str, str | list[str]] | None = None
+    #: Values the upstream implies but does not return: a retail catalogue's
+    #: currency, or a condition every listing shares. Applied only when the
+    #: projection did not supply the field.
+    constants: dict[str, Any] = Field(default_factory=dict)
     #: Collapse list-of-object fields to one attribute, e.g. {interventions: name}.
     pluck: dict[str, str] = Field(default_factory=dict)
     #: Keys to strip when no projection is declared.
@@ -228,6 +247,11 @@ class Capability(BaseModel):
     #: JSON body template for POST APIs. All params go to the body, not the query.
     #: ``"{name}"`` is replaced by the raw value; keys with no value are dropped.
     body_template: dict[str, Any] | None = None
+    #: Browser transport: the human-facing page to open before intercepting the
+    #: API response. ``{query}`` is URL-encoded by the adapter.
+    browser_url: str | None = None
+    #: Browser transport: a substring that identifies the API response to keep.
+    browser_response_match: str | None = None
     #: Query template for APIs whose filters are nested params
     #: (`conditions[0][property]=state`). Rendered like body_template, then flattened.
     query_template: dict[str, Any] | None = None
@@ -345,8 +369,14 @@ class Manifest(BaseModel):
     id: str
     title: str
     category: str = "public-records"
-    #: HTTP REST is the default; mcp_remote proxies a remote MCP server.
-    transport: Literal["http", "mcp_remote"] = "http"
+    #: HTTP REST is the default; mcp_remote proxies a remote MCP server;
+    #: fanout queries several named providers and merges their records;
+    #: browser drives a real browser window for bot-protected sites.
+    transport: Literal["http", "mcp_remote", "fanout", "browser"] = "http"
+    #: Providers a fanout capability queries, in display order.
+    members: list[str] = Field(default_factory=list)
+    #: Capability name to call on every member (all four retailers expose `search`).
+    member_capability: str = "search"
     #: For remote MCP, expose only tools annotated readOnlyHint=true.
     read_only_only: bool = True
     #: Explicit remote tool allowlist; empty means use read_only_only.
@@ -368,7 +398,8 @@ class Manifest(BaseModel):
     #: (e.g. `US-WA-KING`). A state id covers its children; a county listing its
     #: cities is explicit. Empty means the provider is not jurisdiction-specific.
     jurisdictions: list[str] = Field(default_factory=list)
-    base: str
+    #: Empty for a fanout view, which has no upstream host of its own.
+    base: str = ""
     adapter: str = "rest_json"
     auth: Auth = Field(default_factory=Auth)
     attribution: str | None = None
@@ -402,6 +433,17 @@ class Manifest(BaseModel):
                 )
             out.append(code)
         return out
+
+    @model_validator(mode="after")
+    def _transport_contract(self) -> "Manifest":
+        if self.transport == "fanout":
+            if not self.members:
+                raise ValueError("transport=fanout requires a non-empty members list")
+            if self.id in self.members:
+                raise ValueError("a fanout provider cannot list itself as a member")
+        elif not self.base:
+            raise ValueError(f"transport={self.transport} requires a base URL")
+        return self
 
     def ttl(self, default: float) -> float:
         return self.cache_ttl if self.cache_ttl is not None else default
@@ -497,6 +539,8 @@ class Manifest(BaseModel):
             "attribution": self.attribution,
             "terms": self.terms,
             "regions": self.regions or "global",
+            "members": self.members or None,
+            "member_capability": self.member_capability if self.members else None,
             "limits": self.limits,
             "capabilities": caps,
         }

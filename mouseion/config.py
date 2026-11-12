@@ -86,6 +86,25 @@ class Settings:
     #: Some models (nomic, e5) require asymmetric prefixes.
     query_prefix: str = field(default_factory=lambda: os.getenv("MOUSEION_QUERY_PREFIX", ""))
     doc_prefix: str = field(default_factory=lambda: os.getenv("MOUSEION_DOC_PREFIX", ""))
+    #: Browser-backed providers. Patchright drives a real Chrome window, because
+    #: headless Chromium is detected by the bot-protection layers these sites use.
+    browser_headless: bool = field(
+        default_factory=lambda: _bool("MOUSEION_BROWSER_HEADLESS", False)
+    )
+    browser_channel: str = field(
+        default_factory=lambda: os.getenv("MOUSEION_BROWSER_CHANNEL", "chrome")
+    )
+    browser_profile_dir: Path = field(
+        default_factory=lambda: Path(
+            os.getenv("MOUSEION_BROWSER_PROFILE", ROOT / ".mouseion" / "browser")
+        )
+    )
+    browser_timeout_s: float = field(
+        default_factory=lambda: float(os.getenv("MOUSEION_BROWSER_TIMEOUT", "60"))
+    )
+    browser_offscreen: bool = field(
+        default_factory=lambda: _bool("MOUSEION_BROWSER_OFFSCREEN", True)
+    )
 
 
 settings = Settings()

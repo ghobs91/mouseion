@@ -20,6 +20,20 @@ def config(tmp_path: Path) -> Settings:
     return Settings(providers_dir=ROOT / "providers", db_path=tmp_path / "cache.db")
 
 
+@pytest.fixture(scope="session")
+def walmart_private_key() -> str:
+    """A throwaway RSA key so signed-request code runs without a real credential."""
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import rsa
+
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    return key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption(),
+    ).decode("ascii")
+
+
 STUDY = {
     "hasResults": False,
     "protocolSection": {

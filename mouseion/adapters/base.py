@@ -45,6 +45,10 @@ class PreparedRequest:
     #: All pages of this capability share one upstream response, so the cache key
     #: must ignore the cursor.
     shared_cache_key: bool = False
+    #: Browser transport: the human-facing page to open before intercepting.
+    browser_url: str | None = None
+    #: Browser transport: metadata from the page's own request (warehouse, etc.).
+    browser_meta: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(slots=True)
@@ -143,7 +147,43 @@ class Adapter(ABC):
             token = base64.b64encode(f"{key}:".encode()).decode()
             headers["Authorization"] = f"Basic {token}"
             return
+        if auth.type == "signed":
+            if auth.signer != "walmart":
+                raise ProviderError(
+                    f"provider '{manifest.id}' declares unknown signer '{auth.signer}'"
+                )
+            consumer_id = resolve(auth.env)
+            private_key = resolve(auth.private_key_env)
+            key_version = (
+                resolve(auth.key_version_env) if auth.key_version_env else None
+            ) or auth.key_version
+            missing = [
+                name
+                for name, value in (
+                    (auth.env, consumer_id),
+                    (auth.private_key_env, private_key),
+                    (auth.key_version_env, key_version),
+                )
+                if name and not value
+            ]
+            if missing:
+                raise ProviderError(
+                    f"missing credential for provider '{manifest.id}'",
+                    hint=f"set {', '.join(missing)} in the environment or save it in the dashboard",
+                )
+            from ..signing import walmart_headers
+
+            headers.update(
+                walmart_headers(
+                    consumer_id=consumer_id,
+                    private_key=private_key,
+                    key_version=key_version,
+                )
+            )
+            return
         if auth.type != "api_key":
+            # client_credentials headers are resolved asynchronously by the
+            # client, because a token request needs the network.
             return
         if not auth.env:
             raise ProviderError(f"provider '{manifest.id}' declares api_key auth without env")
@@ -313,6 +353,9 @@ class Adapter(ABC):
                 ]
             elif isinstance(value, dict):
                 data[field_name] = value.get(sub_key)
+
+        for field_name, value in capability.constants.items():
+            data.setdefault(field_name, value)
 
         for field_name in capability.strip_html:
             value = data.get(field_name)

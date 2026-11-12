@@ -4,6 +4,7 @@ from .atom import AtomAdapter
 from .base import Adapter, AdapterResult, PreparedRequest, extract_records
 from .cdx import CdxAdapter
 from .coinbase_rates import CoinbaseRatesAdapter
+from .costco_grs import CostcoGrsAdapter
 from .csv_adapter import CsvAdapter
 from .faa_nas import FaaNasAdapter
 from .html_table import HtmlTableAdapter
@@ -27,6 +28,7 @@ ADAPTERS: dict[str, Adapter] = {
         SdmxJsonAdapter(),
         CdxAdapter(),
         CoinbaseRatesAdapter(),
+        CostcoGrsAdapter(),
         CsvAdapter(),
         HtmlTableAdapter(),
         NwsForecastAdapter(),

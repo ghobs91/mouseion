@@ -79,7 +79,11 @@ def build_snapshot(
         for credential in provider["credentials"]
         if credential["env"]
     ]
-    credentials_missing = sum(1 for credential in credential_fields if not credential["configured"])
+    credentials_missing = sum(
+        1
+        for credential in credential_fields
+        if not credential["configured"] and not credential.get("optional")
+    )
 
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -195,9 +199,19 @@ def _credentials(manifest: Any, store: CredentialStore) -> list[dict[str, Any]]:
     elif auth.type == "client_credentials":
         fields.append((auth.client_id_env, "client ID"))
         fields.append((auth.client_secret_env, "client secret"))
+    elif auth.type == "signed":
+        fields.append((auth.env, "consumer ID"))
+        fields.append((auth.private_key_env, "RSA private key"))
+        fields.append((auth.key_version_env, "key version"))
 
     for header, env in manifest.headers_env.items():
         fields.append((env, header))
+
+    optional_envs = {
+        env
+        for header, env in manifest.headers_env.items()
+        if header.lower() in {name.lower() for name in manifest.headers}
+    }
 
     out: list[dict[str, Any]] = []
     for env, label in fields:
@@ -212,6 +226,7 @@ def _credentials(manifest: Any, store: CredentialStore) -> list[dict[str, Any]]:
                 "source": source,
                 "signup_url": auth.signup_url,
                 "oauth": False,
+                "optional": env in optional_envs,
             }
         )
     return out
@@ -553,6 +568,8 @@ def serve(
                 manifest.auth.env,
                 manifest.auth.client_id_env,
                 manifest.auth.client_secret_env,
+                manifest.auth.private_key_env,
+                manifest.auth.key_version_env,
                 *manifest.headers_env.values(),
             )
             if name

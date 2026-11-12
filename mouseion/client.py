@@ -4,15 +4,19 @@ from __future__ import annotations
 
 import base64
 import json
+import time
 from datetime import timedelta
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 
 from .adapters import get_adapter
+from .browser import BrowserClient
 from .cache import Cache, cache_key
 from .config import Settings
 from .config import settings as default_settings
+from .credentials import resolve
 from .envelope import (
     Cursor,
     Envelope,
@@ -39,6 +43,10 @@ class ProviderClient:
         self.cache = cache
         self.config = config or default_settings
         self.remote = RemoteMCPClient(cache, self.config)
+        self.browser = BrowserClient(self.config)
+        #: Bearer tokens, keyed by provider. Tokens are process-local and never
+        #: enter the response cache.
+        self._tokens: dict[str, tuple[str, float]] = {}
         self._http = httpx.AsyncClient(
             timeout=self.config.timeout_s,
             follow_redirects=True,
@@ -59,10 +67,10 @@ class ProviderClient:
     ) -> Any:
         """Return the upstream body, unparsed. Used by the fixture recorder."""
         manifest = self._resolve(provider)
-        if manifest.transport == "mcp_remote":
+        if manifest.transport in {"mcp_remote", "fanout"}:
             raise ProviderError(
-                f"provider '{manifest.id}' is a remote MCP server",
-                hint="remote MCP providers cannot be recorded as fixtures",
+                f"provider '{manifest.id}' is a {manifest.transport} provider",
+                hint="remote MCP and fanout providers cannot be recorded as fixtures",
             )
         cap = self._resolve_capability(manifest, capability)
         adapter = get_adapter(cap.adapter or manifest.adapter)
@@ -88,6 +96,12 @@ class ProviderClient:
         manifest = self._resolve(provider)
         if manifest.transport == "mcp_remote":
             return await self.remote.call(manifest, capability, dict(params or {}))
+        if manifest.transport == "fanout":
+            from .fanout import call_fanout
+
+            return await call_fanout(
+                self, manifest, capability, dict(params or {}), cursor, refresh=refresh
+            )
         envelope, _ = await self.call_with_body(
             provider, capability, params, cursor, refresh=refresh
         )
@@ -104,10 +118,10 @@ class ProviderClient:
     ) -> tuple[Envelope, Any]:
         """Same as call(), but also returns the raw upstream body (fixture recording)."""
         manifest = self._resolve(provider)
-        if manifest.transport == "mcp_remote":
+        if manifest.transport in {"mcp_remote", "fanout"}:
             raise ProviderError(
-                f"provider '{manifest.id}' is a remote MCP server",
-                hint="remote MCP providers cannot be recorded as fixtures",
+                f"provider '{manifest.id}' is a {manifest.transport} provider",
+                hint="remote MCP and fanout providers cannot be recorded as fixtures",
             )
         cap = self._resolve_capability(manifest, capability)
         adapter = get_adapter(cap.adapter or manifest.adapter)
@@ -188,23 +202,30 @@ class ProviderClient:
     async def _fetch(
         self, manifest: Manifest, prepared: Any, cap: Capability
     ) -> tuple[Any, int]:
-        timeout = manifest.timeout_s or self.config.timeout_s
-        try:
-            response = await self._http.request(
-                prepared.method,
-                prepared.url,
-                params=prepared.params,
-                headers=prepared.headers,
-                json=prepared.json_body,
-                timeout=timeout,
+        if manifest.transport == "browser":
+            return await self.browser.fetch(manifest, prepared, cap), 200
+
+        headers = dict(prepared.headers)
+        if manifest.auth.type == "client_credentials":
+            headers["Authorization"] = (
+                f"Bearer {await self._client_credentials_token(manifest)}"
             )
-        except httpx.TimeoutException:
-            raise ProviderError(
-                f"upstream timeout after {timeout}s",
-                hint="narrow the query or retry",
-            ) from None
-        except httpx.HTTPError as exc:
-            raise ProviderError(f"upstream request failed: {exc}") from None
+
+        retried_token = False
+        while True:
+            response = await self._send(manifest, prepared, headers)
+            if (
+                response.status_code == 401
+                and manifest.auth.type == "client_credentials"
+                and not retried_token
+            ):
+                self._tokens.pop(manifest.id, None)
+                headers["Authorization"] = (
+                    f"Bearer {await self._client_credentials_token(manifest)}"
+                )
+                retried_token = True
+                continue
+            break
 
         raw = response.content
         limit = manifest.max_body_bytes or self.config.max_body_bytes
@@ -235,6 +256,104 @@ class ProviderClient:
                 status=response.status_code,
             )
         return body, response.status_code
+
+    async def _send(
+        self, manifest: Manifest, prepared: Any, headers: dict[str, str]
+    ) -> httpx.Response:
+        timeout = manifest.timeout_s or self.config.timeout_s
+        try:
+            return await self._http.request(
+                prepared.method,
+                prepared.url,
+                params=prepared.params,
+                headers=headers,
+                json=prepared.json_body,
+                timeout=timeout,
+            )
+        except httpx.TimeoutException:
+            raise ProviderError(
+                f"upstream timeout after {timeout}s",
+                hint="narrow the query or retry",
+            ) from None
+        except httpx.HTTPError as exc:
+            raise ProviderError(f"upstream request failed: {exc}") from None
+
+    async def _client_credentials_token(self, manifest: Manifest) -> str:
+        """Fetch and cache an OAuth client-credentials bearer token."""
+        auth = manifest.auth
+        cached = self._tokens.get(manifest.id)
+        if cached and cached[1] > time.monotonic():
+            return cached[0]
+        if not auth.token_url or not auth.client_id_env or not auth.client_secret_env:
+            raise ProviderError(
+                f"provider '{manifest.id}' declares incomplete client_credentials auth",
+                hint="token_url, client_id_env and client_secret_env are required",
+            )
+
+        client_id = resolve(auth.client_id_env)
+        client_secret = resolve(auth.client_secret_env)
+        if not client_id or not client_secret:
+            missing = [
+                name
+                for name, value in (
+                    (auth.client_id_env, client_id),
+                    (auth.client_secret_env, client_secret),
+                )
+                if not value
+            ]
+            raise ProviderError(
+                f"missing credential for provider '{manifest.id}'",
+                hint=f"set {', '.join(missing)} in the environment or save it in the dashboard",
+            )
+
+        # RFC 6749 §2.3.1: encode the client id/secret before base64-encoding the
+        # pair, or special characters corrupt the Basic value (eBay is strict).
+        basic = base64.b64encode(
+            f"{quote(client_id, safe='')}:{quote(client_secret, safe='')}".encode()
+        ).decode()
+        form = {"grant_type": "client_credentials"}
+        if auth.scopes:
+            form["scope"] = " ".join(auth.scopes)
+
+        try:
+            response = await self._http.post(
+                auth.token_url,
+                data=form,
+                headers={"Authorization": f"Basic {basic}", "Accept": "application/json"},
+            )
+        except httpx.TimeoutException:
+            raise ProviderError(
+                f"token endpoint timed out for provider '{manifest.id}'",
+                hint="retry, or check the token_url in the manifest",
+            ) from None
+        except httpx.HTTPError as exc:
+            raise ProviderError(
+                f"token request failed for provider '{manifest.id}': {exc}"
+            ) from None
+
+        try:
+            payload = response.json()
+        except ValueError:
+            payload = None
+        token = payload.get("access_token") if isinstance(payload, dict) else None
+        if response.status_code >= 400 or not token:
+            message = (
+                _upstream_message(payload, response.status_code)
+                if payload is not None
+                else f"token endpoint returned HTTP {response.status_code}"
+            )
+            raise ProviderError(
+                message,
+                hint=f"check the client credentials for '{manifest.id}'",
+                status=response.status_code,
+            )
+
+        try:
+            expires = float(payload.get("expires_in") or 300)
+        except (TypeError, ValueError):
+            expires = 300.0
+        self._tokens[manifest.id] = (str(token), time.monotonic() + max(1.0, expires - 60))
+        return str(token)
 
 
 def _upstream_message(body: Any, status: int) -> str:
