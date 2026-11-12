@@ -5,22 +5,26 @@ domain: financial_sovereign
 sub_category: economic_series
 description: >-
   FRED, the St. Louis Fed's database of 800,000+ economic time series: unemployment,
-  CPI, GDP, payrolls, the federal funds rate, Treasury yields and more. Search for a
-  series, then read its observations. Requires a free API key in FRED_API_KEY.
+  CPI, GDP, payrolls, the federal funds rate, Treasury yields, regional data and
+  more. Requires a free API key in FRED_API_KEY.
 docs_url: https://fred.stlouisfed.org/docs/api/fred/
 keywords:
   - fred
+  - federal reserve economic data
   - economic data
   - time series
   - unemployment
   - inflation
   - cpi
+  - consumer price index
   - gdp
   - payrolls
   - federal funds rate
   - treasury yield
   - interest rate
   - recession
+  - regional data
+  - vintage data
 base: https://api.stlouisfed.org/fred
 adapter: rest_json
 auth:
@@ -50,16 +54,45 @@ cache_ttl: 3600
 limits:
   rps: 5
 capabilities:
+  # -- series discovery ---------------------------------------------------
   search_series:
     description: >-
       Find economic series by text. Returns series ids with title, units, frequency
-      and date range. Use the id with `series_observations`.
+      and date range. Use the id with `series_observations`. Supports filters by
+      tag, frequency, units and seasonal adjustment.
     path: /series/search
     params:
       search_text:
         type: string
         required: true
         description: Words describing the series, e.g. "unemployment rate".
+      search_type:
+        type: string
+        enum: [full_text, series_id]
+        description: Match series attributes (full_text) or the series id itself.
+        default: full_text
+      tag_names:
+        type: string
+        description: Semicolon-delimited tags the series must all have, e.g. "usa;gdp".
+      exclude_tag_names:
+        type: string
+        description: Semicolon-delimited tags the series must not have.
+      filter_variable:
+        type: string
+        enum: [frequency, units, seasonal_adjustment]
+        description: Attribute to filter with filter_value.
+      filter_value:
+        type: string
+        description: Value for filter_variable, e.g. "Monthly" or "Percent".
+      order_by:
+        type: string
+        description: >-
+          Result order. Defaults to search_rank for full_text and series_id for
+          series_id searches.
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
       limit:
         type: integer
         description: Series per page (1-100, default 20).
@@ -90,19 +123,266 @@ capabilities:
       - consumer price index inflation series
       - what is the current federal funds rate
       - GDP growth data
+      - find economic series matching a topic
     example:
       search_text: unemployment rate
       limit: 5
+  series_by_tags:
+    description: >-
+      Find series that match all of a set of FRED tags (and none of the excluded
+      tags). Use `tags` to discover tag names first.
+    path: /tags/series
+    params:
+      tag_names:
+        type: string
+        required: true
+        description: Semicolon-delimited tags the series must all have, e.g. "usa;gdp".
+      exclude_tag_names:
+        type: string
+        description: Semicolon-delimited tags the series must not have.
+      order_by:
+        type: string
+        description: Result order, e.g. series_id, title, popularity.
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
+      limit:
+        type: integer
+        description: Series per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: seriess
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/series/{id}"
+    fields:
+      id: id
+      title: title
+      units: units
+      frequency: frequency
+      seasonal_adjustment: seasonal_adjustment
+      observation_start: observation_start
+      observation_end: observation_end
+      last_updated: last_updated
+      popularity: popularity
+    version_field: count
+    exemplars:
+      - series tagged with usa and gdp
+      - find series by FRED tags
+      - all monthly series about inflation
+    example:
+      tag_names: "usa;gdp"
+      limit: 5
+  series_updates:
+    description: >-
+      Series sorted by when their observations were last updated on the FRED
+      server. Useful for "what changed recently" questions.
+    path: /series/updates
+    params:
+      filter_value:
+        type: string
+        enum: [macro, regional, all]
+        description: Restrict to macroeconomic, regional (US state/county/MSA) or all series.
+        default: all
+      start_time:
+        type: string
+        description: Earliest update time, YYYYMMDDHhmm (requires end_time).
+      end_time:
+        type: string
+        description: Latest update time, YYYYMMDDHhmm (requires start_time).
+      limit:
+        type: integer
+        description: Series per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: seriess
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/series/{id}"
+    fields:
+      id: id
+      title: title
+      units: units
+      frequency: frequency
+      seasonal_adjustment: seasonal_adjustment
+      observation_start: observation_start
+      observation_end: observation_end
+      last_updated: last_updated
+      popularity: popularity
+    version_field: count
+    exemplars:
+      - which economic series were updated most recently
+      - latest FRED data updates
+      - recently updated economic indicators
+    example:
+      limit: 5
+
+  # -- series metadata and observations -----------------------------------
+  series:
+    description: >-
+      Get the metadata for one FRED series: title, units, frequency, seasonal
+      adjustment, coverage dates, popularity and notes.
+    path: /series
+    params:
+      series_id:
+        type: string
+        required: true
+        description: FRED series id, e.g. UNRATE or GDP.
+      realtime_start:
+        type: string
+        description: Start of the real-time period, YYYY-MM-DD.
+      realtime_end:
+        type: string
+        description: End of the real-time period, YYYY-MM-DD.
+    defaults:
+      file_type: json
+    record_path: seriess
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/series/{id}"
+    fields:
+      id: id
+      title: title
+      units: units
+      units_short: units_short
+      frequency: frequency
+      frequency_short: frequency_short
+      seasonal_adjustment: seasonal_adjustment
+      seasonal_adjustment_short: seasonal_adjustment_short
+      observation_start: observation_start
+      observation_end: observation_end
+      last_updated: last_updated
+      popularity: popularity
+      notes: notes
+    exemplars:
+      - what are the units and frequency of GDP
+      - describe the UNRATE series
+      - when does a FRED series start and end
+    example:
+      series_id: GDP
+  series_categories:
+    description: >-
+      Categories that contain one FRED series. Walks from a series id back into
+      the category tree.
+    path: /series/categories
+    params:
+      series_id:
+        type: string
+        required: true
+        description: FRED series id, e.g. GDP.
+      realtime_start:
+        type: string
+        description: Start of the real-time period, YYYY-MM-DD.
+      realtime_end:
+        type: string
+        description: End of the real-time period, YYYY-MM-DD.
+    defaults:
+      file_type: json
+    record_path: categories
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/categories/{id}"
+    fields:
+      id: id
+      name: name
+      parent_id: parent_id
+    exemplars:
+      - which categories contain the GDP series
+      - FRED category for a series
+    example:
+      series_id: GDP
+  series_release:
+    description: >-
+      The release that publishes one FRED series, with its press-release flag and
+      upstream link.
+    path: /series/release
+    params:
+      series_id:
+        type: string
+        required: true
+        description: FRED series id, e.g. GDP.
+      realtime_start:
+        type: string
+        description: Start of the real-time period, YYYY-MM-DD.
+      realtime_end:
+        type: string
+        description: End of the real-time period, YYYY-MM-DD.
+    defaults:
+      file_type: json
+    record_path: releases
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/release?rid={id}"
+    fields:
+      id: id
+      name: name
+      press_release: press_release
+      link: link
+      notes: notes
+    exemplars:
+      - which release publishes GDP
+      - source release for an economic series
+    example:
+      series_id: GDP
   series_observations:
     description: >-
       Read the observations of one FRED series by id (e.g. UNRATE, CPIAUCSL, GDP,
-      DGS10). Returns date/value pairs, oldest first by default.
+      DGS10). Returns date/value pairs, newest first by default. Supports date
+      ranges, frequency aggregation, unit transformations and vintage dates.
     path: /series/observations
     params:
       series_id:
         type: string
         required: true
         description: FRED series id, e.g. UNRATE.
+      observation_start:
+        type: string
+        description: First observation date, YYYY-MM-DD.
+      observation_end:
+        type: string
+        description: Last observation date, YYYY-MM-DD.
+      realtime_start:
+        type: string
+        description: Start of the real-time period, YYYY-MM-DD.
+      realtime_end:
+        type: string
+        description: End of the real-time period, YYYY-MM-DD.
+      frequency:
+        type: string
+        description: >-
+          Lower frequency to aggregate to: d, w, bw, m, q, sa, a, or a weekly
+          variant such as wef or weth.
+      aggregation_method:
+        type: string
+        enum: [avg, sum, eop]
+        description: How to aggregate when frequency is set (default avg).
+      units:
+        type: string
+        enum: [lin, chg, ch1, pch, pc1, pca, cch, cca, log]
+        description: Value transformation, e.g. lin (levels) or pch (percent change).
+      output_type:
+        type: integer
+        enum: [1, 2, 3, 4]
+        description: >-
+          1 observations by real-time period (default), 2 by vintage date (all),
+          3 by vintage date (new/revised), 4 initial release only.
+      vintage_dates:
+        type: string
+        description: Comma-separated YYYY-MM-DD vintage dates to read instead of a real-time period.
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Observation order (default desc, newest first).
       limit:
         type: integer
         description: Observations per page (1-1000, default 100).
@@ -127,6 +407,1102 @@ capabilities:
       - latest unemployment rate values
       - monthly CPI numbers for the last year
       - treasury yield history
+      - GDP observations between two dates
+      - vintage values of a series as of a past date
     example:
       series_id: UNRATE
       limit: 12
+  series_vintage_dates:
+    description: >-
+      Dates when a FRED series was revised or new values were released. Use a date
+      with `series_observations` to read the series as it stood then.
+    path: /series/vintagedates
+    params:
+      series_id:
+        type: string
+        required: true
+        description: FRED series id, e.g. GDP.
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Vintage date order (default asc).
+      limit:
+        type: integer
+        description: Vintage dates per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: vintage_dates
+    id_field: vintage_date
+    source_url_template: "https://fred.stlouisfed.org/series/{series_id}"
+    fields:
+      vintage_date: value
+    version_field: count
+    exemplars:
+      - when was GDP revised
+      - revision history of an economic series
+      - vintage dates for a FRED series
+    example:
+      series_id: GDP
+      limit: 5
+  series_tags:
+    description: >-
+      Tags assigned to one FRED series, with group, popularity and series count.
+    path: /series/tags
+    params:
+      series_id:
+        type: string
+        required: true
+        description: FRED series id, e.g. GDP.
+      order_by:
+        type: string
+        description: Result order, e.g. name, group_id, popularity.
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
+      limit:
+        type: integer
+        description: Tags per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: tags
+    id_field: name
+    source_url_template: "https://fred.stlouisfed.org/tags/series?t={name}"
+    fields:
+      name: name
+      group_id: group_id
+      notes: notes
+      created: created
+      popularity: popularity
+      series_count: series_count
+    version_field: count
+    exemplars:
+      - tags for the GDP series
+      - what topics describe a FRED series
+    example:
+      series_id: GDP
+      limit: 5
+  search_series_tags:
+    description: >-
+      Tags on the series that match a full-text search. Use it to narrow a search
+      before calling `search_series` with tag filters.
+    path: /series/search/tags
+    params:
+      series_search_text:
+        type: string
+        required: true
+        description: Words describing the series, e.g. "unemployment".
+      tag_names:
+        type: string
+        description: Semicolon-delimited tags the series must all have.
+      tag_group_id:
+        type: string
+        description: Restrict tags to a group such as freq, gen, geo, rls, seas or src.
+      tag_search_text:
+        type: string
+        description: Restrict returned tags to those matching this text.
+      order_by:
+        type: string
+        description: Result order, e.g. series_count, popularity, name.
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
+      limit:
+        type: integer
+        description: Tags per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: tags
+    id_field: name
+    source_url_template: "https://fred.stlouisfed.org/tags/series?t={name}"
+    fields:
+      name: name
+      group_id: group_id
+      notes: notes
+      created: created
+      popularity: popularity
+      series_count: series_count
+    version_field: count
+    exemplars:
+      - tags for unemployment search results
+      - what tags match an economic topic
+    example:
+      series_search_text: unemployment
+      limit: 5
+  search_series_related_tags:
+    description: >-
+      Tags related to a set of tags within the series matching a text search.
+    path: /series/search/related_tags
+    params:
+      series_search_text:
+        type: string
+        required: true
+        description: Words describing the series, e.g. "unemployment".
+      tag_names:
+        type: string
+        required: true
+        description: Semicolon-delimited tags to find related tags for.
+      exclude_tag_names:
+        type: string
+        description: Semicolon-delimited tags to exclude.
+      tag_group_id:
+        type: string
+        description: Restrict tags to a group such as freq, gen, geo, rls, seas or src.
+      tag_search_text:
+        type: string
+        description: Restrict returned tags to those matching this text.
+      order_by:
+        type: string
+        description: Result order, e.g. series_count, popularity, name.
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
+      limit:
+        type: integer
+        description: Tags per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: tags
+    id_field: name
+    source_url_template: "https://fred.stlouisfed.org/tags/series?t={name}"
+    fields:
+      name: name
+      group_id: group_id
+      notes: notes
+      created: created
+      popularity: popularity
+      series_count: series_count
+    version_field: count
+    exemplars:
+      - tags related to usa within unemployment series
+      - related tags for an economic topic
+    example:
+      series_search_text: unemployment
+      tag_names: "usa"
+      limit: 5
+
+  # -- categories ---------------------------------------------------------
+  category:
+    description: >-
+      Get one category in the FRED category tree. Category 0 is the root; each
+      category lists a parent and groups a set of series.
+    path: /category
+    params:
+      category_id:
+        type: integer
+        description: FRED category id; 0 is the root category.
+        default: 0
+    defaults:
+      file_type: json
+    record_path: categories
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/categories/{id}"
+    fields:
+      id: id
+      name: name
+      parent_id: parent_id
+    exemplars:
+      - the root category of FRED
+      - what is FRED category 125
+      - category tree node for trade balance
+    example:
+      category_id: 125
+  category_children:
+    description: >-
+      Direct child categories of a FRED category. Walk the tree from 0 to find a
+      topic, then list its series with `category_series`.
+    path: /category/children
+    params:
+      category_id:
+        type: integer
+        description: Parent FRED category id; 0 is the root category.
+        default: 0
+      realtime_start:
+        type: string
+        description: Start of the real-time period, YYYY-MM-DD.
+      realtime_end:
+        type: string
+        description: End of the real-time period, YYYY-MM-DD.
+    defaults:
+      file_type: json
+    record_path: categories
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/categories/{id}"
+    fields:
+      id: id
+      name: name
+      parent_id: parent_id
+    exemplars:
+      - subcategories of the FRED root category
+      - child categories under money and banking
+      - browse the economic data category tree
+    example:
+      category_id: 0
+  category_related:
+    description: >-
+      Categories related to a FRED category, for adjacent-topic discovery.
+    path: /category/related
+    params:
+      category_id:
+        type: integer
+        required: true
+        description: FRED category id.
+      realtime_start:
+        type: string
+        description: Start of the real-time period, YYYY-MM-DD.
+      realtime_end:
+        type: string
+        description: End of the real-time period, YYYY-MM-DD.
+    defaults:
+      file_type: json
+    record_path: categories
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/categories/{id}"
+    fields:
+      id: id
+      name: name
+      parent_id: parent_id
+    exemplars:
+      - categories related to trade balance
+      - adjacent FRED economic categories
+    example:
+      category_id: 125
+  category_series:
+    description: >-
+      Series inside one FRED category, optionally filtered by frequency, units,
+      seasonal adjustment or tags.
+    path: /category/series
+    params:
+      category_id:
+        type: integer
+        required: true
+        description: FRED category id.
+      filter_variable:
+        type: string
+        enum: [frequency, units, seasonal_adjustment]
+        description: Attribute to filter with filter_value.
+      filter_value:
+        type: string
+        description: Value for filter_variable, e.g. "Monthly" or "Percent".
+      tag_names:
+        type: string
+        description: Semicolon-delimited tags the series must all have.
+      exclude_tag_names:
+        type: string
+        description: Semicolon-delimited tags the series must not have.
+      order_by:
+        type: string
+        description: Result order, e.g. series_id, title, popularity.
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
+      limit:
+        type: integer
+        description: Series per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: seriess
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/series/{id}"
+    fields:
+      id: id
+      title: title
+      units: units
+      frequency: frequency
+      seasonal_adjustment: seasonal_adjustment
+      observation_start: observation_start
+      observation_end: observation_end
+      last_updated: last_updated
+      popularity: popularity
+    version_field: count
+    exemplars:
+      - series in the trade balance category
+      - all monthly series in a FRED category
+      - browse economic series by category
+    example:
+      category_id: 125
+      limit: 5
+  category_tags:
+    description: >-
+      Tags used by the series in one FRED category, with group and series count.
+    path: /category/tags
+    params:
+      category_id:
+        type: integer
+        required: true
+        description: FRED category id.
+      tag_names:
+        type: string
+        description: Semicolon-delimited tags to filter by.
+      exclude_tag_names:
+        type: string
+        description: Semicolon-delimited tags to exclude.
+      tag_group_id:
+        type: string
+        description: Restrict tags to a group such as freq, gen, geo, rls, seas or src.
+      search_text:
+        type: string
+        description: Restrict returned tags to those matching this text.
+      order_by:
+        type: string
+        description: Result order, e.g. series_count, popularity, name.
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
+      limit:
+        type: integer
+        description: Tags per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: tags
+    id_field: name
+    source_url_template: "https://fred.stlouisfed.org/tags/series?t={name}"
+    fields:
+      name: name
+      group_id: group_id
+      notes: notes
+      created: created
+      popularity: popularity
+      series_count: series_count
+    version_field: count
+    exemplars:
+      - tags in the trade balance category
+      - topics covered by a FRED category
+    example:
+      category_id: 125
+      limit: 5
+  category_related_tags:
+    description: >-
+      Tags related to a set of tags within one FRED category.
+    path: /category/related_tags
+    params:
+      category_id:
+        type: integer
+        required: true
+        description: FRED category id.
+      tag_names:
+        type: string
+        required: true
+        description: Semicolon-delimited tags to find related tags for.
+      exclude_tag_names:
+        type: string
+        description: Semicolon-delimited tags to exclude.
+      tag_group_id:
+        type: string
+        description: Restrict tags to a group such as freq, gen, geo, rls, seas or src.
+      search_text:
+        type: string
+        description: Restrict returned tags to those matching this text.
+      order_by:
+        type: string
+        description: Result order, e.g. series_count, popularity, name.
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
+      limit:
+        type: integer
+        description: Tags per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: tags
+    id_field: name
+    source_url_template: "https://fred.stlouisfed.org/tags/series?t={name}"
+    fields:
+      name: name
+      group_id: group_id
+      notes: notes
+      created: created
+      popularity: popularity
+      series_count: series_count
+    version_field: count
+    exemplars:
+      - tags related to trade within a category
+      - related tags in a FRED category
+    example:
+      category_id: 125
+      tag_names: "trade"
+      limit: 5
+
+  # -- releases -----------------------------------------------------------
+  releases:
+    description: >-
+      All economic data releases in FRED, with press-release flag and upstream
+      link. A release groups the series published together.
+    path: /releases
+    params:
+      order_by:
+        type: string
+        enum: [release_id, name, press_release, realtime_start, realtime_end]
+        description: Result order (default release_id).
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
+      limit:
+        type: integer
+        description: Releases per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: releases
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/release?rid={id}"
+    fields:
+      id: id
+      name: name
+      press_release: press_release
+      link: link
+      notes: notes
+    version_field: count
+    exemplars:
+      - list economic data releases
+      - FRED releases catalogue
+      - which releases publish economic indicators
+    example:
+      limit: 5
+  release_calendar:
+    description: >-
+      Release dates for all FRED releases — the economic release calendar. Set
+      include_release_dates_with_no_data to see future dates.
+    path: /releases/dates
+    params:
+      include_release_dates_with_no_data:
+        type: string
+        enum: ["true", "false"]
+        description: Include future dates that have no data yet.
+        default: "false"
+      order_by:
+        type: string
+        enum: [release_date, release_id, release_name]
+        description: Result order (default release_date).
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
+      limit:
+        type: integer
+        description: Release dates per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: release_dates
+    id_template: "{release_id}:{date}"
+    source_url_template: "https://fred.stlouisfed.org/release?rid={release_id}"
+    fields:
+      release_id: release_id
+      release_name: release_name
+      date: date
+    version_field: count
+    exemplars:
+      - when is the next CPI release
+      - economic data release calendar
+      - upcoming FRED release dates
+    example:
+      limit: 5
+      include_release_dates_with_no_data: "true"
+  release:
+    description: >-
+      Metadata for one FRED release: name, press-release flag, link and notes.
+    path: /release
+    params:
+      release_id:
+        type: integer
+        required: true
+        description: FRED release id, e.g. 53.
+      realtime_start:
+        type: string
+        description: Start of the real-time period, YYYY-MM-DD.
+      realtime_end:
+        type: string
+        description: End of the real-time period, YYYY-MM-DD.
+    defaults:
+      file_type: json
+    record_path: releases
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/release?rid={id}"
+    fields:
+      id: id
+      name: name
+      press_release: press_release
+      link: link
+      notes: notes
+    exemplars:
+      - describe FRED release 53
+      - what is the personal consumption expenditures release
+    example:
+      release_id: 53
+  release_dates:
+    description: >-
+      Release dates for one FRED release.
+    path: /release/dates
+    params:
+      release_id:
+        type: integer
+        required: true
+        description: FRED release id, e.g. 53.
+      include_release_dates_with_no_data:
+        type: string
+        enum: ["true", "false"]
+        description: Include future dates that have no data yet.
+        default: "false"
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Date order (default asc).
+      limit:
+        type: integer
+        description: Release dates per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: release_dates
+    id_template: "{release_id}:{date}"
+    source_url_template: "https://fred.stlouisfed.org/release?rid={release_id}"
+    fields:
+      release_id: release_id
+      date: date
+    version_field: count
+    exemplars:
+      - release dates for the CPI release
+      - when does a FRED release publish next
+    example:
+      release_id: 53
+      limit: 5
+  release_series:
+    description: >-
+      Series published on one FRED release, optionally filtered by frequency,
+      units, seasonal adjustment or tags.
+    path: /release/series
+    params:
+      release_id:
+        type: integer
+        required: true
+        description: FRED release id, e.g. 53.
+      filter_variable:
+        type: string
+        enum: [frequency, units, seasonal_adjustment]
+        description: Attribute to filter with filter_value.
+      filter_value:
+        type: string
+        description: Value for filter_variable, e.g. "Monthly" or "Percent".
+      tag_names:
+        type: string
+        description: Semicolon-delimited tags the series must all have.
+      exclude_tag_names:
+        type: string
+        description: Semicolon-delimited tags the series must not have.
+      order_by:
+        type: string
+        description: Result order, e.g. series_id, title, popularity.
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
+      limit:
+        type: integer
+        description: Series per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: seriess
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/series/{id}"
+    fields:
+      id: id
+      title: title
+      units: units
+      frequency: frequency
+      seasonal_adjustment: seasonal_adjustment
+      observation_start: observation_start
+      observation_end: observation_end
+      last_updated: last_updated
+      popularity: popularity
+    version_field: count
+    exemplars:
+      - series published in a FRED release
+      - all data in the employment situation release
+    example:
+      release_id: 53
+      limit: 5
+  release_sources:
+    description: >-
+      Data sources behind one FRED release, with upstream links.
+    path: /release/sources
+    params:
+      release_id:
+        type: integer
+        required: true
+        description: FRED release id, e.g. 53.
+      realtime_start:
+        type: string
+        description: Start of the real-time period, YYYY-MM-DD.
+      realtime_end:
+        type: string
+        description: End of the real-time period, YYYY-MM-DD.
+    defaults:
+      file_type: json
+    record_path: sources
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/source?id={id}"
+    fields:
+      id: id
+      name: name
+      link: link
+      notes: notes
+    exemplars:
+      - data sources for a FRED release
+      - which agency publishes a release
+    example:
+      release_id: 53
+  release_tags:
+    description: >-
+      Tags on the series in one FRED release.
+    path: /release/tags
+    params:
+      release_id:
+        type: integer
+        required: true
+        description: FRED release id, e.g. 53.
+      tag_names:
+        type: string
+        description: Semicolon-delimited tags to filter by.
+      exclude_tag_names:
+        type: string
+        description: Semicolon-delimited tags to exclude.
+      tag_group_id:
+        type: string
+        description: Restrict tags to a group such as freq, gen, geo, rls, seas or src.
+      search_text:
+        type: string
+        description: Restrict returned tags to those matching this text.
+      order_by:
+        type: string
+        description: Result order, e.g. series_count, popularity, name.
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
+      limit:
+        type: integer
+        description: Tags per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: tags
+    id_field: name
+    source_url_template: "https://fred.stlouisfed.org/tags/series?t={name}"
+    fields:
+      name: name
+      group_id: group_id
+      notes: notes
+      created: created
+      popularity: popularity
+      series_count: series_count
+    version_field: count
+    exemplars:
+      - tags in a FRED release
+      - topics covered by an economic release
+    example:
+      release_id: 53
+      limit: 5
+  release_related_tags:
+    description: >-
+      Tags related to a set of tags within one FRED release.
+    path: /release/related_tags
+    params:
+      release_id:
+        type: integer
+        required: true
+        description: FRED release id, e.g. 53.
+      tag_names:
+        type: string
+        required: true
+        description: Semicolon-delimited tags to find related tags for.
+      exclude_tag_names:
+        type: string
+        description: Semicolon-delimited tags to exclude.
+      tag_group_id:
+        type: string
+        description: Restrict tags to a group such as freq, gen, geo, rls, seas or src.
+      search_text:
+        type: string
+        description: Restrict returned tags to those matching this text.
+      order_by:
+        type: string
+        description: Result order, e.g. series_count, popularity, name.
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
+      limit:
+        type: integer
+        description: Tags per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: tags
+    id_field: name
+    source_url_template: "https://fred.stlouisfed.org/tags/series?t={name}"
+    fields:
+      name: name
+      group_id: group_id
+      notes: notes
+      created: created
+      popularity: popularity
+      series_count: series_count
+    version_field: count
+    exemplars:
+      - related tags in a FRED release
+      - tags similar to usa in an economic release
+    example:
+      release_id: 53
+      tag_names: "usa"
+      limit: 5
+  release_tables:
+    description: >-
+      The table structure of one FRED release: element ids, parent/child order and
+      the series behind each row. Set include_observation_values to add the value
+      and date for series rows.
+    path: /release/tables
+    params:
+      release_id:
+        type: integer
+        required: true
+        description: FRED release id, e.g. 53.
+      element_id:
+        type: integer
+        description: Table element to read; omit for the top-most element.
+      include_observation_values:
+        type: string
+        enum: ["true", "false"]
+        description: Include the observation value and date for series elements.
+        default: "false"
+      observation_date:
+        type: string
+        description: Observation date to include, YYYY-MM-DD (default latest).
+    defaults:
+      file_type: json
+    record_path: elements
+    id_field: element_id
+    source_url_template: "https://fred.stlouisfed.org/release/tables?rid={release_id}&eid={element_id}"
+    drop:
+      - children
+    exemplars:
+      - table of contents of a FRED release
+      - rows in the personal consumption expenditures table
+      - release table values with observations
+    example:
+      release_id: 53
+
+  # -- sources ------------------------------------------------------------
+  sources:
+    description: >-
+      All data sources in FRED, with upstream links and notes.
+    path: /sources
+    params:
+      order_by:
+        type: string
+        enum: [source_id, name, realtime_start, realtime_end]
+        description: Result order (default source_id).
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
+      limit:
+        type: integer
+        description: Sources per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: sources
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/source?id={id}"
+    fields:
+      id: id
+      name: name
+      link: link
+      notes: notes
+    version_field: count
+    exemplars:
+      - list FRED data sources
+      - which agencies contribute economic data
+    example:
+      limit: 5
+  source:
+    description: >-
+      Metadata for one FRED data source: name, link and notes.
+    path: /source
+    params:
+      source_id:
+        type: integer
+        required: true
+        description: FRED source id, e.g. 1.
+      realtime_start:
+        type: string
+        description: Start of the real-time period, YYYY-MM-DD.
+      realtime_end:
+        type: string
+        description: End of the real-time period, YYYY-MM-DD.
+    defaults:
+      file_type: json
+    record_path: sources
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/source?id={id}"
+    fields:
+      id: id
+      name: name
+      link: link
+      notes: notes
+    exemplars:
+      - describe FRED source 1
+      - what is the Board of Governors source
+    example:
+      source_id: 1
+  source_releases:
+    description: >-
+      Releases published by one FRED data source.
+    path: /source/releases
+    params:
+      source_id:
+        type: integer
+        required: true
+        description: FRED source id, e.g. 1.
+      order_by:
+        type: string
+        enum: [release_id, name, press_release, realtime_start, realtime_end]
+        description: Result order (default release_id).
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
+      limit:
+        type: integer
+        description: Releases per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: releases
+    id_field: id
+    source_url_template: "https://fred.stlouisfed.org/release?rid={id}"
+    fields:
+      id: id
+      name: name
+      press_release: press_release
+      link: link
+      notes: notes
+    version_field: count
+    exemplars:
+      - releases published by one economic data source
+      - what does a FRED data source publish
+    example:
+      source_id: 1
+      limit: 5
+
+  # -- tags ---------------------------------------------------------------
+  tags:
+    description: >-
+      All FRED tags, or tags filtered by name, group or text. Tag names are used
+      by `series_by_tags` and by the series search filters.
+    path: /tags
+    params:
+      tag_names:
+        type: string
+        description: Semicolon-delimited tag names to filter by.
+      tag_group_id:
+        type: string
+        description: Restrict tags to a group such as freq, gen, geo, rls, seas or src.
+      search_text:
+        type: string
+        description: Restrict tags to those matching this text.
+      order_by:
+        type: string
+        description: Result order, e.g. series_count, popularity, name.
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
+      limit:
+        type: integer
+        description: Tags per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: tags
+    id_field: name
+    source_url_template: "https://fred.stlouisfed.org/tags/series?t={name}"
+    fields:
+      name: name
+      group_id: group_id
+      notes: notes
+      created: created
+      popularity: popularity
+      series_count: series_count
+    version_field: count
+    exemplars:
+      - find FRED tags about inflation
+      - list economic data tags
+      - what tags exist for geographic data
+    example:
+      limit: 5
+  related_tags:
+    description: >-
+      Tags related to a set of FRED tags, for widening a topic search.
+    path: /related_tags
+    params:
+      tag_names:
+        type: string
+        required: true
+        description: Semicolon-delimited tags to find related tags for.
+      exclude_tag_names:
+        type: string
+        description: Semicolon-delimited tags to exclude.
+      tag_group_id:
+        type: string
+        description: Restrict tags to a group such as freq, gen, geo, rls, seas or src.
+      search_text:
+        type: string
+        description: Restrict returned tags to those matching this text.
+      order_by:
+        type: string
+        description: Result order, e.g. series_count, popularity, name.
+      sort_order:
+        type: string
+        enum: [asc, desc]
+        description: Sort direction for order_by.
+      limit:
+        type: integer
+        description: Tags per page (1-1000, default 20).
+        default: 20
+    defaults:
+      file_type: json
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 20
+      max_limit: 1000
+    record_path: tags
+    id_field: name
+    source_url_template: "https://fred.stlouisfed.org/tags/series?t={name}"
+    fields:
+      name: name
+      group_id: group_id
+      notes: notes
+      created: created
+      popularity: popularity
+      series_count: series_count
+    version_field: count
+    exemplars:
+      - tags related to usa and gdp
+      - similar economic data tags
+    example:
+      tag_names: "usa;gdp"
+      limit: 5

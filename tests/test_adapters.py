@@ -1199,6 +1199,97 @@ def test_yahoo_chart_zips_bars(registry):
     assert first.source_url == "https://finance.yahoo.com/quote/AAPL/history"
 
 
+def test_fred_exposes_and_parses_the_whole_v1_surface(registry):
+    manifest = registry.get("fred")
+    adapter = get_adapter(manifest.adapter)
+    paths = {cap.path for cap in manifest.capabilities.values()}
+    assert {
+        "/category",
+        "/category/series",
+        "/releases",
+        "/releases/dates",
+        "/release/tables",
+        "/series",
+        "/series/vintagedates",
+        "/sources",
+        "/tags",
+        "/tags/series",
+    } <= paths
+
+    category = manifest.capabilities["category"]
+    result = adapter.parse(
+        manifest,
+        category,
+        {"categories": [{"id": 125, "name": "Trade Balance", "parent_id": 13}]},
+        prepare(manifest, category),
+    )
+    assert result.records[0].source_record_id == "125"
+    assert result.records[0].data["name"] == "Trade Balance"
+    assert result.records[0].source_url == "https://fred.stlouisfed.org/categories/125"
+
+    calendar = manifest.capabilities["release_calendar"]
+    result = adapter.parse(
+        manifest,
+        calendar,
+        {
+            "count": 1,
+            "release_dates": [
+                {"release_id": 10, "release_name": "Consumer Price Index", "date": "2026-11-12"}
+            ],
+        },
+        prepare(manifest, calendar, {"limit": 1}),
+    )
+    assert result.records[0].source_record_id == "10:2026-11-12"
+    assert result.records[0].source_url == "https://fred.stlouisfed.org/release?rid=10"
+
+    vintages = manifest.capabilities["series_vintage_dates"]
+    result = adapter.parse(
+        manifest,
+        vintages,
+        {"count": 1, "vintage_dates": ["2026-10-01"]},
+        prepare(manifest, vintages, {"series_id": "GDP"}),
+    )
+    assert result.records[0].data == {"vintage_date": "2026-10-01"}
+    assert result.records[0].source_url == "https://fred.stlouisfed.org/series/GDP"
+
+    tables = manifest.capabilities["release_tables"]
+    result = adapter.parse(
+        manifest,
+        tables,
+        {
+            "elements": {
+                "12887": {
+                    "element_id": 12887,
+                    "release_id": 53,
+                    "name": "Goods",
+                    "children": [{"element_id": 1}],
+                }
+            }
+        },
+        prepare(manifest, tables, {"release_id": 53}),
+    )
+    assert result.records[0].source_record_id == "12887"
+    assert "children" not in result.records[0].data
+
+
+def test_fred_observations_accept_a_date_range(registry):
+    manifest = registry.get("fred")
+    cap = manifest.capabilities["series_observations"]
+    request = prepare(
+        manifest,
+        cap,
+        {
+            "series_id": "CPIAUCSL",
+            "observation_start": "2025-01-01",
+            "observation_end": "2025-12-31",
+            "frequency": "a",
+        },
+    )
+    assert request.params["observation_start"] == "2025-01-01"
+    assert request.params["observation_end"] == "2025-12-31"
+    assert request.params["frequency"] == "a"
+
+
 def test_yahoo_chart_pages_locally(registry):
     manifest = registry.get("yahoo_finance")
     cap = manifest.capabilities["history"]
