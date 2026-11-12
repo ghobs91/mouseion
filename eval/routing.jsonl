@@ -226,3 +226,16 @@
 {"query": "what is the price of Apple stock", "expect": "yahoo_finance"}
 {"query": "AAPL quote", "expect": "yahoo_finance"}
 {"query": "how has Tesla stock performed this year", "expect": "yahoo_finance"}
+
+{"query": "compare prices for a robot vacuum at Best Buy and Walmart", "expect": "retail_search"}
+{"query": "cheapest blender across Costco and eBay", "expect": "retail_search"}
+{"query": "Walmart price for a Ninja blender", "expect": "walmart_products"}
+{"query": "refurbished Sony lens on eBay", "expect": "ebay_items"}
+{"query": "Costco warehouse price for a Dyson vacuum", "expect": "costco_products"}
+{"query": "Best Buy open box camera price", "expect": "bestbuy_products"}
+
+{"query": "does the Internet Archive hold a copy of 10.1038/nature12373", "expect": "ia_scholar"}
+{"query": "archived version of the article with PMID 23903748", "expect": "ia_scholar"}
+{"query": "get the preserved copy for PMC4221854", "expect": "ia_scholar"}
+{"query": "the preprint 1706.03762v5", "expect": "ia_scholar"}
+{"query": "is this file checksum preserved by the archive", "expect": "ia_scholar"}

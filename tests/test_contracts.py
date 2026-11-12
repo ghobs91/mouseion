@@ -21,6 +21,8 @@ import pytest
 
 from mouseion.adapters.base import extract_records
 from mouseion.bootstrap import build
+from mouseion.browser import BrowserClient
+from mouseion.client import ProviderClient
 from mouseion.contract import ERROR, check_body, check_envelope
 from mouseion.envelope import ProviderError
 from mouseion.registry import Registry
@@ -44,8 +46,44 @@ def _errors(violations):
     return [str(violation) for violation in violations if violation.severity == ERROR]
 
 
+def _credential_envs(manifest, walmart_private_key: str) -> list[tuple[str, str]]:
+    """Dummy env values so the offline replay can exercise the auth path."""
+    auth = manifest.auth
+    if auth.type in {"api_key", "basic", "user_agent"}:
+        return [(auth.env, "fixture-token")] if auth.env else []
+    if auth.type == "client_credentials":
+        return [
+            (env, "fixture-token")
+            for env in (auth.client_id_env, auth.client_secret_env)
+            if env
+        ]
+    if auth.type == "signed":
+        return [
+            (env, value)
+            for env, value in (
+                (auth.env, "fixture-consumer"),
+                (auth.private_key_env, walmart_private_key),
+                (auth.key_version_env, "1"),
+            )
+            if env
+        ]
+    return []
+
+
+def _missing_credentials(manifest) -> list[str]:
+    auth = manifest.auth
+    names: list[str | None] = []
+    if auth.type in {"api_key", "basic", "user_agent"}:
+        names = [auth.env]
+    elif auth.type == "client_credentials":
+        names = [auth.client_id_env, auth.client_secret_env]
+    elif auth.type == "signed":
+        names = [auth.env, auth.private_key_env]
+    return [name for name in names if name and not os.getenv(name)]
+
+
 @pytest.mark.parametrize("fixture_id", FIXTURE_IDS)
-def test_fixture_matches_contract(fixture_id, config, monkeypatch):
+def test_fixture_matches_contract(fixture_id, config, monkeypatch, walmart_private_key):
     monkeypatch.setenv("SEC_USER_AGENT", "mouseion-contract-test test@example.com")
     payload = json.loads((FIXTURES / f"{fixture_id}.json").read_text(encoding="utf-8"))
     provider, capability = payload["provider"], payload["capability"]
@@ -53,8 +91,20 @@ def test_fixture_matches_contract(fixture_id, config, monkeypatch):
     # Replay tests parsing, not auth: give any credentialed manifest a dummy secret.
     # The transport is mocked, so it never leaves the process.
     manifest = Registry.load(ROOT / "providers").get(provider)
-    if manifest.auth.env:
-        monkeypatch.setenv(manifest.auth.env, "fixture-token")
+    for env, value in _credential_envs(manifest, walmart_private_key):
+        monkeypatch.setenv(env, value)
+    if manifest.auth.type == "client_credentials":
+
+        async def _token(_self, _manifest):
+            return "fixture-token"
+
+        monkeypatch.setattr(ProviderClient, "_client_credentials_token", _token)
+    if manifest.transport == "browser":
+
+        async def _browser(_self, _manifest, _prepared, _capability):
+            return payload["body"]
+
+        monkeypatch.setattr(BrowserClient, "fetch", _browser)
 
     def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json=payload["body"])
@@ -109,6 +159,9 @@ def test_live_contract(provider, capability, config):
         env = manifest.auth.env or ""
         if not os.getenv(env):
             pytest.skip(f"needs {env}")
+    missing = _missing_credentials(manifest)
+    if missing:
+        pytest.skip(f"needs {', '.join(missing)}")
 
     async def run() -> object:
         app = build(config)

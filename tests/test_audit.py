@@ -94,12 +94,25 @@ def test_tier_two_sources_are_free_and_cardless():
     for manifest in registry.manifests.values():
         if manifest.source.tier != 2:
             continue
-        assert manifest.auth.type in {"api_key", "basic", "oauth", "client_credentials"}
+        if manifest.transport in {"fanout", "browser"}:
+            # A view or browser transport has no credential of its own.
+            assert manifest.auth.type == "none"
+            continue
+        assert manifest.auth.type in {
+            "api_key",
+            "basic",
+            "oauth",
+            "client_credentials",
+            "signed",
+        }
         if manifest.auth.type in {"api_key", "basic"}:
             assert manifest.auth.env
         elif manifest.auth.type == "oauth":
             assert manifest.auth.scopes
             assert manifest.auth.redirect_uri
+        elif manifest.auth.type == "signed":
+            assert manifest.auth.env
+            assert manifest.auth.private_key_env
         else:
             assert manifest.auth.token_url
             assert manifest.auth.client_id_env
@@ -217,6 +230,65 @@ def test_query_map_must_name_a_real_param():
     manifest = base_manifest()
     manifest.capabilities["search"].query_map = {"text": "not_a_param"}
     assert "query_map_unknown_param" in codes(audit_manifest(manifest, today=TODAY))
+
+
+def fanout_manifest(members: list[str], capability: str = "search") -> Manifest:
+    return Manifest.model_validate(
+        {
+            "id": "view",
+            "title": "Retail view",
+            "domain": "commerce",
+            "sub_category": "product_catalog",
+            "transport": "fanout",
+            "members": members,
+            "member_capability": capability,
+            "base": "",
+            "docs_url": "https://example.gov/docs",
+            "attribution": "Example retailers",
+            "cache_ttl": 300,
+            "source": {
+                "is_primary": False,
+                "originator": "Example retailers",
+                "originator_domain": "multi-retailer",
+                "provenance": "aggregator_exception",
+                "tier": 2,
+                "exception_reason": "A view over named primary catalogues.",
+                "auth_policy": {
+                    "free": True,
+                    "credit_card_required": False,
+                    "trial": False,
+                    "evidence_url": "https://example.gov/docs",
+                    "verified_at": "2026-10-29",
+                },
+                "rate_limit": {"per_min": 60, "burst": 10, "concurrency": 2},
+            },
+            "capabilities": {
+                "search": {
+                    "description": "Search the member catalogues.",
+                    "path": "/",
+                    "params": {"query": {"type": "string", "required": True}},
+                }
+            },
+        }
+    )
+
+
+def test_fanout_members_must_exist():
+    member = base_manifest()
+    view = fanout_manifest(["missing_provider"])
+    findings = audit_registry(
+        Registry({"demo": member, "view": view}), today=TODAY
+    )
+    assert "fanout_unknown_member" in codes(findings)
+
+
+def test_fanout_members_must_expose_the_capability():
+    member = base_manifest()
+    view = fanout_manifest(["demo"], capability="not_a_capability")
+    findings = audit_registry(
+        Registry({"demo": member, "view": view}), today=TODAY
+    )
+    assert "fanout_missing_capability" in codes(findings)
 
 
 def test_unknown_canonical_field_fails():

@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import pytest
+from pydantic import ValidationError
+
 from mouseion.adapters import get_adapter
 from mouseion.manifest import Manifest
 
@@ -12,6 +15,13 @@ def test_all_manifests_load(registry):
         "census_geocoder",
         "bundesliga",
         "caltrain_news",
+        "north_carolina_election_results",
+        "maryland_election_results",
+        "california_election_results",
+        "virginia_election_results",
+        "georgia_election_results",
+        "washington_election_results",
+        "utah_election_results",
         "cftc_cot",
         "cftc_press",
         "chicago_food_inspections",
@@ -43,6 +53,7 @@ def test_all_manifests_load(registry):
         "govinfo",
         "grants_gov",
         "github",
+        "ia_scholar",
         "internet_archive",
         "library_of_congress",
         "maven_central",
@@ -137,12 +148,20 @@ def test_all_manifests_load(registry):
         "world_bank",
         "yahoo_finance",
         "zenodo",
+        "bestbuy_products",
+        "walmart_products",
+        "ebay_items",
+        "costco_products",
+        "retail_search",
     }
 
 
 def test_manifest_fields_are_consistent(registry):
     for manifest in registry.manifests.values():
-        assert manifest.base.startswith("https://")
+        if manifest.transport != "fanout":
+            assert manifest.base.startswith("https://")
+        else:
+            assert manifest.members
         for name, cap in manifest.capabilities.items():
             assert cap.description, f"{manifest.id}/{name} needs a description"
             if cap.id_field and cap.fields:
@@ -195,3 +214,61 @@ def test_unknown_params_are_dropped(registry):
     )
     assert "bogus" not in merged
     assert merged["query.cond"] == "melanoma"
+
+
+def test_fanout_requires_members():
+    with pytest.raises(ValidationError):
+        Manifest.model_validate(
+            {
+                "id": "view",
+                "title": "View",
+                "domain": "commerce",
+                "sub_category": "product_catalog",
+                "transport": "fanout",
+                "members": [],
+                "source": {
+                    "is_primary": False,
+                    "originator": "A",
+                    "originator_domain": "multi-retailer",
+                    "provenance": "aggregator_exception",
+                    "exception_reason": "view",
+                    "tier": 2,
+                    "auth_policy": {
+                        "evidence_url": "https://example.test/docs",
+                        "verified_at": "2026-10-29",
+                    },
+                },
+                "capabilities": {
+                    "search": {"description": "d", "path": "/"}
+                },
+            }
+        )
+
+
+def test_fanout_cannot_list_itself():
+    with pytest.raises(ValidationError):
+        Manifest.model_validate(
+            {
+                "id": "view",
+                "title": "View",
+                "domain": "commerce",
+                "sub_category": "product_catalog",
+                "transport": "fanout",
+                "members": ["view"],
+                "source": {
+                    "is_primary": False,
+                    "originator": "A",
+                    "originator_domain": "multi-retailer",
+                    "provenance": "aggregator_exception",
+                    "exception_reason": "view",
+                    "tier": 2,
+                    "auth_policy": {
+                        "evidence_url": "https://example.test/docs",
+                        "verified_at": "2026-10-29",
+                    },
+                },
+                "capabilities": {
+                    "search": {"description": "d", "path": "/"}
+                },
+            }
+        )
