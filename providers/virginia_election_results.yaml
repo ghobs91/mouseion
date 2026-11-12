@@ -1,0 +1,123 @@
+id: virginia_election_results
+title: Virginia Election Results
+category: government
+domain: civic_local
+sub_category: election_results
+transport: http
+adapter: rest_json
+base: https://enr.elections.virginia.gov
+regions: [US]
+jurisdictions: [US-VA]
+description: >-
+  Unofficial and certified election results from the Virginia Department of
+  Elections. `ballot_items` lists the contests on an election with turnout and
+  reporting status; `contest` returns one contest with each candidate's vote
+  count, party and winner flag. The department also publishes a JSON file for
+  each election and CSV exports from 2005 onward.
+docs_url: https://www.elections.virginia.gov/results/
+keywords:
+  - election results
+  - virginia
+  - department of elections
+  - vote counts
+  - ballot items
+  - contest results
+attribution: "Virginia Department of Elections"
+source:
+  is_primary: true
+  originator: "Virginia Department of Elections"
+  originator_domain: elections.virginia.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.elections.virginia.gov/results/
+    verified_at: 2026-11-04
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 60
+capabilities:
+  ballot_items:
+    description: >-
+      List the contests for one election, with vote-for text, total votes and
+      reporting status. Pass `election` as the slug from the results URL, e.g.
+      `2026-November-General`. Page with `limit`; the feed ignores server-side
+      paging, so the window is sliced locally. Use `contest` for candidates.
+    path: /results/public/api/elections/{jurisdiction}/{election}/ballot-items
+    params:
+      election:
+        type: string
+        required: true
+        description: "election slug, e.g. 2026-November-General or 2025-November-General"
+      jurisdiction:
+        type: string
+        default: virginia
+        description: "jurisdiction slug; Virginia is the only one served here"
+      limit:
+        type: integer
+        default: 10
+        description: "contests per page (1-50)"
+    record_path: data
+    id_field: id
+    fields:
+      id: id
+      contest: name.0.text
+      contest_type: contestType
+      vote_for: voteFor.0.text
+      vote_total: voteTotal
+      reporting_units: reportingStatus.reportingUnits
+      total_units: reportingStatus.totalUnits
+      as_of: reportingStatus.asOf
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 10
+      max_limit: 50
+    local_window: true
+    source_url_template: "https://enr.elections.virginia.gov/results/public/virginia/{election}"
+    version_field: "data.0.reportingStatus.asOf"
+    exemplars:
+      - Virginia election results
+      - what contests are on the Virginia ballot
+      - Virginia election contest list
+    example: {election: 2025-December-9-Special, limit: 5}
+  contest:
+    description: >-
+      Read one contest by ballot item id, with each candidate's name, party, vote
+      count and winner flag. Get the id from `ballot_items`.
+    path: /results/public/api/elections/{jurisdiction}/{election}/ballot-items/{ballot_item_id}
+    params:
+      election:
+        type: string
+        required: true
+        description: "election slug, e.g. 2026-November-General"
+      ballot_item_id:
+        type: string
+        required: true
+        description: "ballot item id from `ballot_items`"
+      jurisdiction:
+        type: string
+        default: virginia
+        description: "jurisdiction slug; Virginia is the only one served here"
+    id_field: id
+    fields:
+      id: id
+      contest: name.0.text
+      contest_type: contestType
+      vote_for: voteFor.0.text
+      vote_total: voteTotal
+      reporting_units: reportingStatus.reportingUnits
+      total_units: reportingStatus.totalUnits
+      as_of: reportingStatus.asOf
+      candidates: summaryResults.ballotOptions
+    source_url_template: "https://enr.elections.virginia.gov/results/public/virginia/{election}"
+    version_field: reportingStatus.asOf
+    exemplars:
+      - who won the Virginia Senate race
+      - Virginia contest vote counts by candidate
+      - how many votes did a candidate get in Virginia
+    example:
+      election: 2025-December-9-Special
+      ballot_item_id: 01000000-e148-f7b5-96fc-08de2cfe3190

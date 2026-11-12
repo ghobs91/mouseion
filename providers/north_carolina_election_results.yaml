@@ -1,0 +1,122 @@
+id: north_carolina_election_results
+title: North Carolina Election Results
+category: government
+domain: civic_local
+sub_category: election_results
+transport: http
+adapter: csv
+base: https://dl.ncsbe.gov
+regions: [US]
+jurisdictions: [US-NC]
+description: >-
+  Precinct-level North Carolina election results from the State Board of
+  Elections, by contest, choice and voting method. Each election is a ZIP with
+  one tab-delimited file; pass `election` as a key such as `2025_09_09`. The
+  Board refreshes the file through election night and after certification.
+docs_url: https://www.ncsbe.gov/results-data/election-results
+keywords:
+  - election results
+  - north carolina
+  - precinct results
+  - vote counts
+  - ncsbe
+attribution: "North Carolina State Board of Elections"
+source:
+  is_primary: true
+  originator: "North Carolina State Board of Elections"
+  originator_domain: ncsbe.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.ncsbe.gov/results-data/election-results
+    verified_at: 2026-11-04
+  rate_limit: {per_min: 20, burst: 4, concurrency: 2}
+cache_ttl: 300
+capabilities:
+  results:
+    description: >-
+      Read one North Carolina election by precinct. Pass `election` as a key such
+      as `2025_09_09`; `provider_describe` lists every key. Returns county,
+      precinct, contest, choice, party and votes split by election day, early
+      voting, absentee by mail and provisional.
+    path: /ENRS/{dataset}.zip
+    params:
+      election:
+        type: string
+        required: true
+        description: "election key, e.g. 2025_09_09"
+      limit:
+        type: integer
+        default: 25
+        description: "rows per page (1-1000)"
+    dataset_param: election
+    datasets:
+      "2016_03_15": "2016_03_15/results_pct_20160315"
+      "2016_06_07": "2016_06_07/results_pct_20160607"
+      "2016_11_08": "2016_11_08/results_pct_20161108"
+      "2017_09_12": "2017_09_12/results_pct_20170912"
+      "2017_10_10": "2017_10_10/results_pct_20171010"
+      "2017_11_07": "2017_11_07/results_pct_20171107"
+      "2018_05_08": "2018_05_08/results_pct_20180508"
+      "2018_06_26": "2018_06_26/results_pct_20180626"
+      "2018_11_06": "2018_11_06/results_pct_20181106"
+      "2019_04_30": "2019_04_30/results_pct_20190430"
+      "2019_05_14": "2019_05_14/results_pct_20190514"
+      "2019_07_09": "2019_07_09/results_pct_20190709"
+      "2019_09_10": "2019_09_10/results_pct_20190910"
+      "2019_10_08": "2019_10_08/results_pct_20191008"
+      "2019_11_05": "2019_11_05/results_pct_20191105"
+      "2020_03_03": "2020_03_03/results_pct_20200303"
+      "2020_06_23": "2020_06_23/results_pct_20200623"
+      "2020_11_03": "2020_11_03/results_pct_20201103"
+      "2021_10_05": "2021_10_05/results_pct_20211005"
+      "2021_11_02": "2021_11_02/results_pct_20211102"
+      "2022_05_17": "2022_05_17/results_pct_20220517"
+      "2022_07_26": "2022_07_26/results_pct_20220726"
+      "2022_11_08": "2022_11_08/results_pct_20221108"
+      "2022_12_06": "2022_12_06/results_pct_20221206"
+      "2023_03_07": "2023_03_07/results_pct_20230307"
+      "2023_09_12": "2023_09_12/results_pct_20230912"
+      "2023_10_10": "2023_10_10/results_pct_20231010"
+      "2023_11_07": "2023_11_07/results_pct_20231107"
+      "2024_03_05": "2024_03_05/results_pct_20240305"
+      "2024_05_14": "2024_05_14/results_pct_20240514"
+      "2024_11_05": "2024_11_05/results_pct_20241105"
+      "2025_09_09": "2025_09_09/results_pct_20250909"
+      "2025_10_07": "2025_10_07/results_pct_20251007"
+      "2025_11_04": "2025_11_04/results_pct_20251104"
+      "2026_03_03": "2026_03_03/results_pct_20260303"
+      "2026_11_03": "2026_11_03/results_pct_20261103"
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 25
+      max_limit: 1000
+    local_window: true
+    id_template: "{county}:{precinct}:{contest_group_id}:{choice}"
+    fields:
+      county: "County"
+      election_date: "Election Date"
+      precinct: "Precinct"
+      contest_group_id: "Contest Group ID"
+      contest_type: "Contest Type"
+      contest_name: "Contest Name"
+      choice: "Choice"
+      choice_party: "Choice Party"
+      vote_for: "Vote For"
+      election_day: "Election Day"
+      early_voting: "Early Voting"
+      absentee_by_mail: "Absentee by Mail"
+      provisional: "Provisional"
+      total_votes: "Total Votes"
+      real_precinct: "Real Precinct"
+    source_url_template: "https://dl.ncsbe.gov/ENRS/{dataset}.zip"
+    exemplars:
+      - North Carolina election results by precinct
+      - NC precinct vote counts
+      - how many votes did a candidate get in a North Carolina precinct
+    example: {election: "2025_09_09", limit: 5}

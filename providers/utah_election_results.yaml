@@ -1,0 +1,154 @@
+id: utah_election_results
+title: Utah Election Results
+category: government
+domain: civic_local
+sub_category: election_results
+transport: http
+adapter: rest_json
+base: https://electionresults.utah.gov
+regions: [US]
+jurisdictions: [US-UT]
+description: >-
+  Unofficial and certified election results from the Utah Lieutenant Governor. `elections`
+  lists the elections served, `ballot_items` lists the contests in one election,
+  and `contest` returns one contest with each candidate's vote count, party and
+  winner flag. The feed is powered by Enhanced Voting.
+docs_url: https://electionresults.utah.gov/
+keywords:
+  - election results
+  - utah
+  - vote counts
+  - ballot items
+  - contest results
+attribution: "Utah Lieutenant Governor"
+source:
+  is_primary: true
+  originator: "Utah Lieutenant Governor"
+  originator_domain: utah.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://electionresults.utah.gov/
+    verified_at: 2026-11-04
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 60
+capabilities:
+  elections:
+    description: >-
+      List the elections this jurisdiction publishes. Returns each election's id,
+      name and date; pass the id as `election` to the other capabilities.
+    path: /results/public/api/jurisdictions/{jurisdiction}
+    params:
+      jurisdiction:
+        type: string
+        default: Utah
+        description: "jurisdiction short name, e.g. Utah"
+      limit:
+        type: integer
+        default: 10
+        description: "elections per page (1-50)"
+    record_path: elections
+    id_field: id
+    fields:
+      id: publicElectionId
+      name: name.0.text
+      date: electionDate
+      date_text: dateText.0.text
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 10
+      max_limit: 50
+    local_window: true
+    source_url_template: "https://electionresults.utah.gov/results/public/Utah"
+    exemplars:
+      - what elections are available in Utah
+      - list Utah elections
+    example: {jurisdiction: Utah, limit: 5}
+  ballot_items:
+    description: >-
+      List the contests for one election, with vote-for text, total votes and
+      reporting status. Pass the id from `elections` as `election`. Page with
+      `limit`; the feed ignores server-side paging, so the window is sliced
+      locally. Use `contest` for candidates.
+    path: /results/public/api/elections/{jurisdiction}/{election}/ballot-items
+    params:
+      election:
+        type: string
+        required: true
+        description: "election id from `elections`, e.g. General11032026"
+      jurisdiction:
+        type: string
+        default: Utah
+        description: "jurisdiction short name, e.g. Utah"
+      limit:
+        type: integer
+        default: 10
+        description: "contests per page (1-50)"
+    record_path: data
+    id_field: id
+    fields:
+      id: id
+      contest: name.0.text
+      contest_type: contestType
+      vote_for: voteFor.0.text
+      vote_total: voteTotal
+      reporting_units: reportingStatus.reportingUnits
+      total_units: reportingStatus.totalUnits
+      as_of: reportingStatus.asOf
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 10
+      max_limit: 50
+    local_window: true
+    source_url_template: "https://electionresults.utah.gov/results/public/Utah/elections/{election}"
+    version_field: "data.0.reportingStatus.asOf"
+    exemplars:
+      - Utah election results
+      - Utah election contest list
+      - what contests are on the Utah ballot
+    example: {election: general11042025, limit: 5}
+  contest:
+    description: >-
+      Read one contest by ballot item id, with each candidate's name, party, vote
+      count and winner flag. Get the id from `ballot_items`.
+    path: /results/public/api/elections/{jurisdiction}/{election}/ballot-items/{ballot_item_id}
+    params:
+      election:
+        type: string
+        required: true
+        description: "election id from `elections`"
+      ballot_item_id:
+        type: string
+        required: true
+        description: "ballot item id from `ballot_items`"
+      jurisdiction:
+        type: string
+        default: Utah
+        description: "jurisdiction short name, e.g. Utah"
+    id_field: id
+    fields:
+      id: id
+      contest: name.0.text
+      contest_type: contestType
+      vote_for: voteFor.0.text
+      vote_total: voteTotal
+      reporting_units: reportingStatus.reportingUnits
+      total_units: reportingStatus.totalUnits
+      as_of: reportingStatus.asOf
+      candidates: summaryResults.ballotOptions
+    source_url_template: "https://electionresults.utah.gov/results/public/Utah/elections/{election}"
+    version_field: reportingStatus.asOf
+    exemplars:
+      - who won the Utah Senate race
+      - Utah contest vote counts by candidate
+      - how many votes did a candidate get in Utah
+    example:
+      election: general11042025
+      ballot_item_id: 01000000-d3f1-92f9-65c8-08de1570b52a

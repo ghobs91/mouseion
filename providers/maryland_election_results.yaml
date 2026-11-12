@@ -1,0 +1,98 @@
+id: maryland_election_results
+title: Maryland Election Results
+category: government
+domain: civic_local
+sub_category: election_results
+transport: http
+adapter: csv
+base: https://elections.maryland.gov
+regions: [US]
+jurisdictions: [US-MD]
+description: >-
+  Precinct-level Maryland election results from the State Board of Elections,
+  by office, candidate and voting method. Results are published as one CSV per
+  county, party and election; pass `year`, `prefix`, `county` and `party` to
+  select the file. The board also publishes a statewide precinct CSV and a
+  county summary CSV.
+docs_url: https://elections.maryland.gov/elections/2026/election_data/index.html
+keywords:
+  - election results
+  - maryland
+  - precinct results
+  - vote counts
+  - maryland state board of elections
+attribution: "Maryland State Board of Elections"
+source:
+  is_primary: true
+  originator: "Maryland State Board of Elections"
+  originator_domain: elections.maryland.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://elections.maryland.gov/elections/2026/election_data/index.html
+    verified_at: 2026-11-04
+  rate_limit: {per_min: 20, burst: 4, concurrency: 2}
+cache_ttl: 3600
+capabilities:
+  precinct_results:
+    description: >-
+      Read one Maryland county's precinct results for one party. `prefix` is the
+      election file prefix (for example `GP26` for the 2026 primary), `county` is
+      the two-digit county code, and `party` is `Democratic`, `Republican` or
+      `Non-Partisan`. Returns office, district, candidate, party, winner and
+      votes by method.
+    path: /elections/{year}/election_data/{prefix}_{county}Precincts{party}.csv
+    params:
+      year:
+        type: string
+        default: "2026"
+        description: "election year, e.g. 2026"
+      prefix:
+        type: string
+        default: "GP26"
+        description: "file prefix, e.g. GP26 for the 2026 primary"
+      county:
+        type: string
+        required: true
+        description: "two-digit county code, e.g. 24 for Worcester"
+      party:
+        type: string
+        default: Democratic
+        description: "Democratic, Republican or Non-Partisan"
+      limit:
+        type: integer
+        default: 25
+        description: "rows per page (1-1000)"
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 25
+      max_limit: 1000
+    local_window: true
+    id_template: "{county}:{precinct}:{office_name}:{candidate}"
+    fields:
+      county: "County"
+      county_name: "County Name"
+      precinct: "Election District - Precinct"
+      congressional: "Congressional"
+      legislative: "Legislative"
+      office_name: "Office Name"
+      office_district: "Office District"
+      candidate: "Candidate Name"
+      candidate_party: "Party"
+      winner: "Winner"
+      early_votes: "Early Votes"
+      election_night_votes: "Election Night Votes"
+      mail_in_ballot_1: "Mail-In Ballot 1 Votes"
+      provisional: "Provisional Votes"
+      mail_in_ballot_2: "Mail-In Ballot 2 Votes"
+    source_url_template: "https://elections.maryland.gov/elections/{year}/election_data/{prefix}_{county}Precincts{party}.csv"
+    exemplars:
+      - Maryland election results by precinct
+      - Worcester County vote counts
+      - Maryland primary results by candidate
+    example: {year: "2026", prefix: GP26, county: "24", party: Democratic, limit: 5}

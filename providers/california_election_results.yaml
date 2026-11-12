@@ -1,0 +1,92 @@
+id: california_election_results
+title: California Election Results
+category: government
+domain: civic_local
+sub_category: election_results
+transport: http
+adapter: rest_json
+base: https://api.sos.ca.gov
+regions: [US]
+jurisdictions: [US-CA]
+description: >-
+  Statewide election results from the California Secretary of State, by contest
+  and by county. Returns the race title, precinct reporting status and time, and
+  each candidate's votes, percentage, party and incumbent flag. The Secretary of
+  State publishes the endpoint list and bulk files for the current election.
+docs_url: https://media.sos.ca.gov/
+keywords:
+  - election results
+  - california
+  - secretary of state
+  - vote counts
+  - precinct results
+  - statewide results
+  - county results
+attribution: "California Secretary of State"
+source:
+  is_primary: true
+  originator: "California Secretary of State"
+  originator_domain: sos.ca.gov
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://www.sos.ca.gov/elections
+    verified_at: 2026-11-04
+  rate_limit: {per_min: 30, burst: 5, concurrency: 2}
+cache_ttl: 60
+capabilities:
+  statewide:
+    description: >-
+      Statewide results for one contest. Pass `contest` as a slug such as
+      `governor`, `attorney-general`, `secretary-of-state` or `ballot-measures`.
+      Returns one race with its candidates nested under `candidates`. District
+      contests (U.S. House, Board of Equalization) use a different path.
+    path: /returns/{contest}
+    params:
+      contest:
+        type: string
+        required: true
+        description: "contest slug, e.g. governor, attorney-general, secretary-of-state, ballot-measures"
+    fields:
+      race: raceTitle
+      reporting: Reporting
+      reporting_time: ReportingTime
+      candidates: candidates
+    source_url_template: "https://electionresults.sos.ca.gov/returns/{contest}"
+    version_field: ReportingTime
+    exemplars:
+      - California governor election results
+      - how many votes did a candidate get in California
+      - California ballot measure results
+      - California statewide race results
+    example: {contest: governor}
+  county:
+    description: >-
+      Results for one contest within a county. Pass `contest` and `county` as
+      slugs such as `governor` and `alameda`. Returns the county race and the
+      statewide race, each with candidates nested under `candidates`.
+    path: /returns/{contest}/county/{county}
+    params:
+      contest:
+        type: string
+        required: true
+        description: "contest slug, e.g. governor, attorney-general, secretary-of-state"
+      county:
+        type: string
+        required: true
+        description: "county slug, e.g. alameda, los-angeles, san-francisco"
+    fields:
+      race: raceTitle
+      reporting: Reporting
+      reporting_time: ReportingTime
+      candidates: candidates
+    source_url_template: "https://electionresults.sos.ca.gov/returns/{contest}/county/{county}"
+    version_field: "0.ReportingTime"
+    exemplars:
+      - California election results by county
+      - Alameda County vote counts
+      - Los Angeles County election results
+    example: {contest: governor, county: alameda}

@@ -86,9 +86,13 @@ def _unzip(data: bytes, member: str | None) -> str:
         raise ProviderError("expected a ZIP archive") from None
 
     names = archive.namelist()
+    files = [candidate for candidate in names if not candidate.endswith("/")]
     name = member or next(
-        (candidate for candidate in names if candidate.lower().endswith(".csv")), None
+        (candidate for candidate in files if candidate.lower().endswith(".csv")), None
     )
+    if name is None:
+        # Bulk election feeds often ship a .txt member instead of .csv.
+        name = files[0] if files else None
     if name is None or name not in names:
         raise ProviderError(
             f"archive has no member '{name}'",
