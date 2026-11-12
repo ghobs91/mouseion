@@ -1,0 +1,397 @@
+id: ia_scholar
+title: Internet Archive Scholar (Fatcat)
+category: research
+domain: academic_scientific
+sub_category: scholarly_preservation
+description: >-
+  Internet Archive Scholar's bibliographic database (Fatcat v2). Resolve a DOI,
+  PMID, PMCID, arXiv id or Fatcat UUID to a work record, then list the archived
+  PDF copies the Internet Archive holds. Keyless. Use `release_by_doi` for the
+  common case and `files` to see which preserved copies exist. The release's
+  `source_url` points at Scholar's fulltext redirect, which serves or forwards
+  to the archived document itself.
+docs_url: https://scholar.archive.org/api/fatcat/v2/openapi.json
+keywords:
+  - internet archive scholar
+  - ia scholar
+  - fatcat
+  - doi
+  - pmid
+  - pmcid
+  - arxiv
+  - open access
+  - archived pdf
+  - full text
+  - preservation
+  - preprint
+  - citation
+  - bibliographic record
+  - scholarly work
+base: https://scholar.archive.org/api/fatcat/v2
+adapter: rest_json
+auth:
+  type: none
+attribution: "Internet Archive Scholar (Fatcat)"
+source:
+  is_primary: false
+  originator: "Internet Archive"
+  originator_domain: archive.org
+  provenance: aggregator_exception
+  exception_reason: >-
+    Fatcat aggregates Crossref, PubMed, arXiv and other catalogues for its
+    bibliographic records. Its distinct value is the archived full-text copy it
+    points to; the record metadata is not originated by the Internet Archive.
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://scholar.archive.org/api/fatcat/v2/openapi.json
+    verified_at: 2026-11-04
+  rate_limit:
+    per_min: 60
+    burst: 5
+    concurrency: 2
+cache_ttl: 86400
+limits:
+  rps: 1
+  note: "The v2 API publishes no rate-limit headers; stay conservative."
+capabilities:
+  release_by_doi:
+    description: >-
+      Resolve a DOI to a Fatcat release. Returns the title, year, type, stage,
+      publisher, venue id, volume, issue, pages, language, licence, withdrawal
+      status, author names, identifier crosswalk and abstract. The record's
+      source_url is Scholar's fulltext redirect for that DOI, which serves or
+      forwards to the archived copy.
+    path: /release/lookup
+    defaults:
+      id_type: doi
+    params:
+      doi:
+        type: string
+        required: true
+        description: DOI, e.g. "10.1038/nature12373".
+    alias:
+      doi: id_value
+    patterns:
+      - "10\\.\\d{4,9}/[^\\s,;]+"
+    record_path: null
+    id_field: fatcat_id
+    source_url_template: >-
+      https://scholar.archive.org/api/fatcat/v2/release/lookup/fulltext?id_type=doi&id_value={id_value}
+    fields:
+      fatcat_id: id
+      work_id: work_id
+      title: title
+      year: release_year
+      date: release_date
+      type: release_type
+      stage: release_stage
+      publisher: publisher
+      venue_id: container_id
+      volume: volume
+      issue: issue
+      pages: pages
+      language: language
+      license: license_slug
+      withdrawn: withdrawn_status
+      authors: contribs
+      identifiers: extids
+      abstract: abstracts.0.content
+    pluck:
+      authors: raw_name
+    exemplars:
+      - Fatcat record for DOI 10.1038/nature12373
+      - is this paper preserved by the Internet Archive
+      - archived PDF for a DOI
+      - open access copy of a journal article
+      - who wrote this paper and when was it published
+    example:
+      doi: 10.1038/nature12373
+  release_by_pmid:
+    description: >-
+      Resolve a PubMed PMID to a Fatcat release. Same projection as
+      release_by_doi, with a fulltext redirect for the PMID.
+    path: /release/lookup
+    defaults:
+      id_type: pmid
+    params:
+      pmid:
+        type: string
+        required: true
+        description: PMID digits, e.g. "23903748".
+    alias:
+      pmid: id_value
+    patterns:
+      - "PMID[:\\s]*\\d{4,9}"
+    record_path: null
+    id_field: fatcat_id
+    source_url_template: >-
+      https://scholar.archive.org/api/fatcat/v2/release/lookup/fulltext?id_type=pmid&id_value={id_value}
+    fields:
+      fatcat_id: id
+      work_id: work_id
+      title: title
+      year: release_year
+      date: release_date
+      type: release_type
+      stage: release_stage
+      publisher: publisher
+      venue_id: container_id
+      volume: volume
+      issue: issue
+      pages: pages
+      language: language
+      license: license_slug
+      withdrawn: withdrawn_status
+      authors: contribs
+      identifiers: extids
+      abstract: abstracts.0.content
+    pluck:
+      authors: raw_name
+    exemplars:
+      - Fatcat release for PMID 23903748
+      - archived copy of a PubMed article
+      - full text for a PMID
+    example:
+      pmid: "23903748"
+  release_by_pmcid:
+    description: >-
+      Resolve a PubMed Central id (PMC…) to a Fatcat release. Same projection as
+      release_by_doi, with a fulltext redirect for the PMCID.
+    path: /release/lookup
+    defaults:
+      id_type: pmcid
+    params:
+      pmcid:
+        type: string
+        required: true
+        description: PMC id including the prefix, e.g. "PMC4221854".
+    alias:
+      pmcid: id_value
+    patterns:
+      - "PMC\\d{6,9}"
+    record_path: null
+    id_field: fatcat_id
+    source_url_template: >-
+      https://scholar.archive.org/api/fatcat/v2/release/lookup/fulltext?id_type=pmcid&id_value={id_value}
+    fields:
+      fatcat_id: id
+      work_id: work_id
+      title: title
+      year: release_year
+      date: release_date
+      type: release_type
+      stage: release_stage
+      publisher: publisher
+      venue_id: container_id
+      volume: volume
+      issue: issue
+      pages: pages
+      language: language
+      license: license_slug
+      withdrawn: withdrawn_status
+      authors: contribs
+      identifiers: extids
+      abstract: abstracts.0.content
+    pluck:
+      authors: raw_name
+    exemplars:
+      - Fatcat release for PMC4221854
+      - archived PDF of a PubMed Central article
+    example:
+      pmcid: PMC4221854
+  release_by_arxiv:
+    description: >-
+      Resolve an arXiv id to a Fatcat release. Same projection as
+      release_by_doi. The id must include the version suffix (for example
+      "1706.03762v5"); a bare id returns no match. The corresponding arXiv DOI
+      (10.48550/arXiv.<id>) also resolves through release_by_doi.
+    path: /release/lookup
+    defaults:
+      id_type: arxiv
+    params:
+      arxiv:
+        type: string
+        required: true
+        description: arXiv id with version, e.g. "1706.03762v5".
+    alias:
+      arxiv: id_value
+    patterns:
+      - "arXiv:\\s*\\d{4}\\.\\d{4,5}(v\\d+)?"
+    record_path: null
+    id_field: fatcat_id
+    source_url_template: >-
+      https://scholar.archive.org/api/fatcat/v2/release/lookup/fulltext?id_type=arxiv&id_value={id_value}
+    fields:
+      fatcat_id: id
+      work_id: work_id
+      title: title
+      year: release_year
+      date: release_date
+      type: release_type
+      stage: release_stage
+      publisher: publisher
+      venue_id: container_id
+      volume: volume
+      issue: issue
+      pages: pages
+      language: language
+      license: license_slug
+      withdrawn: withdrawn_status
+      authors: contribs
+      identifiers: extids
+      abstract: abstracts.0.content
+    pluck:
+      authors: raw_name
+    exemplars:
+      - Fatcat record for arXiv 1706.03762v5
+      - archived preprint of Attention Is All You Need
+      - full text of an arXiv paper
+    example:
+      arxiv: 1706.03762v5
+  release:
+    description: >-
+      Read one Fatcat release by its UUID (the fatcat_id returned by the
+      identifier resolvers). Returns the same fields as release_by_doi.
+    path: /release/{ident}
+    params:
+      ident:
+        type: string
+        required: true
+        description: Fatcat release UUID, e.g. df9cbd15-174e-4e0d-84cf-ffa9daed96e7.
+    record_path: null
+    id_field: fatcat_id
+    source_url_template: "https://scholar.archive.org/fatcat/release/{ident}"
+    fields:
+      fatcat_id: id
+      work_id: work_id
+      title: title
+      year: release_year
+      date: release_date
+      type: release_type
+      stage: release_stage
+      publisher: publisher
+      venue_id: container_id
+      volume: volume
+      issue: issue
+      pages: pages
+      language: language
+      license: license_slug
+      withdrawn: withdrawn_status
+      authors: contribs
+      identifiers: extids
+      abstract: abstracts.0.content
+    pluck:
+      authors: raw_name
+    exemplars:
+      - Fatcat release df9cbd15-174e-4e0d-84cf-ffa9daed96e7
+      - read a Fatcat record by its UUID
+    example:
+      ident: df9cbd15-174e-4e0d-84cf-ffa9daed96e7
+  files:
+    description: >-
+      List the archived files attached to a Fatcat release: mimetype, size,
+      SHA-1, SHA-256, MD5 and the URLs where each copy lives (webarchive for
+      Internet Archive captures, web for the original location). An empty list
+      means Scholar knows the record but holds no file for it.
+    path: /release/{ident}/files
+    params:
+      ident:
+        type: string
+        required: true
+        description: Fatcat release UUID, e.g. df9cbd15-174e-4e0d-84cf-ffa9daed96e7.
+      limit:
+        type: integer
+        description: Files per page (1-100, default 25).
+        default: 25
+    pagination:
+      mode: offset
+      param: offset
+      limit_param: limit
+      default_limit: 25
+      max_limit: 100
+      start: 0
+    record_path: items
+    id_field: file_id
+    version_field: count
+    fields:
+      file_id: id
+      mimetype: mimetype
+      size_bytes: size_bytes
+      sha256: sha256
+      sha1: sha1
+      md5: md5
+      urls: urls
+    exemplars:
+      - archived files for Fatcat release df9cbd15-174e-4e0d-84cf-ffa9daed96e7
+      - which PDFs does the Internet Archive hold for this paper
+      - checksums of an archived copy
+      - where is this paper's full text archived
+    example:
+      ident: df9cbd15-174e-4e0d-84cf-ffa9daed96e7
+  venue:
+    description: >-
+      Read a Fatcat container (journal, conference or book series) by its UUID,
+      which a release returns as venue_id. Returns the name, container type,
+      publisher, ISSN-L, e-ISSN, p-ISSN and Wikidata QID.
+    path: /container/{ident}
+    params:
+      ident:
+        type: string
+        required: true
+        description: Fatcat container UUID, e.g. 1c4a3423-7d8e-4080-a760-62fb43d63dbb.
+    record_path: null
+    id_field: venue_id
+    source_url_template: "https://scholar.archive.org/fatcat/container/{ident}"
+    fields:
+      venue_id: id
+      name: name
+      type: container_type
+      publisher: publisher
+      issn_l: issnl
+      issn_e: issne
+      issn_p: issnp
+      wikidata_qid: wikidata_qid
+    exemplars:
+      - which journal has Fatcat container 1c4a3423-7d8e-4080-a760-62fb43d63dbb
+      - ISSN of the journal that published this paper
+      - venue name and publisher for a Fatcat release
+    example:
+      ident: 1c4a3423-7d8e-4080-a760-62fb43d63dbb
+  preserved_file:
+    description: >-
+      Look up an archived file by SHA-256 checksum. Confirms whether the
+      Internet Archive holds this exact file, and returns its size, other
+      checksums and the URLs where it is served. Use it after downloading a PDF
+      to check preservation, or to find the archived copy of a file you already
+      have.
+    path: /file/lookup
+    defaults:
+      id_type: sha256
+    params:
+      sha256:
+        type: string
+        required: true
+        description: Lower- or upper-case hex SHA-256 checksum (64 characters).
+    alias:
+      sha256: id_value
+    patterns:
+      - "\\b[a-fA-F0-9]{64}\\b"
+    record_path: null
+    id_field: file_id
+    fields:
+      file_id: id
+      mimetype: mimetype
+      size_bytes: size_bytes
+      sha256: sha256
+      sha1: sha1
+      md5: md5
+      urls: urls
+    exemplars:
+      - is this PDF archived by the Internet Archive
+      - find the archived copy of a file by sha256
+      - checksum lookup in Fatcat
+    example:
+      sha256: fcfffca4cbd3465ee44ae7c9444a4546cc9ddb644a2fff76bf36a265de3469ad
