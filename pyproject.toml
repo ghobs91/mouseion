@@ -8,6 +8,7 @@ dependencies = [
     "pydantic>=2.7",
     "PyYAML>=6.0",
     "mcp>=2.3,<3",
+    "cryptography>=42",
 ]
 
 [project.optional-dependencies]
@@ -15,6 +16,7 @@ dev = ["pytest>=8.0"]
 embeddings = [
     "fastembed>=0.4",
 ]
+browser = ["patchright>=1.50"]
 
 [project.scripts]
 mouseion = "mouseion.cli:main"
