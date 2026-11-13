@@ -1,6 +1,6 @@
 # Source inventory
 
-The full registry: **144 providers and 248 capabilities across ten domains**.
+The full registry: **145 providers and 250 capabilities across ten domains**.
 `none` means keyless; every other value names the credential the manifest
 declares. The authoritative live view is `mouseion providers` or the dashboard's
 Sources tab. This page is the stable inventory for reading and review.
@@ -81,6 +81,7 @@ directory of every API on the internet.
 | Hawaii Campaign Spending | none | `ledger` |
 | Maven Central | none | `search` |
 | MBTA news | none | `announcements` |
+| MDN Web Docs | none | `search`, `page` |
 | New York Campaign Finance | none | `disclosures` |
 | New York business registry | none | `entities` |
 | New York property assessments | none | `parcels` |

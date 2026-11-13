@@ -58,7 +58,7 @@ routing — and drops the rest.
 | Piece | Responsibility |
 |---|---|
 | **Registry** | YAML manifests in `providers/`: source policy, auth, capabilities, params, projections |
-| **Adapters** | The shapes: `rest_json`, `socrata`, `csv`, `zip`, `html_table`, `atom`, `sdmx_json`, `cdx`, `faa_nas`, `mcp_remote` |
+| **Adapters** | The shapes: `rest_json`, `socrata`, `csv`, `zip`, `html_table`, `atom`, `sdmx_json`, `cdx`, `faa_nas`, `software_docs`, `mcp_remote` |
 | **Router** | Exact patterns first, then optional embeddings, blended with IDF-aware lexical scoring |
 | **Engine** | Canonical query translation, cluster-only failover, rate limiting, circuit breaker, negative cache, single-flight |
 | **Envelope** | One result shape: records, source status, attribution, terms, cursor, missing fields |
@@ -99,7 +99,7 @@ A manifest declares one of ten domains and a finer `sub_category`:
 | `reference` | 15 | Wikipedia, MLB, MusicBrainz, TMDB, USAJobs, UEFA, FIFA, five soccer leagues, Podcast Index, O*NET |
 | `financial_sovereign` | 20 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF ownership, Companies House, NY registry, Coinbase, Yahoo Finance; central-bank and regulator press |
 | `governance_legislative` | 20 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener, FDA press; state governors and attorneys general |
-| `developer_infrastructure` | 10 | npm, PyPI, crates.io, Go, Maven, GitHub, NVD, Hugging Face, Stack Exchange |
+| `developer_infrastructure` | 11 | npm, PyPI, crates.io, Go, Maven, GitHub, NVD, Hugging Face, Stack Exchange, MDN |
 | `archives_web_state` | 5 | Wayback, Internet Archive, Library of Congress, UK National Archives |
 | `transport_infrastructure` | 8 | OurAirports, FAA airport status, Schiphol flights, MBTA, SFMTA, Caltrain news, TfL live status |
 | `commerce` | 7 | Best Buy, Walmart, eBay, Costco, Shopify Global Catalog, Open Food Facts |
@@ -202,7 +202,7 @@ its own catalogue, not a public-record originator.
 
 ## Coverage
 
-**144 providers, 248 capabilities, ten domains.** The full inventory is in
+**145 providers, 250 capabilities, ten domains.** The full inventory is in
 [`docs/PROVIDERS.md`](docs/PROVIDERS.md). The demand-shaped gap analysis, using
 Firecrawl Alexandria's categories as a reference, is in
 [`docs/PROVIDER-TARGETS.md`](docs/PROVIDER-TARGETS.md).
@@ -232,6 +232,11 @@ Highlights:
   lookup from the Unified API, keyless.
 - **Developer Q&A** — Stack Overflow and the Stack Exchange network: question
   search plus the question body, keyless and CC BY-SA.
+- **Official documentation** — MDN: search its index, then read a page as
+  Markdown with its section headings, from the `/index.json` MDN publishes
+  rather than by scraping the article. The `software_docs` adapter behind it
+  reads any docs site that returns HTML, so the next documentation source is a
+  manifest.
 - **Podcasts** — Podcast Index search and episode lists (free key and secret;
   routing works without them, data calls need the credentials).
 - **Occupations** — O*NET's occupation taxonomy: SOC code, title and description
@@ -427,14 +432,15 @@ than a directory of every API.
 ## Repository map
 
 ```
-providers/        144 YAML manifests, one per source plus one composite view
+providers/        145 YAML manifests, one per source plus one composite view
 mouseion/
   manifest.py     schema: domain, source policy, auth, capabilities, projection
   registry.py     loading, lexical scoring, provider cards
   router.py       patterns → embeddings → lexical, jurisdiction filtering
   engine.py       canonical query, cluster failover, rate limits, breaker
   client.py       prepare → cache → HTTP → normalize → envelope
-  adapters/       rest_json, socrata, csv (+ZIP), html_table, atom, sdmx_json, cdx, faa_nas
+  adapters/       rest_json, socrata, csv (+ZIP), html_table, atom, sdmx_json, cdx, faa_nas,
+                  software_docs
   fanout.py       parallel member calls, offer merge, per-member cursors
   browser.py      Patchright transport: headful page + response interception
   signing.py      RSA-signed requests (Walmart)

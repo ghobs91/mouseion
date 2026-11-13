@@ -50,7 +50,7 @@ capabilities; one provider often covers several capabilities.
 | `geo_earth_observation` | 14 | Nominatim, Overpass, USGS, NOAA, NWS alerts and forecasts, EONET, GeoNames |
 | `governance_legislative` | 20 | Congress, GovInfo, Federal Register, UK Parliament, CourtListener, FDA press, state governors and attorneys general |
 | `financial_sovereign` | 20 | ECB, FRED, BLS, World Bank, Treasury, CFTC, SEC, FEC, GLEIF ownership; Coinbase and Yahoo Finance quotes; central-bank and regulator press; NY business registry |
-| `developer_infrastructure` | 10 | npm, PyPI, crates, Go, Maven, GitHub, NVD, Hugging Face, Stack Exchange |
+| `developer_infrastructure` | 11 | npm, PyPI, crates, Go, Maven, GitHub, NVD, Hugging Face, Stack Exchange, MDN |
 | `archives_web_state` | 5 | Wayback, Internet Archive, LoC, UK National Archives |
 | `commerce` | 7 | Best Buy, Walmart, eBay and Costco fan-out; Shopify catalog; Open Food Facts |
 | `transport_infrastructure` | 8 | OurAirports, FAA status, Schiphol flights, MBTA, SFMTA, Caltrain news, TfL live status |
@@ -72,7 +72,7 @@ card.
 | Health (32) | openFDA, CMS, ClinicalTrials, NIH, PubMed | WHO, NHS, state health | WHO GHO (OData), NHS Digital, state health Socrata | 1 |
 | Life sciences (31) | UniProt, PubChem, PMC, GBIF | structures, genomes | RCSB PDB, Ensembl, bioRxiv, KEGG (academic) | 1 |
 | Places (23) | Nominatim, Overpass, USGS, **GeoNames** | hierarchy, timezone, population | **GeoNames** ✅, Who's On First, USGS GNIS | 2 / 1 |
-| Developer (21) | 10 providers | package registries, Q&A | **Hugging Face** ✅, **Stack Exchange** ✅, Docker Hub | 1 |
+| Developer (21) | 11 providers | package registries, Q&A, official docs | **Hugging Face** ✅, **Stack Exchange** ✅, **MDN** ✅, Docker Hub | 1 |
 | Travel (21) | OurAirports, FAA, Schiphol | routes, rail | **OurAirports** ✅, **FAA NAS** ✅, **Schiphol** ✅, OpenFlights | 1 / 2 |
 | News (16) | ten agency and transit press feeds, plus official registers | global news index | more agency press releases via RSS; GDELT (aggregator exception), Media Cloud | 1 / 2 |
 | Research (16) | 14 providers | citation graph, preprints | Semantic Scholar, CORE, bioRxiv/medRxiv | 2 / 1 |

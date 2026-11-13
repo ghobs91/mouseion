@@ -19,7 +19,7 @@ recently discussed source. Update the status columns when a provider lands.
 
 ## Current state
 
-**136 providers / 196 capabilities.** Domain distribution is deliberately uneven:
+**145 providers / 250 capabilities.** Domain distribution is deliberately uneven:
 depth where the sources are good, not an even split.
 
 | Domain | Providers | Strong at | Weak at |
@@ -30,7 +30,7 @@ depth where the sources are good, not an even split.
 | `geo_earth_observation` | 14 | geocoding, hazards, hydrology, alerts | **forecast**, real-time conditions |
 | `reference` | 15 | sports, music, film, jobs, occupations, encyclopedia, podcasts | games, people |
 | `governance_legislative` | 20 | legislation, courts, federal agencies, state governors and attorneys general | — |
-| `developer_infrastructure` | 10 | package registries, vulnerabilities, code, Q&A | containers |
+| `developer_infrastructure` | 11 | package registries, vulnerabilities, code, Q&A, web-platform docs (MDN) | containers, docs beyond MDN |
 | `transport_infrastructure` | 8 | airports, flight status, transit news, London live status | US real-time transit (GTFS-RT) |
 | `archives_web_state` | 5 | web and national archives | — |
 | `commerce` | 7 | Best Buy, Walmart, eBay, Costco, Shopify catalogue, food products | barcodes, non-food products outside these five catalogues |
@@ -63,6 +63,7 @@ depth where the sources are good, not an even split.
 | Jobs and occupations | covered | USAJobs postings, O*NET occupation profiles |
 | Packages, vulnerabilities, source code | covered | npm, PyPI, crates, Go, Maven, GitHub, NVD |
 | Developer Q&A | covered | Stack Exchange |
+| Web-platform documentation | covered | MDN `search` and `page`; other product docs still need a manifest |
 | Market quotes | covered | Coinbase crypto; Yahoo Finance equities/ETFs/indices via aggregator exception; no primary NYSE feed |
 | Macroeconomic statistics | covered | FRED, BLS, ECB, World Bank, Treasury |
 | IMF / OECD / BIS series | gap | SDMX endpoints, adapter already exists |
@@ -136,7 +137,7 @@ Scored on the same axes, with demand read as "how often an LLM searches this":
 | Candidate | Demand | Gap | Policy | Leverage | Impact | Note |
 |---|---:|---:|---:|---:|---:|---|
 | ~~**Market quotes: Coinbase + Yahoo Finance**~~ — shipped | 5 | 5 | 3 | 4 | **4.40** | Coinbase documented and keyless; Yahoo is an explicit aggregator exception covering NYSE and Nasdaq names |
-| Official docs: MDN | 5 | 4 | 4 | 4 | 4.35 | highest coding-agent demand; covers the web platform only |
+| ~~Official docs: MDN~~ — shipped | 5 | 4 | 4 | 4 | **4.35** | highest coding-agent demand; the adapter reads any docs site, the manifest covers the web platform |
 | General news: GDELT | 5 | 4 | 2 | 5 | 4.15 | aggregator exception; one API covers every topic |
 | US real-time transit (GTFS-RT) | 4 | 5 | 5 | 2 | 4.05 | high effort |
 | OFAC sanctions | 3 | 4 | 5 | 3 | 3.65 | compliance, not volume |
@@ -147,10 +148,15 @@ and search endpoints, as an explicit aggregator exception. NYSE has no public AP
 of its own, so a primary NYSE feed remains a gap; Yahoo is the working substitute,
 never automatic.
 
-**Next by the same rule: MDN official docs (4.35).** It is policy-clean and
-keyless, and official documentation is the most common unshipped category for
-coding agents. General news via GDELT (4.15) remains the runner-up, penalized for
-the aggregator exception.
+**Shipped: MDN official docs.** `/api/v1/search` for discovery and the published
+`/en-US/docs/.../index.json` for the page, which carries the prose blocks, the
+section headings and the modification date. The `software_docs` adapter handles
+the HTML shape too, so the marginal cost of the next documentation source is a
+manifest and a fixture rather than an adapter.
+
+**Next by the same rule: general news via GDELT (4.15).** It stays the runner-up
+because the aggregator exception is a real policy cost; the cheaper wins remain
+IMF/OECD/BIS SDMX (3.85, adapter already present) and OFAC (3.65).
 
 ## Maintenance
 
