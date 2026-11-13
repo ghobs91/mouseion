@@ -239,3 +239,8 @@
 {"query": "get the preserved copy for PMC4221854", "expect": "ia_scholar"}
 {"query": "the preprint 1706.03762v5", "expect": "ia_scholar"}
 {"query": "is this file checksum preserved by the archive", "expect": "ia_scholar"}
+
+{"query": "MDN documentation for the fetch API", "expect": "mdn"}
+{"query": "JavaScript Promise.all reference", "expect": "mdn"}
+{"query": "CSS grid layout properties and browser support", "expect": "mdn"}
+{"query": "how does response.json() parse a response body", "expect": "mdn"}

@@ -177,9 +177,9 @@ def test_yahoo_splits_quote_and_history(registry, cache):
 def test_eval_baseline_holds(registry, cache):
     index = JurisdictionIndex(load_jurisdictions(ROOT / "jurisdictions.yaml"))
     report = run(evaluate(Router(registry, cache, jurisdictions=index), load_cases()))
-    assert report["total"] == 188
-    assert report["top1"] >= 171, report["misses"]
-    assert report["top3"] >= 181, report["misses"]
+    assert report["total"] == 192
+    assert report["top1"] >= 175, report["misses"]
+    assert report["top3"] >= 185, report["misses"]
     assert report["top3"] >= report["top1"]
 
 
