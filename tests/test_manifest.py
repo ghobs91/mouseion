@@ -58,6 +58,7 @@ def test_all_manifests_load(registry):
         "library_of_congress",
         "maven_central",
         "mbta_news",
+        "mdn",
         "nasa_eonet",
         "nc_governor_news",
         "nhc",

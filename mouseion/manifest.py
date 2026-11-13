@@ -247,6 +247,15 @@ class Capability(BaseModel):
     #: JSON body template for POST APIs. All params go to the body, not the query.
     #: ``"{name}"`` is replaced by the raw value; keys with no value are dropped.
     body_template: dict[str, Any] | None = None
+    #: Software docs: dotted path to a structured block list whose entries carry
+    #: HTML in ``value.content`` (MDN publishes ``doc.body``). Blocks without
+    #: content — compatibility tables, specification lists — are skipped.
+    docs_blocks: str | None = None
+    #: Software docs: narrow an HTML page to one region before extraction.
+    #: Accepts ``tag``, ``tag.class``, ``.class`` or ``#id``.
+    docs_selector: str | None = None
+    #: Software docs: character budget for one page's extracted text.
+    docs_max_chars: int = Field(default=20_000, gt=0)
     #: Browser transport: the human-facing page to open before intercepting the
     #: API response. ``{query}`` is URL-encoded by the adapter.
     browser_url: str | None = None

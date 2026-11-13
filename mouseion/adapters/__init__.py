@@ -15,6 +15,7 @@ from .rest_json import RestJsonAdapter
 from .rss import RssAdapter
 from .sdmx_json import SdmxJsonAdapter
 from .socrata import SocrataAdapter
+from .software_docs import SoftwareDocsAdapter
 from .tfl_status import TflStatusAdapter
 from .yahoo_chart import YahooChartAdapter
 
@@ -32,6 +33,7 @@ ADAPTERS: dict[str, Adapter] = {
         CsvAdapter(),
         HtmlTableAdapter(),
         NwsForecastAdapter(),
+        SoftwareDocsAdapter(),
         OnetOccupationsAdapter(),
         PodcastIndexAdapter(),
         TflStatusAdapter(),

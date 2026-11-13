@@ -1,0 +1,127 @@
+id: mdn
+title: MDN Web Docs
+category: developer
+domain: developer_infrastructure
+sub_category: software_docs
+description: >-
+  MDN's own index of web-platform documentation: HTML, CSS, JavaScript, the DOM,
+  Web APIs, HTTP and browser compatibility notes. Search returns the canonical
+  page path; `page` reads that page as Markdown, from MDN's published
+  `/index.json` rather than by scraping the rendered article. Keyless.
+docs_url: https://developer.mozilla.org/en-US/docs/MDN/Community
+keywords:
+  - mdn
+  - javascript
+  - browser api
+  - dom
+  - css
+  - html
+  - web platform
+  - web api
+  - reference
+  - documentation
+  - fetch
+  - promise
+  - element
+  - event listener
+  - response
+  - request
+  - json
+  - parse
+  - headers
+base: https://developer.mozilla.org
+adapter: software_docs
+attribution: "MDN Web Docs, Mozilla"
+terms: >-
+  MDN documentation is licensed CC BY-SA 2.5 or later; code samples are CC0.
+source:
+  is_primary: true
+  originator: "MDN Web Docs (Mozilla)"
+  originator_domain: developer.mozilla.org
+  provenance: official
+  tier: 1
+  auth_policy:
+    free: true
+    credit_card_required: false
+    trial: false
+    evidence_url: https://developer.mozilla.org/en-US/docs/MDN/Writing_guidelines/Attrib_copyright_license
+    verified_at: 2026-11-13
+  rate_limit:
+    per_min: 60
+    burst: 10
+    concurrency: 2
+cache_ttl: 21600
+capabilities:
+  search:
+    description: >-
+      Search MDN's documentation index. Returns the page title, a one-sentence
+      summary, the canonical path and a relevance score. Pass the returned
+      `path` to `page` to read it. MDN serves ten results per page; `limit` trims
+      the page you get back.
+    path: /api/v1/search
+    params:
+      query:
+        type: string
+        required: true
+        description: "search terms, e.g. 'fetch response json'"
+      locale:
+        type: string
+        default: en-US
+        description: "MDN locale, e.g. en-US, fr, ja, zh-CN"
+      limit:
+        type: integer
+        default: 10
+        description: "results to return from the current page (MDN serves 10)"
+    alias: {query: q}
+    pagination: {mode: page, param: page, start: 1, default_limit: 10, max_limit: 50}
+    record_path: documents
+    id_field: path
+    fields:
+      slug: slug
+      title: title
+      summary: summary
+      path: mdn_url
+      score: score
+    source_url_template: "https://developer.mozilla.org{path}"
+    strip_html: [summary]
+    version_field: metadata.total.value
+    exemplars:
+      - MDN documentation for a web API
+      - what does this JavaScript method do
+      - browser support and syntax for a CSS property
+      - web platform reference for an HTML element
+      - how do I use the fetch API
+      - parse a JSON response body from a fetch call
+      - which headers are on a response object
+    example: {query: "fetch response json", limit: 3}
+  page:
+    description: >-
+      Read one MDN page as Markdown: title, section headings and the article
+      body, without site navigation or compatibility tables. Accepts a slug
+      (`Web/API/Fetch_API`) or the page URL. Use `search` first to get the
+      canonical path, which avoids a redirect.
+    path: /en-US/docs/{path}/index.json
+    params:
+      path:
+        type: string
+        required: true
+        description: "docs page path, e.g. Web/API/Fetch_API or Web/CSS/grid"
+    docs_blocks: doc.body
+    docs_max_chars: 20000
+    id_field: path
+    fields:
+      title: title
+      summary: summary
+      path: path
+      updated: updated
+      headings: headings
+      text: text
+      chars: chars
+      truncated: truncated
+    source_url_template: "https://developer.mozilla.org{path}"
+    exemplars:
+      - read the MDN page for an API
+      - full article text of an MDN reference page
+      - documentation for a JavaScript global object
+      - explain the CSS property from its reference page
+    example: {path: "Web/API/Response/json"}
